@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@layer base {
+  :root {
+    --background: 240 15% 7%;
+    --foreground: 214 32% 95%;
+    --card: 240 15% 11%;
+    --card-foreground: 214 32% 95%;
+    --popover: 240 15% 11%;
+    --popover-foreground: 214 32% 95%;
+    --primary: 258 88% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 15% 16%;
+    --secondary-foreground: 214 32% 95%;
+    --muted: 240 15% 16%;
+    --muted-foreground: 215 20% 60%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 15% 20%;
+    --input: 240 15% 16%;
+    --ring: 258 88% 60%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #0F0F1A;
+    color: #F1F5F9;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .gradient-text {
+    @apply bg-gradient-brand bg-clip-text text-transparent;
+  }
+
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-brand text-white font-semibold px-6 py-3 rounded-xl
+           hover:opacity-90 hover:shadow-glow-purple transition-all duration-300
+           active:scale-95 cursor-pointer;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-white font-semibold px-6 py-3 rounded-xl
+           border border-white/20 hover:bg-white/10 hover:border-white/40
+           transition-all duration-300 cursor-pointer;
+  }
+
+  .btn-amber {
+    @apply bg-brand-amber text-black font-semibold px-6 py-3 rounded-xl
+           hover:bg-amber-400 hover:shadow-glow-amber transition-all duration-300
+           active:scale-95 cursor-pointer;
+  }
+
+  .input-dark {
+    @apply bg-white/5 border border-white/10 rounded-xl px-4 py-3
+           text-white placeholder:text-white/30 focus:outline-none
+           focus:border-brand-purple focus:ring-1 focus:ring-brand-purple
+           transition-all duration-200 w-full;
+  }
+
+  .section-heading {
+    @apply text-3xl md:text-4xl font-bold text-center mb-4;
+  }
+
+  .section-subheading {
+    @apply text-brand-muted text-center max-w-2xl mx-auto mb-12;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0F0F1A;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(108, 62, 244, 0.5);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #6C3EF4;
+}
+
+/* Selection */
+::selection {
+  background: rgba(108, 62, 244, 0.4);
+  color: #fff;
+}

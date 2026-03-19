@@ -1,0 +1,132 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  phone        String?
+  passwordHash String?
+  avatar       String?
+  isAdmin      Boolean   @default(false)
+  provider     String?   // 'vk' | 'mailru' | 'yandex' | 'credentials'
+  providerId   String?
+  telegramId   String?   // для DM через бот
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  orders       Order[]
+  reviews      Review[]
+  payments     Payment[]
+  accounts     Account[]
+  sessions     Session[]
+
+  @@index([email])
+  @@index([providerId])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Order {
+  id          String    @id @default(cuid())
+  userId      String?
+  type        String    // 'coursework' | 'diploma' | 'essay' | 'lab' | 'presentation' | 'other'
+  subject     String
+  deadline    DateTime
+  description String    @db.Text
+  files       String?   @db.Text // JSON array of file paths
+  status      String    @default("new")
+  // Статусы: new | in_progress | ready_for_review | awaiting_payment | paid | completed | cancelled
+  price       Decimal?  @db.Decimal(10, 2)
+  paymentLink String?   @db.Text
+  paymentId   String?
+  adminNote   String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User?     @relation(fields: [userId], references: [id])
+  payments    Payment[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Payment {
+  id         String   @id @default(cuid())
+  orderId    String
+  userId     String?
+  amount     Decimal  @db.Decimal(10, 2)
+  status     String   // 'pending' | 'succeeded' | 'cancelled'
+  yukassaId  String?
+  metadata   String?  @db.Text // JSON
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  order      Order    @relation(fields: [orderId], references: [id])
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([yukassaId])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  userId     String?
+  name       String
+  city       String?
+  university String?
+  rating     Int
+  text       String   @db.Text
+  avatar     String?
+  approved   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([approved])
+  @@index([userId])
+}

@@ -1,0 +1,287 @@
+import nodemailer from 'nodemailer'
+import path from 'path'
+import fs from 'fs'
+
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.beget.com',
+  port: parseInt(process.env.SMTP_PORT || '465'),
+  secure: true, // SSL
+  auth: {
+    user: process.env.SMTP_USER || 'support@studyassist.ru',
+    pass: process.env.SMTP_PASS || '',
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+})
+
+export interface OrderEmailData {
+  orderId: string
+  orderType: string
+  subject: string
+  deadline: string
+  description: string
+  name: string
+  email: string
+  phone?: string | null
+  files?: string[]
+}
+
+function getOrderTypeLabel(type: string): string {
+  const types: Record<string, string> = {
+    coursework: 'Курсовая работа',
+    diploma: 'Дипломная работа (ВКР)',
+    essay: 'Реферат / Эссе',
+    lab: 'Лабораторная работа / Задача',
+    presentation: 'Презентация / Отчёт',
+    other: 'Другое',
+  }
+  return types[type] || type
+}
+
+function formatOrderId(id: string): string {
+  // Берём последние 5 символов ID или числовой хеш
+  const hash = id.replace(/[^0-9]/g, '').slice(-5).padStart(5, '0')
+  return `#${hash}`
+}
+
+export async function sendNewOrderEmail(data: OrderEmailData): Promise<void> {
+  const orderLabel = formatOrderId(data.orderId)
+  const typeLabel = getOrderTypeLabel(data.orderType)
+
+  // Подготавливаем аттачменты
+  const attachments: nodemailer.Attachment[] = []
+  if (data.files && data.files.length > 0) {
+    for (const filePath of data.files) {
+      const fullPath = path.join(process.cwd(), 'public', filePath)
+      if (fs.existsSync(fullPath)) {
+        attachments.push({
+          filename: path.basename(filePath),
+          path: fullPath,
+        })
+      }
+    }
+  }
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Новая заявка StudyAssist</title>
+</head>
+<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
+              <h1 style="color:#fff;margin:0;font-size:24px;font-weight:700;">📋 Новая заявка ${orderLabel}</h1>
+              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;">StudyAssist.ru</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <span style="color:#94A3B8;font-size:14px;">Тип работы</span><br>
+                    <span style="color:#F1F5F9;font-size:16px;font-weight:600;">${typeLabel}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <span style="color:#94A3B8;font-size:14px;">Предмет / Дисциплина</span><br>
+                    <span style="color:#F1F5F9;font-size:16px;">${data.subject}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <span style="color:#94A3B8;font-size:14px;">Дедлайн</span><br>
+                    <span style="color:#F59E0B;font-size:16px;font-weight:600;">${data.deadline}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <span style="color:#94A3B8;font-size:14px;">Описание задания</span><br>
+                    <span style="color:#F1F5F9;font-size:15px;line-height:1.6;">${data.description.replace(/\n/g, '<br>')}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <span style="color:#94A3B8;font-size:14px;">Имя клиента</span><br>
+                    <span style="color:#F1F5F9;font-size:16px;">${data.name}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <span style="color:#94A3B8;font-size:14px;">Email</span><br>
+                    <a href="mailto:${data.email}" style="color:#6C3EF4;font-size:16px;">${data.email}</a>
+                  </td>
+                </tr>
+                ${data.phone ? `
+                <tr>
+                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <span style="color:#94A3B8;font-size:14px;">Телефон</span><br>
+                    <a href="tel:${data.phone}" style="color:#6C3EF4;font-size:16px;">${data.phone}</a>
+                  </td>
+                </tr>
+                ` : ''}
+                <tr>
+                  <td style="padding:12px 0;">
+                    <span style="color:#94A3B8;font-size:14px;">Прикреплённые файлы</span><br>
+                    <span style="color:#F1F5F9;font-size:16px;">${data.files?.length || 0} шт.</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 32px 32px;text-align:center;">
+              <a href="${process.env.NEXTAUTH_URL}/admin/orders"
+                 style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">
+                Открыть в панели администратора
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `
+
+  await transporter.sendMail({
+    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
+    to: process.env.SMTP_USER,
+    subject: `📋 Новая заявка ${orderLabel} — ${typeLabel} (${data.subject})`,
+    html: htmlContent,
+    attachments,
+  })
+}
+
+export async function sendStatusUpdateEmail(
+  to: string,
+  orderId: string,
+  newStatus: string,
+  paymentLink?: string | null
+): Promise<void> {
+  const orderLabel = formatOrderId(orderId)
+
+  const statusLabels: Record<string, string> = {
+    new: 'Новая',
+    in_progress: 'В работе',
+    ready_for_review: 'Готова к проверке',
+    awaiting_payment: 'Ожидает оплаты',
+    paid: 'Оплачена',
+    completed: 'Завершена',
+    cancelled: 'Отменена',
+  }
+
+  const statusLabel = statusLabels[newStatus] || newStatus
+  const isPayment = newStatus === 'awaiting_payment' && paymentLink
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>Обновление заявки</title></head>
+<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
+              <h1 style="color:#fff;margin:0;font-size:24px;">Обновление заявки ${orderLabel}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px;text-align:center;">
+              <p style="color:#94A3B8;font-size:16px;">Статус вашей заявки изменён:</p>
+              <div style="display:inline-block;background:rgba(108,62,244,0.2);border:1px solid #6C3EF4;color:#F1F5F9;padding:12px 24px;border-radius:8px;font-size:18px;font-weight:600;margin:16px 0;">
+                ${statusLabel}
+              </div>
+              ${isPayment ? `
+              <p style="color:#F1F5F9;font-size:16px;margin:24px 0 8px;">Ваша работа готова! Для получения файлов перейдите к оплате:</p>
+              <a href="${paymentLink}"
+                 style="display:inline-block;background:linear-gradient(135deg,#F59E0B,#EF4444);color:#fff;padding:16px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;margin:8px 0;">
+                Оплатить работу
+              </a>
+              ` : ''}
+              <p style="color:#94A3B8;font-size:14px;margin-top:24px;">
+                Вы можете отслеживать статус в <a href="${process.env.NEXTAUTH_URL}/dashboard" style="color:#6C3EF4;">личном кабинете</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `
+
+  await transporter.sendMail({
+    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
+    to,
+    subject: `Заявка ${orderLabel}: статус изменён на "${statusLabel}"`,
+    html: htmlContent,
+  })
+}
+
+export async function sendPaymentLinkEmail(
+  to: string,
+  orderId: string,
+  paymentLink: string,
+  amount: number
+): Promise<void> {
+  const orderLabel = formatOrderId(orderId)
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>Ссылка на оплату</title></head>
+<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
+              <h1 style="color:#fff;margin:0;font-size:24px;">💳 Ссылка на оплату</h1>
+              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;">Заявка ${orderLabel}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px;text-align:center;">
+              <p style="color:#F1F5F9;font-size:16px;">Ваша работа проверена и готова к передаче.</p>
+              <p style="color:#94A3B8;font-size:15px;">Стоимость работы:</p>
+              <div style="font-size:32px;font-weight:700;color:#F59E0B;margin:16px 0;">${amount.toLocaleString('ru-RU')} ₽</div>
+              <a href="${paymentLink}"
+                 style="display:inline-block;background:linear-gradient(135deg,#F59E0B,#EF4444);color:#fff;padding:16px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;margin:16px 0;">
+                Оплатить сейчас
+              </a>
+              <p style="color:#94A3B8;font-size:13px;margin-top:24px;">
+                После оплаты работа будет автоматически доступна в вашем
+                <a href="${process.env.NEXTAUTH_URL}/dashboard" style="color:#6C3EF4;">личном кабинете</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `
+
+  await transporter.sendMail({
+    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
+    to,
+    subject: `Ссылка на оплату заявки ${orderLabel} — ${amount.toLocaleString('ru-RU')} ₽`,
+    html: htmlContent,
+  })
+}
