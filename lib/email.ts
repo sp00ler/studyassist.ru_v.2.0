@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import type Mail from 'nodemailer/lib/mailer'
 import path from 'path'
 import fs from 'fs'
 
@@ -50,7 +51,7 @@ export async function sendNewOrderEmail(data: OrderEmailData): Promise<void> {
   const typeLabel = getOrderTypeLabel(data.orderType)
 
   // Подготавливаем аттачменты
-  const attachments: nodemailer.Attachment[] = []
+  const attachments: Mail.Attachment[] = []
   if (data.files && data.files.length > 0) {
     for (const filePath of data.files) {
       const fullPath = path.join(process.cwd(), 'public', filePath)
