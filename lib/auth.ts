@@ -1,4 +1,4 @@
-import { NextAuthOptions, Provider } from 'next-auth'
+import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
@@ -148,9 +148,9 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
-    VKProvider as Provider,
-    MailRuProvider as Provider,
-    YandexProvider as Provider,
+    VKProvider as any,
+    MailRuProvider as any,
+    YandexProvider as any,
   ],
   callbacks: {
     async jwt({ token, user, account }) {
