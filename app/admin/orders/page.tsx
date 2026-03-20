@@ -123,13 +123,13 @@ export default function AdminOrdersPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">№</th>
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Тип</th>
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Предмет</th>
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Клиент</th>
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Дедлайн</th>
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Статус</th>
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Сумма</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">№</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Тип</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Предмет</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Клиент</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Дедлайн</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Статус</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Сумма</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -173,12 +173,12 @@ export default function AdminOrdersPage() {
           {/* Pagination */}
           {total > 20 && (
             <div className="flex items-center justify-center gap-3 mt-6">
-              <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
-                ←
+              <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} aria-label="Предыдущая страница">
+                <span aria-hidden="true">←</span>
               </Button>
-              <span className="text-white/60 text-sm">Страница {page} из {Math.ceil(total / 20)}</span>
-              <Button variant="outline" size="sm" onClick={() => setPage((p) => p + 1)} disabled={page >= Math.ceil(total / 20)}>
-                →
+              <span className="text-white/60 text-sm" aria-live="polite">Страница {page} из {Math.ceil(total / 20)}</span>
+              <Button variant="outline" size="sm" onClick={() => setPage((p) => p + 1)} disabled={page >= Math.ceil(total / 20)} aria-label="Следующая страница">
+                <span aria-hidden="true">→</span>
               </Button>
             </div>
           )}

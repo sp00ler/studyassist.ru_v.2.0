@@ -56,6 +56,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-sans antialiased bg-[#0F0F1A] text-[#F1F5F9] min-h-screen">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#6C3EF4] focus:text-white focus:rounded-lg focus:text-sm focus:font-medium"
+        >
+          Перейти к основному содержанию
+        </a>
         <SessionProvider>
           {children}
           <Toaster />

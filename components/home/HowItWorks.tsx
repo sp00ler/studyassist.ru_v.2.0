@@ -51,12 +51,12 @@ export function HowItWorks() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+        <ol className="grid grid-cols-1 md:grid-cols-3 gap-8 relative list-none">
           {/* Connecting line (desktop) */}
-          <div className="hidden md:block absolute top-16 left-[calc(16.67%+32px)] right-[calc(16.67%+32px)] h-px bg-gradient-to-r from-[#6C3EF4] via-[#3B82F6] to-[#F59E0B] opacity-30" />
+          <div className="hidden md:block absolute top-16 left-[calc(16.67%+32px)] right-[calc(16.67%+32px)] h-px bg-gradient-to-r from-[#6C3EF4] via-[#3B82F6] to-[#F59E0B] opacity-30" aria-hidden="true" />
 
           {steps.map((step, index) => (
-            <motion.div
+            <motion.li
               key={step.number}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -96,9 +96,9 @@ export function HowItWorks() {
                 <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
                 <p className="text-white/50 leading-relaxed text-sm">{step.description}</p>
               </div>
-            </motion.div>
+            </motion.li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   )

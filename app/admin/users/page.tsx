@@ -50,11 +50,11 @@ export default function AdminUsersPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Пользователь</th>
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Провайдер</th>
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Заявок</th>
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Роль</th>
-                    <th className="text-left text-white/40 text-xs px-4 py-3 uppercase">Дата регистрации</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Пользователь</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Провайдер</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Заявок</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Роль</th>
+                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Дата регистрации</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -102,17 +102,19 @@ export default function AdminUsersPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
+                aria-label="Предыдущая страница"
                 className="px-4 py-2 rounded-lg bg-white/5 text-white/60 disabled:opacity-30 hover:bg-white/10 transition-colors text-sm"
               >
-                ←
+                <span aria-hidden="true">←</span>
               </button>
-              <span className="text-white/60 text-sm">Страница {page} из {Math.ceil(total / 20)}</span>
+              <span className="text-white/60 text-sm" aria-live="polite">Страница {page} из {Math.ceil(total / 20)}</span>
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= Math.ceil(total / 20)}
+                aria-label="Следующая страница"
                 className="px-4 py-2 rounded-lg bg-white/5 text-white/60 disabled:opacity-30 hover:bg-white/10 transition-colors text-sm"
               >
-                →
+                <span aria-hidden="true">→</span>
               </button>
             </div>
           )}

@@ -77,10 +77,13 @@ function StarRating({ rating, onChange }: { rating: number; onChange?: (r: numbe
           onClick={() => onChange?.(star)}
           onMouseEnter={() => onChange && setHovered(star)}
           onMouseLeave={() => onChange && setHovered(0)}
+          aria-label={onChange ? `Оценка ${star} из 5` : undefined}
+          aria-pressed={onChange ? star === rating : undefined}
           className={`transition-all duration-150 ${onChange ? 'cursor-pointer hover:scale-110' : 'cursor-default'}`}
         >
           <Star
             className="w-5 h-5"
+            aria-hidden="true"
             fill={star <= (hovered || rating) ? '#F59E0B' : 'none'}
             stroke={star <= (hovered || rating) ? '#F59E0B' : '#ffffff30'}
           />
@@ -147,39 +150,43 @@ export function ReviewsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 list-none">
           {STATIC_REVIEWS.map((review, index) => (
-            <motion.article
+            <motion.li
               key={review.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.08 }}
-              className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300"
             >
-              <div className="flex items-start gap-4 mb-4">
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
-                  style={{ backgroundColor: `${review.color}30`, border: `1px solid ${review.color}40` }}
-                >
-                  {review.initials}
+              <article className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 h-full">
+                <div className="flex items-start gap-4 mb-4">
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
+                    style={{ backgroundColor: `${review.color}30`, border: `1px solid ${review.color}40` }}
+                    aria-hidden="true"
+                  >
+                    {review.initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-semibold">{review.name}</p>
+                    <p className="text-white/40 text-xs">{review.university}, {review.city}</p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-semibold">{review.name}</p>
-                  <p className="text-white/40 text-xs">{review.university}, {review.city}</p>
+
+                <div aria-label={`Оценка ${review.rating} из 5`}>
+                  <StarRating rating={review.rating} />
                 </div>
-              </div>
 
-              <StarRating rating={review.rating} />
+                <p className="text-white/70 text-sm leading-relaxed mt-3 mb-4">
+                  &quot;{review.text}&quot;
+                </p>
 
-              <p className="text-white/70 text-sm leading-relaxed mt-3 mb-4">
-                &quot;{review.text}&quot;
-              </p>
-
-              <p className="text-white/30 text-xs">{review.date}</p>
-            </motion.article>
+                <p className="text-white/30 text-xs">{review.date}</p>
+              </article>
+            </motion.li>
           ))}
-        </div>
+        </ul>
 
         {/* Review submission form */}
         <motion.div
@@ -198,18 +205,21 @@ export function ReviewsSection() {
                 <a href="/auth/login" className="text-[#6C3EF4] hover:underline">войти</a>
               </p>
             ) : submitted ? (
-              <p className="text-emerald-400 text-sm text-center">
+              <p role="status" aria-live="polite" className="text-emerald-400 text-sm text-center">
                 ✓ Отзыв отправлен на модерацию. Спасибо!
               </p>
             ) : (
               <div className="space-y-4">
                 <div>
-                  <label className="text-white/70 text-sm block mb-2">Ваша оценка</label>
-                  <StarRating rating={reviewRating} onChange={setReviewRating} />
+                  <p id="rating-label" className="text-white/70 text-sm block mb-2">Ваша оценка</p>
+                  <div role="group" aria-labelledby="rating-label">
+                    <StarRating rating={reviewRating} onChange={setReviewRating} />
+                  </div>
                 </div>
                 <div>
-                  <label className="text-white/70 text-sm block mb-2">Текст отзыва</label>
+                  <label htmlFor="review-text" className="text-white/70 text-sm block mb-2">Текст отзыва</label>
                   <Textarea
+                    id="review-text"
                     value={reviewText}
                     onChange={(e) => setReviewText(e.target.value)}
                     placeholder="Расскажите о своём опыте..."

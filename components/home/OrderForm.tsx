@@ -198,6 +198,8 @@ export function OrderForm() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
+            role="status"
+            aria-live="polite"
             className="bg-white/5 border border-white/10 rounded-3xl p-12 text-center"
           >
             <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -281,9 +283,9 @@ export function OrderForm() {
                 className="space-y-5"
               >
                 <div>
-                  <Label className="mb-2 block">Тип работы *</Label>
+                  <Label htmlFor="field-type" className="mb-2 block">Тип работы *</Label>
                   <Select onValueChange={(v) => setValue1('type', v as FormData['type'])}>
-                    <SelectTrigger>
+                    <SelectTrigger id="field-type" aria-describedby={errors1.type ? 'error-type' : undefined} aria-invalid={!!errors1.type}>
                       <SelectValue placeholder="Выберите тип работы" />
                     </SelectTrigger>
                     <SelectContent>
@@ -295,27 +297,33 @@ export function OrderForm() {
                       <SelectItem value="other">Другое</SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors1.type && <p className="text-red-400 text-xs mt-1">{errors1.type.message}</p>}
+                  {errors1.type && <p id="error-type" role="alert" className="text-red-400 text-xs mt-1">{errors1.type.message}</p>}
                 </div>
 
                 <div>
-                  <Label className="mb-2 block">Дисциплина / Предмет *</Label>
+                  <Label htmlFor="field-subject" className="mb-2 block">Дисциплина / Предмет *</Label>
                   <Input
+                    id="field-subject"
                     {...register1('subject')}
+                    aria-describedby={errors1.subject ? 'error-subject' : undefined}
+                    aria-invalid={!!errors1.subject}
                     placeholder="Например: Экономика организации, Высшая математика..."
                   />
-                  {errors1.subject && <p className="text-red-400 text-xs mt-1">{errors1.subject.message}</p>}
+                  {errors1.subject && <p id="error-subject" role="alert" className="text-red-400 text-xs mt-1">{errors1.subject.message}</p>}
                 </div>
 
                 <div>
-                  <Label className="mb-2 block">Дедлайн *</Label>
+                  <Label htmlFor="field-deadline" className="mb-2 block">Дедлайн *</Label>
                   <Input
+                    id="field-deadline"
                     type="date"
                     {...register1('deadline')}
+                    aria-describedby={errors1.deadline ? 'error-deadline' : undefined}
+                    aria-invalid={!!errors1.deadline}
                     min={getTomorrowDate()}
                     className="[color-scheme:dark]"
                   />
-                  {errors1.deadline && <p className="text-red-400 text-xs mt-1">{errors1.deadline.message}</p>}
+                  {errors1.deadline && <p id="error-deadline" role="alert" className="text-red-400 text-xs mt-1">{errors1.deadline.message}</p>}
                 </div>
 
                 <Button type="submit" className="w-full gap-2" size="lg">
@@ -336,23 +344,26 @@ export function OrderForm() {
                 className="space-y-5"
               >
                 <div>
-                  <Label className="mb-2 block">
+                  <Label htmlFor="field-description" className="mb-2 block">
                     Подробное описание задания *
-                    <span className={`ml-2 text-xs ${descriptionLength < 50 ? 'text-white/30' : 'text-emerald-400'}`}>
+                    <span className={`ml-2 text-xs ${descriptionLength < 50 ? 'text-white/30' : 'text-emerald-400'}`} aria-live="polite">
                       {descriptionLength}/50 мин.
                     </span>
                   </Label>
                   <Textarea
+                    id="field-description"
                     {...register2('description')}
+                    aria-describedby={errors2.description ? 'error-description' : undefined}
+                    aria-invalid={!!errors2.description}
                     placeholder="Опишите задание подробно: объём, требования к содержанию, особые пожелания, наличие методички. Чем подробнее, тем точнее расчёт стоимости..."
                     rows={6}
                   />
-                  {errors2.description && <p className="text-red-400 text-xs mt-1">{errors2.description.message}</p>}
+                  {errors2.description && <p id="error-description" role="alert" className="text-red-400 text-xs mt-1">{errors2.description.message}</p>}
                 </div>
 
                 {/* File upload */}
                 <div>
-                  <Label className="mb-2 block">Прикрепить файлы (необязательно)</Label>
+                  <label htmlFor="file-input" className="mb-2 block text-sm font-medium leading-none">Прикрепить файлы (необязательно)</label>
                   <div
                     onDrop={handleDrop}
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
@@ -361,8 +372,12 @@ export function OrderForm() {
                       dragOver ? 'border-[#6C3EF4] bg-[#6C3EF4]/10' : 'border-white/10 hover:border-white/20 bg-white/3'
                     }`}
                     onClick={() => document.getElementById('file-input')?.click()}
+                    role="button"
+                    aria-label="Загрузить файлы"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === 'Enter' && document.getElementById('file-input')?.click()}
                   >
-                    <Upload className="w-8 h-8 text-white/30 mx-auto mb-2" />
+                    <Upload className="w-8 h-8 text-white/30 mx-auto mb-2" aria-hidden="true" />
                     <p className="text-white/50 text-sm">
                       Перетащите файлы сюда или <span className="text-[#6C3EF4]">выберите файлы</span>
                     </p>
@@ -373,7 +388,7 @@ export function OrderForm() {
                       multiple
                       accept=".pdf,.doc,.docx,.txt,.zip,.jpg,.jpeg,.png,.rar"
                       onChange={handleFileChange}
-                      className="hidden"
+                      className="sr-only"
                     />
                   </div>
 
@@ -389,9 +404,10 @@ export function OrderForm() {
                           <button
                             type="button"
                             onClick={() => removeFile(i)}
+                            aria-label={`Удалить файл ${file.name}`}
                             className="text-white/30 hover:text-red-400 transition-colors"
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-4 h-4" aria-hidden="true" />
                           </button>
                         </div>
                       ))}
@@ -422,15 +438,28 @@ export function OrderForm() {
                 className="space-y-5"
               >
                 <div>
-                  <Label className="mb-2 block">Ваше имя *</Label>
-                  <Input {...register3('name')} placeholder="Как к вам обращаться?" />
-                  {errors3.name && <p className="text-red-400 text-xs mt-1">{errors3.name.message}</p>}
+                  <Label htmlFor="field-name" className="mb-2 block">Ваше имя *</Label>
+                  <Input
+                    id="field-name"
+                    {...register3('name')}
+                    aria-describedby={errors3.name ? 'error-name' : undefined}
+                    aria-invalid={!!errors3.name}
+                    placeholder="Как к вам обращаться?"
+                  />
+                  {errors3.name && <p id="error-name" role="alert" className="text-red-400 text-xs mt-1">{errors3.name.message}</p>}
                 </div>
 
                 <div>
-                  <Label className="mb-2 block">Email *</Label>
-                  <Input {...register3('email')} type="email" placeholder="your@email.ru" />
-                  {errors3.email && <p className="text-red-400 text-xs mt-1">{errors3.email.message}</p>}
+                  <Label htmlFor="field-email" className="mb-2 block">Email *</Label>
+                  <Input
+                    id="field-email"
+                    {...register3('email')}
+                    type="email"
+                    aria-describedby={errors3.email ? 'error-email' : undefined}
+                    aria-invalid={!!errors3.email}
+                    placeholder="your@email.ru"
+                  />
+                  {errors3.email && <p id="error-email" role="alert" className="text-red-400 text-xs mt-1">{errors3.email.message}</p>}
                 </div>
 
                 <div>

@@ -164,7 +164,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -176,10 +176,14 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-8 bg-white/5 rounded-xl p-1 w-fit">
+        <div role="tablist" aria-label="Разделы личного кабинета" className="flex gap-1 mb-8 bg-white/5 rounded-xl p-1 w-fit">
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              aria-controls={`tabpanel-${tab.id}`}
+              id={`tab-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 activeTab === tab.id
@@ -187,12 +191,12 @@ export default function DashboardPage() {
                   : 'text-white/60 hover:text-white'
               }`}
             >
-              <tab.icon className="w-4 h-4" />
+              <tab.icon className="w-4 h-4" aria-hidden="true" />
               {tab.label}
               {tab.count !== null && tab.count > 0 && (
                 <span className={`text-xs rounded-full px-2 py-0.5 ${
                   activeTab === tab.id ? 'bg-white/20' : 'bg-white/10'
-                }`}>
+                }`} aria-label={`${tab.count} заявок`}>
                   {tab.count}
                 </span>
               )}
@@ -203,6 +207,9 @@ export default function DashboardPage() {
         {/* Tab content */}
         <motion.div
           key={activeTab}
+          role="tabpanel"
+          id={`tabpanel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -230,7 +237,7 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6C3EF4] to-[#3B82F6] flex items-center justify-center overflow-hidden">
                     {profile?.avatar ? (
-                      <Image src={profile.avatar} alt="" width={64} height={64} className="object-cover" />
+                      <Image src={profile.avatar} alt={`Аватар пользователя ${profile.name || ''}`} width={64} height={64} className="object-cover" />
                     ) : (
                       <User className="w-8 h-8 text-white" />
                     )}
@@ -286,9 +293,9 @@ export default function DashboardPage() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-white/10">
-                        <th className="text-left text-white/40 text-xs px-6 py-4 uppercase">Дата</th>
-                        <th className="text-left text-white/40 text-xs px-6 py-4 uppercase">Сумма</th>
-                        <th className="text-left text-white/40 text-xs px-6 py-4 uppercase">Статус</th>
+                        <th scope="col" className="text-left text-white/40 text-xs px-6 py-4 uppercase">Дата</th>
+                        <th scope="col" className="text-left text-white/40 text-xs px-6 py-4 uppercase">Сумма</th>
+                        <th scope="col" className="text-left text-white/40 text-xs px-6 py-4 uppercase">Статус</th>
                       </tr>
                     </thead>
                     <tbody>

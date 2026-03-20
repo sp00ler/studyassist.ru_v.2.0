@@ -76,8 +76,8 @@ export function Navbar() {
                     </Button>
                   </Link>
                 )}
-                <Button variant="ghost" size="sm" onClick={() => signOut()} className="gap-2 text-white/60 hover:text-white">
-                  <LogOut className="w-4 h-4" />
+                <Button variant="ghost" size="sm" onClick={() => signOut()} aria-label="Выйти из аккаунта" className="gap-2 text-white/60 hover:text-white">
+                  <LogOut className="w-4 h-4" aria-hidden="true" />
                 </Button>
               </>
             ) : (
@@ -100,9 +100,11 @@ export function Navbar() {
           <button
             className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Меню"
+            aria-label={mobileOpen ? 'Закрыть меню' : 'Открыть меню'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
           >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
           </button>
         </div>
       </nav>
@@ -111,6 +113,7 @@ export function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            id="mobile-menu"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
