@@ -36,6 +36,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/consent-marketing" className="text-white/50 hover:text-white text-sm transition-colors">
+                  Согласие на рекламные рассылки
+                </Link>
+              </li>
+              <li>
                 <Link href="/offer" className="text-white/50 hover:text-white text-sm transition-colors">
                   Публичная оферта
                 </Link>
