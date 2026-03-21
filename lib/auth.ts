@@ -12,6 +12,7 @@ const VKProvider = {
   id: 'vk',
   name: 'ВКонтакте',
   type: 'oauth' as const,
+  checks: ['pkce', 'state'],
   authorization: {
     url: 'https://id.vk.com/oauth2/auth',
     params: {
