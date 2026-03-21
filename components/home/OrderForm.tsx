@@ -15,8 +15,8 @@ import { useToast } from '@/components/ui/use-toast'
 
 // Step 1 schema
 const step1Schema = z.object({
-  type: z.enum(['coursework', 'diploma', 'essay', 'lab', 'presentation', 'other'], {
-    errorMap: () => ({ message: 'Выберите тип работы' }),
+  type: z.enum(['consultation', 'tutoring', 'materials', 'task-review', 'exam-prep', 'other'], {
+    errorMap: () => ({ message: 'Выберите тип услуги' }),
   }),
   subject: z.string().min(2, 'Укажите предмет'),
   deadline: z.string().refine((d) => {
@@ -45,8 +45,8 @@ const step3Schema = z.object({
 type FormData = z.infer<typeof step1Schema> & z.infer<typeof step2Schema> & z.infer<typeof step3Schema>
 
 const stepTitles = [
-  'Тип работы',
-  'Описание задания',
+  'Тип услуги',
+  'Описание запроса',
   'Контактные данные',
 ]
 
@@ -220,7 +220,7 @@ export function OrderForm() {
               <p className="text-2xl font-bold text-[#A78BFA]">{formatOrderId(orderId)}</p>
             </div>
             <p className="text-white/50 text-sm">
-              Мы свяжемся с вами в течение 30 минут и рассчитаем стоимость работы.
+              Мы свяжемся с вами в течение 30 минут и согласуем детали консультации.
               Проверьте email — там уже ждёт подтверждение заявки.
             </p>
           </motion.div>
@@ -245,7 +245,7 @@ export function OrderForm() {
               заявку
             </span>
           </h2>
-          <p className="text-white/50">Заполните форму — и мы свяжемся с вами в течение 30 минут</p>
+          <p className="text-white/50">Заполните форму — и мы свяжемся с вами в течение 30 минут для согласования деталей</p>
         </motion.div>
 
         <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
@@ -289,17 +289,17 @@ export function OrderForm() {
                 className="space-y-5"
               >
                 <div>
-                  <Label htmlFor="field-type" className="mb-2 block">Тип работы *</Label>
+                  <Label htmlFor="field-type" className="mb-2 block">Тип услуги *</Label>
                   <Select onValueChange={(v) => setValue1('type', v as FormData['type'])}>
                     <SelectTrigger id="field-type" aria-describedby={errors1.type ? 'error-type' : undefined} aria-invalid={!!errors1.type}>
-                      <SelectValue placeholder="Выберите тип работы" />
+                      <SelectValue placeholder="Выберите тип услуги" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="coursework">Курсовая работа</SelectItem>
-                      <SelectItem value="diploma">Дипломная работа (ВКР)</SelectItem>
-                      <SelectItem value="essay">Реферат / Эссе</SelectItem>
-                      <SelectItem value="lab">Лабораторная работа / Задача</SelectItem>
-                      <SelectItem value="presentation">Презентация / Отчёт</SelectItem>
+                      <SelectItem value="consultation">Консультация по предмету</SelectItem>
+                      <SelectItem value="tutoring">Репетиторство</SelectItem>
+                      <SelectItem value="materials">Подбор материалов и литературы</SelectItem>
+                      <SelectItem value="task-review">Разбор задач и примеров</SelectItem>
+                      <SelectItem value="exam-prep">Подготовка к экзамену</SelectItem>
                       <SelectItem value="other">Другое</SelectItem>
                     </SelectContent>
                   </Select>
@@ -319,7 +319,7 @@ export function OrderForm() {
                 </div>
 
                 <div>
-                  <Label htmlFor="field-deadline" className="mb-2 block">Дедлайн *</Label>
+                  <Label htmlFor="field-deadline" className="mb-2 block">Желаемая дата *</Label>
                   <Input
                     id="field-deadline"
                     type="date"
@@ -351,7 +351,7 @@ export function OrderForm() {
               >
                 <div>
                   <Label htmlFor="field-description" className="mb-2 block">
-                    Подробное описание задания *
+                    Подробное описание запроса *
                     <span className={`ml-2 text-xs ${descriptionLength < 50 ? 'text-white/30' : 'text-emerald-400'}`} aria-live="polite">
                       {descriptionLength}/50 мин.
                     </span>
@@ -361,7 +361,7 @@ export function OrderForm() {
                     {...register2('description')}
                     aria-describedby={errors2.description ? 'error-description' : undefined}
                     aria-invalid={!!errors2.description}
-                    placeholder="Опишите задание подробно: объём, требования к содержанию, особые пожелания, наличие методички. Чем подробнее, тем точнее расчёт стоимости..."
+                    placeholder="Опишите запрос подробно: какие темы или задачи вызывают затруднение, уровень подготовки, конкретные вопросы. Чем подробнее, тем точнее расчёт стоимости..."
                     rows={6}
                   />
                   {errors2.description && <p id="error-description" role="alert" className="text-red-400 text-xs mt-1">{errors2.description.message}</p>}

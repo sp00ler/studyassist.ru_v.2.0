@@ -7,49 +7,49 @@ import { BookOpen, GraduationCap, FileText, FlaskConical, PresentationIcon, More
 const services = [
   {
     icon: BookOpen,
-    title: 'Курсовые работы',
-    description: 'Теоретическая и практическая части, список литературы, оформление по ГОСТ.',
-    price: 'от 3 500 ₽',
+    title: 'Консультации по предметам',
+    description: 'Объясним сложные темы, разберём задачи по шагам. Математика, экономика, право, IT и другие дисциплины.',
+    price: 'от 800 ₽/час',
     color: '#6C3EF4',
     gradient: 'from-purple-500/20 to-purple-900/10',
   },
   {
     icon: GraduationCap,
-    title: 'ВКР / Дипломные работы',
-    description: 'Полный объём 60-100 страниц, нормоконтроль, презентация, защитная речь. Стоимость зависит от предмета и тематики.',
-    price: 'от 15 000 ₽',
+    title: 'Репетиторство',
+    description: 'Регулярные занятия с преподавателем для глубокого освоения предмета. Индивидуальная программа обучения.',
+    price: 'от 1 200 ₽/занятие',
     color: '#3B82F6',
     gradient: 'from-blue-500/20 to-blue-900/10',
   },
   {
     icon: FileText,
-    title: 'Рефераты и эссе',
-    description: 'Качественная аналитика, уникальность от 80%, оформление по требованиям.',
-    price: 'от 1 000 ₽',
+    title: 'Подбор материалов и литературы',
+    description: 'Поможем найти актуальные источники, учебники, статьи и нормативные документы по вашей теме.',
+    price: 'от 500 ₽',
     color: '#8B5CF6',
     gradient: 'from-violet-500/20 to-violet-900/10',
   },
   {
     icon: FlaskConical,
-    title: 'Лабораторные / Контрольные / Практические',
-    description: 'Решение задач, написание кода, расчёты, анализ данных по любым предметам.',
-    price: 'от 1 000 ₽/задание',
+    title: 'Разбор задач и примеров',
+    description: 'Пошаговое объяснение решения задач по математике, физике, химии, программированию и другим предметам.',
+    price: 'от 600 ₽/задача',
     color: '#06B6D4',
     gradient: 'from-cyan-500/20 to-cyan-900/10',
   },
   {
     icon: PresentationIcon,
-    title: 'Презентации / Отчёт по практике',
-    description: 'Профессиональный дизайн, структурированный контент, доклад к защите. Отчёт по практике — от 5 000 ₽.',
-    price: 'от 1 200 ₽',
+    title: 'Подготовка к экзаменам',
+    description: 'Систематизация знаний, проработка типовых вопросов, рекомендации по стратегии сдачи экзамена.',
+    price: 'от 1 000 ₽',
     color: '#F59E0B',
     gradient: 'from-amber-500/20 to-amber-900/10',
   },
   {
     icon: MoreHorizontal,
-    title: 'УИР / Другие задания',
-    description: 'Учебно-исследовательские работы, контрольные, тесты, переводы и другие задания.',
-    price: 'от 7 000 ₽',
+    title: 'Рецензирование и обратная связь',
+    description: 'Проверим вашу работу, укажем на ошибки и дадим рекомендации по улучшению структуры и содержания.',
+    price: 'от 700 ₽',
     color: '#10B981',
     gradient: 'from-emerald-500/20 to-emerald-900/10',
   },
@@ -73,7 +73,7 @@ export function ServicesSection() {
             </span>
           </h2>
           <p className="text-white/50 text-lg max-w-2xl mx-auto">
-            Помогаем со всеми видами учебных работ — от реферата до диплома
+            Консультации, репетиторство и подбор материалов по любым учебным дисциплинам
           </p>
         </motion.div>
 
@@ -117,7 +117,7 @@ export function ServicesSection() {
                       className="text-xs px-3 py-1.5 rounded-lg font-medium transition-all duration-200 hover:opacity-80"
                       style={{ backgroundColor: `${service.color}20`, color: service.color, border: `1px solid ${service.color}30` }}
                     >
-                      Заказать
+                      Оставить заявку
                     </span>
                   </Link>
                 </div>

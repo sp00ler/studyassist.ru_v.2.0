@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button'
 import { CheckCircle, Zap, Shield } from 'lucide-react'
 
 const trustBadges = [
-  { icon: Zap, text: '1000+ выполненных работ' },
-  { icon: Shield, text: 'Гарантия уникальности' },
+  { icon: Zap, text: '1000+ студентов получили помощь' },
+  { icon: Shield, text: 'Проверенные специалисты' },
   { icon: CheckCircle, text: 'Оплата после согласования' },
 ]
 
@@ -32,7 +32,7 @@ export function HeroSection() {
             >
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6C3EF4]/20 border border-[#6C3EF4]/30 text-[#A78BFA] text-sm font-medium mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#6C3EF4] animate-pulse" />
-                Помощь студентам онлайн
+                Образовательные консультации онлайн
               </span>
             </motion.div>
 
@@ -42,11 +42,11 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6"
             >
-              Выполним любую{' '}
+              Учебные консультации и{' '}
               <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-                студенческую работу
+                репетиторство
               </span>
-              {' '}— быстро и качественно
+              {' '}— понятно и эффективно
             </motion.h1>
 
             <motion.p
@@ -55,8 +55,8 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-lg text-white/60 leading-relaxed mb-8 max-w-xl"
             >
-              Курсовые, дипломные, рефераты, лабораторные и презентации.
-              Гарантия уникальности. Оплата после проверки.
+              Объясним сложные темы, подберём материалы, поможем подготовиться к экзаменам.
+              Индивидуальный подход. Оплата после согласования.
             </motion.p>
 
             <motion.div
@@ -190,8 +190,8 @@ export function HeroSection() {
                     <CheckCircle className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div>
-                    <p className="text-xs text-white font-semibold">Работа сдана!</p>
-                    <p className="text-xs text-white/40">Оценка: Отлично</p>
+                    <p className="text-xs text-white font-semibold">Тема понята!</p>
+                    <p className="text-xs text-white/40">Консультация прошла</p>
                   </div>
                 </div>
               </motion.div>
