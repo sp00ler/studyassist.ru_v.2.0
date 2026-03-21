@@ -41,6 +41,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/refund" className="text-white/50 hover:text-white text-sm transition-colors">
+                  Правила возврата и оплаты
+                </Link>
+              </li>
+              <li>
                 <Link href="/offer" className="text-white/50 hover:text-white text-sm transition-colors">
                   Публичная оферта
                 </Link>
