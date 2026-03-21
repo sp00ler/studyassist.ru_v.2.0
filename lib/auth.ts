@@ -1,30 +1,90 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import VkProvider from 'next-auth/providers/vk'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import type { Adapter } from 'next-auth/adapters'
 
-// VK provider (встроенный NextAuth, oauth.vk.com — стандартный OAuth 2.0)
+// VK ID provider (OAuth 2.1, приложение зарегистрировано на id.vk.com)
+// Authorization: https://id.vk.com/authorize
+// Token: https://id.vk.com/oauth2/auth (POST, требует device_id из callback URL)
+// Userinfo: https://id.vk.com/oauth2/user_info
 // Redirect URI: https://studyassist.ru/api/auth/callback/vk
-// Важно: токен запрашивается через client_secret_post (не Basic Auth)
-const vkProviderConfig = VkProvider({
-  clientId: process.env.VK_CLIENT_ID!,
-  clientSecret: process.env.VK_CLIENT_SECRET!,
-  profile(profile) {
-    const p = profile.response?.[0] ?? {}
-    const userId = p.id
+const VKIDProvider = {
+  id: 'vk',
+  name: 'ВКонтакте',
+  type: 'oauth' as const,
+  checks: ['pkce', 'state'] as const,
+  authorization: {
+    url: 'https://id.vk.com/authorize',
+    params: {
+      scope: 'vkid.personal_info email',
+      response_type: 'code',
+    },
+  },
+  token: {
+    url: 'https://id.vk.com/oauth2/auth',
+    async request({ params, checks, provider }: {
+      params: Record<string, string>
+      checks: Record<string, string>
+      provider: Record<string, any>
+    }) {
+      // params содержит code, state, device_id из callback URL
+      const body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: params.code,
+        redirect_uri: provider.callbackUrl,
+        client_id: process.env.VK_CLIENT_ID!,
+        client_secret: process.env.VK_CLIENT_SECRET!,
+        code_verifier: checks.code_verifier || '',
+        device_id: params.device_id || '',
+        state: params.state || '',
+      })
+
+      const response = await fetch('https://id.vk.com/oauth2/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+      })
+
+      const tokens = await response.json()
+      return { tokens }
+    },
+  },
+  userinfo: {
+    url: 'https://id.vk.com/oauth2/user_info',
+    async request({ tokens }: { tokens: { access_token: string } }) {
+      const res = await fetch('https://id.vk.com/oauth2/user_info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${tokens.access_token}`,
+        },
+        body: new URLSearchParams({ client_id: process.env.VK_CLIENT_ID! }),
+      })
+      const data = await res.json()
+      const user = data.user
+      return {
+        id: String(user.user_id),
+        name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || `vk_${user.user_id}`,
+        email: user.email || `vk_${user.user_id}@studyassist.ru`,
+        image: user.avatar || null,
+      }
+    },
+  },
+  profile(profile: { id: string; name: string; email: string; image: string | null }) {
     return {
-      id: String(userId),
-      name: [p.first_name, p.last_name].filter(Boolean).join(' ') || `vk_${userId}`,
-      email: `vk_${userId}@studyassist.ru`,
-      image: p.photo_100 ?? null,
+      id: profile.id,
+      name: profile.name,
+      email: profile.email,
+      image: profile.image,
       isAdmin: false,
       phone: null,
     }
   },
-})
+  clientId: process.env.VK_CLIENT_ID,
+  clientSecret: process.env.VK_CLIENT_SECRET,
+}
 
 // Mail.ru custom provider
 const MailRuProvider = {
@@ -125,7 +185,7 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
-    vkProviderConfig,
+    VKIDProvider as any,
     MailRuProvider as any,
     YandexProvider as any,
   ],
