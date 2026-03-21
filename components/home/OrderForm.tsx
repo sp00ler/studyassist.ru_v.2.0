@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useToast } from '@/components/ui/use-toast'
 
 // Step 1 schema
 const step1Schema = z.object({
@@ -69,6 +70,7 @@ const getTomorrowDate = () => {
 }
 
 export function OrderForm() {
+  const { toast } = useToast()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -176,7 +178,11 @@ export function OrderForm() {
       }
     } catch (err) {
       console.error(err)
-      alert('Произошла ошибка. Пожалуйста, попробуйте ещё раз.')
+      toast({
+        title: 'Ошибка отправки заявки',
+        description: (err as Error).message || 'Произошла ошибка. Пожалуйста, попробуйте ещё раз или напишите нам на support@studyassist.ru',
+        variant: 'destructive',
+      })
     } finally {
       setLoading(false)
     }

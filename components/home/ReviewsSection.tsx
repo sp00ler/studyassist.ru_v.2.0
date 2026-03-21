@@ -4,64 +4,63 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { Star, Send, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
 
+// Аватарки студентов должны быть размещены в папке /public/avatars/
+// Файлы: anna.png, dmitriy.png, elena.png, mikhail.png, olga.png
+
 const STATIC_REVIEWS = [
   {
     id: '1',
-    name: 'Анна К.',
-    university: 'МГУ',
-    city: 'Москва',
+    name: 'Анна М.',
+    role: 'Экономика',
     rating: 5,
     text: 'Сдала курсовую по экономике на отлично! Всё чётко по методичке, никаких правок не потребовалось. Спасибо огромное, буду обращаться ещё.',
     date: '12.11.2024',
-    initials: 'АК',
+    avatar: '/avatars/anna.png',
     color: '#6C3EF4',
   },
   {
     id: '2',
-    name: 'Дмитрий Р.',
-    university: 'СПбГУ',
-    city: 'Санкт-Петербург',
+    name: 'Дмитрий К.',
+    role: 'Студент, Юриспруденция',
     rating: 5,
-    text: 'Заказывал лабораторные по программированию несколько раз. Каждый раз всё сдаётся с первого раза. Удобно что можно оплатить после того как убедился в качестве.',
+    text: 'Заказывал несколько заданий по юриспруденции. Каждый раз всё сдаётся с первого раза, преподаватель доволен. Оплатил — сразу взялись за работу. Рекомендую.',
     date: '03.10.2024',
-    initials: 'ДР',
+    avatar: '/avatars/dmitriy.png',
     color: '#3B82F6',
   },
   {
     id: '3',
-    name: 'Мария Т.',
-    university: 'ТГУ',
-    city: 'Тольятти',
+    name: 'Елена С.',
+    role: 'Магистрант, Психология',
     rating: 5,
-    text: 'Диплом помогли доработать в последний момент, буквально за 3 дня. Думала уже паника, но ребята взялись и всё сделали как надо. Защитилась на 4.',
+    text: 'Помогли с магистерской по психологии в сжатые сроки. Работа структурированная, грамотная, с хорошей теоретической базой. Защитилась успешно, спасибо!',
     date: '28.06.2024',
-    initials: 'МТ',
+    avatar: '/avatars/elena.png',
     color: '#8B5CF6',
   },
   {
     id: '4',
-    name: 'Алексей М.',
-    university: 'УрФУ',
-    city: 'Екатеринбург',
+    name: 'Михаил П.',
+    role: 'Студент, IT',
     rating: 5,
-    text: 'Реферат за ночь, да ещё и уникальность 85%. Цена адекватная, связь быстрая. Всё нормально.',
+    text: 'Заказывал лабораторные по программированию. Код рабочий, с комментариями, сдал всё с первого раза. Цена адекватная, отвечают быстро.',
     date: '19.09.2024',
-    initials: 'АМ',
+    avatar: '/avatars/mikhail.png',
     color: '#06B6D4',
   },
   {
     id: '5',
-    name: 'Екатерина Н.',
-    university: 'КФУ',
-    city: 'Казань',
+    name: 'Ольга В.',
+    role: 'Студентка, Медицина',
     rating: 5,
-    text: 'Заказывала презентацию с докладом. Слайды сделали красиво, доклад логичный. Преподаватель похвалил оформление.',
+    text: 'Помогли с историей болезни и рефератом по фармакологии. Всё написано грамотно, с учётом медицинской специфики. Очень довольна, буду обращаться ещё!',
     date: '07.11.2024',
-    initials: 'ЕН',
+    avatar: '/avatars/olga.png',
     color: '#F59E0B',
   },
 ]
@@ -162,15 +161,20 @@ export function ReviewsSection() {
               <article className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 h-full">
                 <div className="flex items-start gap-4 mb-4">
                   <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
-                    style={{ backgroundColor: `${review.color}30`, border: `1px solid ${review.color}40` }}
-                    aria-hidden="true"
+                    className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0"
+                    style={{ border: `1px solid ${review.color}40` }}
                   >
-                    {review.initials}
+                    <Image
+                      src={review.avatar}
+                      alt={review.name}
+                      width={48}
+                      height={48}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-white font-semibold">{review.name}</p>
-                    <p className="text-white/40 text-xs">{review.university}, {review.city}</p>
+                    <p className="text-white/40 text-xs">{review.role}</p>
                   </div>
                 </div>
 

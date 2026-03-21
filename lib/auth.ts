@@ -6,6 +6,9 @@ import bcrypt from 'bcryptjs'
 import type { Adapter } from 'next-auth/adapters'
 
 // VK custom provider
+// ВАЖНО: для работы OAuth ВКонтакте необходимо в настройках приложения на vk.com/dev
+// (Настройки → Адрес сайта и Redirect URI) добавить:
+// https://studyassist.ru/api/auth/callback/vk
 const VKProvider = {
   id: 'vk',
   name: 'ВКонтакте',
@@ -15,6 +18,8 @@ const VKProvider = {
     params: {
       scope: 'email',
       response_type: 'code',
+      display: 'page',
+      v: '5.131',
     },
   },
   token: {
