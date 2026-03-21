@@ -42,11 +42,11 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6"
             >
-              Учебные консультации и{' '}
+              Образовательные{' '}
               <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-                репетиторство
+                консультации
               </span>
-              {' '}— понятно и эффективно
+              {' '}для студентов — понятно и эффективно
             </motion.h1>
 
             <motion.p

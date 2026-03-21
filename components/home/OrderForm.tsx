@@ -296,7 +296,7 @@ export function OrderForm() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="consultation">Консультация по предмету</SelectItem>
-                      <SelectItem value="tutoring">Репетиторство</SelectItem>
+                      <SelectItem value="tutoring">Объяснение темы / раздела</SelectItem>
                       <SelectItem value="materials">Подбор материалов и литературы</SelectItem>
                       <SelectItem value="task-review">Разбор задач и примеров</SelectItem>
                       <SelectItem value="exam-prep">Подготовка к экзамену</SelectItem>
