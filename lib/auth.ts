@@ -5,42 +5,41 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import type { Adapter } from 'next-auth/adapters'
 
-// VK custom provider (VK ID — новый OAuth 2.0)
-// Приложение зарегистрировано на id.vk.com, redirect URI:
-// https://studyassist.ru/api/auth/callback/vk
+// VK custom provider (стандартный VK OAuth через oauth.vk.com)
+// Redirect URI в настройках приложения: https://studyassist.ru/api/auth/callback/vk
 const VKProvider = {
   id: 'vk',
   name: 'ВКонтакте',
   type: 'oauth' as const,
-  checks: ['pkce', 'state'],
   authorization: {
-    url: 'https://id.vk.com/oauth2/auth',
+    url: 'https://oauth.vk.com/authorize',
     params: {
-      scope: 'email vkid.personal_info',
+      scope: 'email',
       response_type: 'code',
+      display: 'page',
+      v: '5.131',
     },
   },
   token: {
-    url: 'https://id.vk.com/oauth2/token',
+    url: 'https://oauth.vk.com/access_token',
   },
   userinfo: {
-    url: 'https://id.vk.com/oauth2/user_info',
-    async request({ tokens }: { tokens: { access_token: string } }) {
-      const res = await fetch('https://id.vk.com/oauth2/user_info', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Bearer ${tokens.access_token}`,
-        },
-        body: new URLSearchParams({ client_id: process.env.VK_CLIENT_ID || '' }),
+    url: 'https://api.vk.com/method/users.get',
+    async request({ tokens }: { tokens: { access_token: string; email?: string; user_id?: number } }) {
+      const params = new URLSearchParams({
+        access_token: tokens.access_token,
+        fields: 'photo_200',
+        v: '5.131',
       })
+      const res = await fetch(`https://api.vk.com/method/users.get?${params}`)
       const data = await res.json()
-      const user = data.user
+      const user = data.response?.[0]
+      const userId = user?.id ?? tokens.user_id
       return {
-        id: String(user.user_id),
-        name: `${user.first_name} ${user.last_name}`.trim(),
-        email: user.email || `vk_${user.user_id}@studyassist.ru`,
-        image: user.avatar || null,
+        id: String(userId),
+        name: `${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim(),
+        email: tokens.email || `vk_${userId}@studyassist.ru`,
+        image: user?.photo_200 || null,
       }
     },
   },
