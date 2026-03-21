@@ -5,44 +5,45 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import type { Adapter } from 'next-auth/adapters'
 
-// VK custom provider
-// ВАЖНО: для работы OAuth ВКонтакте необходимо в настройках приложения на vk.com/dev
-// (Настройки → Адрес сайта и Redirect URI) добавить:
+// VK custom provider (VK ID — новый OAuth 2.0)
+// Приложение зарегистрировано на id.vk.com, redirect URI:
 // https://studyassist.ru/api/auth/callback/vk
 const VKProvider = {
   id: 'vk',
   name: 'ВКонтакте',
   type: 'oauth' as const,
   authorization: {
-    url: 'https://oauth.vk.com/authorize',
+    url: 'https://id.vk.com/oauth2/auth',
     params: {
-      scope: 'email',
+      scope: 'email vkid.personal_info',
       response_type: 'code',
-      display: 'page',
-      v: '5.131',
     },
   },
   token: {
-    url: 'https://oauth.vk.com/access_token',
+    url: 'https://id.vk.com/oauth2/token',
   },
   userinfo: {
-    url: 'https://api.vk.com/method/users.get',
-    params: { fields: 'photo_200', v: '5.131' },
-    async request({ tokens, provider }: { tokens: { access_token: string; email?: string }; provider: unknown }) {
-      const res = await fetch(
-        `https://api.vk.com/method/users.get?fields=photo_200&v=5.131&access_token=${tokens.access_token}`
-      )
+    url: 'https://id.vk.com/oauth2/user_info',
+    async request({ tokens }: { tokens: { access_token: string } }) {
+      const res = await fetch('https://id.vk.com/oauth2/user_info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${tokens.access_token}`,
+        },
+        body: new URLSearchParams({ client_id: process.env.VK_CLIENT_ID || '' }),
+      })
       const data = await res.json()
-      const user = data.response[0]
+      const user = data.user
       return {
-        id: String(user.id),
-        name: `${user.first_name} ${user.last_name}`,
-        email: tokens.email || `vk_${user.id}@studyassist.ru`,
-        image: user.photo_200,
+        id: String(user.user_id),
+        name: `${user.first_name} ${user.last_name}`.trim(),
+        email: user.email || `vk_${user.user_id}@studyassist.ru`,
+        image: user.avatar || null,
       }
     },
   },
-  profile(profile: { id: string; name: string; email: string; image: string }) {
+  profile(profile: { id: string; name: string; email: string; image: string | null }) {
     return {
       id: profile.id,
       name: profile.name,
