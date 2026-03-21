@@ -1,59 +1,30 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import VkProvider from 'next-auth/providers/vk'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import type { Adapter } from 'next-auth/adapters'
 
-// VK custom provider (VK ID — OAuth 2.1, приложение зарегистрировано на id.vk.com)
+// VK provider (встроенный NextAuth, oauth.vk.com — стандартный OAuth 2.0)
 // Redirect URI: https://studyassist.ru/api/auth/callback/vk
-const VKProvider = {
-  id: 'vk',
-  name: 'ВКонтакте',
-  type: 'oauth' as const,
-  checks: ['pkce', 'state'],
-  authorization: {
-    url: 'https://id.vk.com/oauth2/auth',
-    params: {
-      scope: 'vkid.personal_info',
-      response_type: 'code',
-    },
-  },
-  token: {
-    url: 'https://id.vk.com/oauth2/token',
-  },
-  userinfo: {
-    url: 'https://id.vk.com/oauth2/user_info',
-    async request({ tokens }: { tokens: { access_token: string } }) {
-      const res = await fetch('https://id.vk.com/oauth2/user_info', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Bearer ${tokens.access_token}`,
-        },
-        body: new URLSearchParams({ client_id: process.env.VK_CLIENT_ID || '' }),
-      })
-      const data = await res.json()
-      const user = data.user
-      return {
-        id: String(user.user_id),
-        name: `${user.first_name} ${user.last_name}`.trim(),
-        email: user.email || `vk_${user.user_id}@studyassist.ru`,
-        image: user.avatar || null,
-      }
-    },
-  },
-  profile(profile: { id: string; name: string; email: string; image: string | null }) {
+// Важно: токен запрашивается через client_secret_post (не Basic Auth)
+const vkProviderConfig = VkProvider({
+  clientId: process.env.VK_CLIENT_ID!,
+  clientSecret: process.env.VK_CLIENT_SECRET!,
+  profile(profile) {
+    const p = profile.response?.[0] ?? {}
+    const userId = p.id
     return {
-      id: profile.id,
-      name: profile.name,
-      email: profile.email,
-      image: profile.image,
+      id: String(userId),
+      name: [p.first_name, p.last_name].filter(Boolean).join(' ') || `vk_${userId}`,
+      email: `vk_${userId}@studyassist.ru`,
+      image: p.photo_100 ?? null,
+      isAdmin: false,
+      phone: null,
     }
   },
-  clientId: process.env.VK_CLIENT_ID,
-  clientSecret: process.env.VK_CLIENT_SECRET,
-}
+})
 
 // Mail.ru custom provider
 const MailRuProvider = {
@@ -154,7 +125,7 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
-    VKProvider as any,
+    vkProviderConfig,
     MailRuProvider as any,
     YandexProvider as any,
   ],
