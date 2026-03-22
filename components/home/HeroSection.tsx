@@ -119,14 +119,14 @@ export function HeroSection() {
                 className="bg-[#1A1A2E] border border-white/10 rounded-2xl p-4 shadow-xl"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6C3EF4] to-[#3B82F6] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                    А
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#6C3EF4] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                    Д
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-semibold">Анна, Экономика</p>
+                    <p className="text-white text-sm font-semibold">Дмитрий, Юриспруденция</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-emerald-400 text-xs">Консультация идёт</span>
+                      <span className="text-emerald-400 text-xs">Работа в процессе</span>
                     </div>
                   </div>
                 </div>
@@ -138,8 +138,8 @@ export function HeroSection() {
                 transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
                 className="bg-[#1A1A2E] border border-white/10 rounded-2xl p-4 shadow-xl"
               >
-                <p className="text-white/50 text-xs mb-1">Тема</p>
-                <p className="text-white text-sm font-semibold mb-3">Микроэкономика. Эластичность спроса</p>
+                <p className="text-white/50 text-xs mb-1">Тип работы</p>
+                <p className="text-white text-sm font-semibold mb-3">Курсовая работа. Гражданское право</p>
                 <div className="w-full bg-white/10 rounded-full h-1.5">
                   <motion.div
                     initial={{ width: '0%' }}
@@ -162,7 +162,7 @@ export function HeroSection() {
                     <CheckCircle className="w-5 h-5 text-emerald-400" />
                   </div>
                   <div>
-                    <p className="text-white text-sm font-semibold">Экзамен сдан на 5</p>
+                    <p className="text-white text-sm font-semibold">Сдано на отлично</p>
                     <p className="text-emerald-400 text-xs mt-0.5">Результат получен</p>
                   </div>
                 </div>

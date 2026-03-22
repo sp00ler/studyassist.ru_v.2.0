@@ -15,8 +15,8 @@ import { useToast } from '@/components/ui/use-toast'
 
 // Step 1 schema
 const step1Schema = z.object({
-  type: z.enum(['consultation', 'tutoring', 'materials', 'task-review', 'exam-prep', 'other'], {
-    errorMap: () => ({ message: 'Выберите тип услуги' }),
+  type: z.enum(['essay', 'coursework', 'diploma', 'lab', 'presentation', 'practice-report', 'uir', 'other'], {
+    errorMap: () => ({ message: 'Выберите тип работы' }),
   }),
   subject: z.string().min(2, 'Укажите предмет'),
   deadline: z.string().refine((d) => {
@@ -289,17 +289,19 @@ export function OrderForm() {
                 className="space-y-5"
               >
                 <div>
-                  <Label htmlFor="field-type" className="mb-2 block">Тип услуги *</Label>
+                  <Label htmlFor="field-type" className="mb-2 block">Тип работы *</Label>
                   <Select onValueChange={(v) => setValue1('type', v as FormData['type'])}>
                     <SelectTrigger id="field-type" aria-describedby={errors1.type ? 'error-type' : undefined} aria-invalid={!!errors1.type}>
                       <SelectValue placeholder="Выберите тип услуги" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="consultation">Консультация по предмету</SelectItem>
-                      <SelectItem value="tutoring">Объяснение темы / раздела</SelectItem>
-                      <SelectItem value="materials">Подбор материалов и литературы</SelectItem>
-                      <SelectItem value="task-review">Разбор задач и примеров</SelectItem>
-                      <SelectItem value="exam-prep">Подготовка к экзамену</SelectItem>
+                      <SelectItem value="essay">Реферат / эссе</SelectItem>
+                      <SelectItem value="coursework">Курсовая работа</SelectItem>
+                      <SelectItem value="diploma">ВКР / Дипломная работа</SelectItem>
+                      <SelectItem value="lab">Лабораторная / контрольная / практическая</SelectItem>
+                      <SelectItem value="presentation">Презентация</SelectItem>
+                      <SelectItem value="practice-report">Отчёт по практике</SelectItem>
+                      <SelectItem value="uir">УИР (учебно-исследовательская работа)</SelectItem>
                       <SelectItem value="other">Другое</SelectItem>
                     </SelectContent>
                   </Select>
