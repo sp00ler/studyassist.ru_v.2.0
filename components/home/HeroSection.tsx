@@ -3,12 +3,12 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, Zap, Shield } from 'lucide-react'
+import { CheckCircle, Zap, Lock } from 'lucide-react'
 
 const trustBadges = [
-  { icon: Zap, text: '1000+ студентов получили помощь' },
-  { icon: Shield, text: 'Проверенные специалисты' },
+  { icon: Zap, text: 'Ответ за 30 минут' },
   { icon: CheckCircle, text: 'Оплата после согласования' },
+  { icon: Lock, text: 'Конфиденциально' },
 ]
 
 export function HeroSection() {
@@ -32,7 +32,7 @@ export function HeroSection() {
             >
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6C3EF4]/20 border border-[#6C3EF4]/30 text-[#A78BFA] text-sm font-medium mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#6C3EF4] animate-pulse" />
-                Образовательные консультации онлайн
+                ✦ Более 1000 студентов уже сдали то, что откладывали
               </span>
             </motion.div>
 
@@ -42,11 +42,11 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6"
             >
-              Образовательные{' '}
+              Дедлайн завтра,{' '}
               <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-                консультации
+                а ты ещё
               </span>
-              {' '}для студентов — понятно и эффективно
+              {' '}не начал?
             </motion.h1>
 
             <motion.p
@@ -55,8 +55,8 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-lg text-white/60 leading-relaxed mb-8 max-w-xl"
             >
-              Объясним сложные темы, подберём материалы, поможем подготовиться к экзаменам.
-              Индивидуальный подход. Оплата после согласования.
+              Разберём тему, подберём материалы, поможем структурировать всё по уму.
+              Пока другие часами ищут ответы — ты уже получаешь результат.
             </motion.p>
 
             <motion.div
@@ -75,7 +75,7 @@ export function HeroSection() {
                     }
                   }}
                 >
-                  Оставить заявку
+                  Получить помощь сейчас
                 </Button>
               </Link>
               <Link href="#pricing">
@@ -104,110 +104,66 @@ export function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Right: Animated illustration */}
+          {/* Right: Pseudo-chat mockup */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="relative flex items-center justify-center"
           >
-            <div className="relative w-full max-w-md">
-              {/* Main illustration */}
-              <svg
-                viewBox="0 0 400 400"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-full"
-              >
-                {/* Background circle */}
-                <circle cx="200" cy="200" r="180" fill="url(#heroGrad1)" fillOpacity="0.1" />
-                <circle cx="200" cy="200" r="150" stroke="url(#heroGrad1)" strokeWidth="1" strokeOpacity="0.3" strokeDasharray="4 4" />
-
-                {/* Laptop */}
-                <g className="animate-float">
-                  <rect x="100" y="160" width="200" height="140" rx="12" fill="#1A1A2E" stroke="#6C3EF4" strokeWidth="2" />
-                  <rect x="110" y="170" width="180" height="100" rx="6" fill="#0F0F1A" />
-                  {/* Screen content */}
-                  <rect x="120" y="180" width="60" height="6" rx="3" fill="#6C3EF4" fillOpacity="0.8" />
-                  <rect x="120" y="192" width="100" height="4" rx="2" fill="#FFFFFF" fillOpacity="0.3" />
-                  <rect x="120" y="202" width="80" height="4" rx="2" fill="#FFFFFF" fillOpacity="0.2" />
-                  <rect x="120" y="212" width="90" height="4" rx="2" fill="#FFFFFF" fillOpacity="0.2" />
-                  {/* Chart */}
-                  <rect x="210" y="180" width="70" height="80" rx="6" fill="#6C3EF4" fillOpacity="0.1" />
-                  <rect x="218" y="220" width="10" height="30" rx="3" fill="#6C3EF4" fillOpacity="0.7" />
-                  <rect x="232" y="210" width="10" height="40" rx="3" fill="#3B82F6" fillOpacity="0.7" />
-                  <rect x="246" y="200" width="10" height="50" rx="3" fill="#A78BFA" fillOpacity="0.7" />
-                  <rect x="260" y="215" width="10" height="35" rx="3" fill="#6C3EF4" fillOpacity="0.7" />
-                  {/* Laptop base */}
-                  <rect x="80" y="298" width="240" height="12" rx="6" fill="#1A1A2E" stroke="#6C3EF4" strokeWidth="1.5" />
-                </g>
-
-                {/* Graduation cap - floating */}
-                <g style={{ animation: 'float 8s ease-in-out infinite', animationDelay: '1s' }}>
-                  <rect x="280" y="80" width="80" height="10" rx="5" fill="#F59E0B" />
-                  <polygon points="320,50 300,85 340,85" fill="#F59E0B" />
-                  <rect x="340" y="80" width="4" height="20" fill="#F59E0B" />
-                  <circle cx="344" cy="104" r="6" fill="#F59E0B" />
-                </g>
-
-                {/* Book stack - floating */}
-                <g style={{ animation: 'float 7s ease-in-out infinite', animationDelay: '0.5s' }}>
-                  <rect x="40" y="220" width="60" height="12" rx="3" fill="#6C3EF4" />
-                  <rect x="44" y="208" width="60" height="14" rx="3" fill="#8B5CF6" />
-                  <rect x="40" y="194" width="56" height="16" rx="3" fill="#3B82F6" />
-                </g>
-
-                {/* Stars/sparkles */}
-                <g fill="#F59E0B">
-                  <circle cx="350" cy="160" r="4" fillOpacity="0.8" />
-                  <circle cx="50" cy="140" r="3" fillOpacity="0.6" />
-                  <circle cx="370" cy="280" r="3" fillOpacity="0.7" />
-                  <circle cx="30" cy="300" r="4" fillOpacity="0.5" />
-                </g>
-
-                {/* Check marks */}
-                <g fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M355 210 L362 218 L374 204" />
-                  <path d="M22 200 L29 208 L41 194" />
-                </g>
-
-                <defs>
-                  <linearGradient id="heroGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#6C3EF4" />
-                    <stop offset="100%" stopColor="#3B82F6" />
-                  </linearGradient>
-                </defs>
-              </svg>
-
-              {/* Floating cards */}
+            <div className="relative w-full max-w-sm flex flex-col gap-4">
+              {/* Card 1: active consultation */}
               <motion.div
-                animate={{ y: [0, -10, 0] }}
+                animate={{ y: [0, -6, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -top-4 -right-4 bg-[#1A1A2E] border border-white/10 rounded-xl p-3 shadow-xl"
+                className="bg-[#1A1A2E] border border-white/10 rounded-2xl p-4 shadow-xl"
               >
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                    <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6C3EF4] to-[#3B82F6] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                    А
                   </div>
-                  <div>
-                    <p className="text-xs text-white font-semibold">Тема понята!</p>
-                    <p className="text-xs text-white/40">Консультация прошла</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-semibold">Анна, Экономика</p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-emerald-400 text-xs">Консультация идёт</span>
+                    </div>
                   </div>
                 </div>
               </motion.div>
 
+              {/* Card 2: progress */}
               <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="absolute -bottom-4 -left-4 bg-[#1A1A2E] border border-white/10 rounded-xl p-3 shadow-xl"
+                animate={{ y: [0, 6, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+                className="bg-[#1A1A2E] border border-white/10 rounded-2xl p-4 shadow-xl"
               >
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-amber-400" />
+                <p className="text-white/50 text-xs mb-1">Тема</p>
+                <p className="text-white text-sm font-semibold mb-3">Микроэкономика. Эластичность спроса</p>
+                <div className="w-full bg-white/10 rounded-full h-1.5">
+                  <motion.div
+                    initial={{ width: '0%' }}
+                    animate={{ width: '70%' }}
+                    transition={{ duration: 1.5, delay: 1, ease: 'easeOut' }}
+                    className="h-1.5 rounded-full bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6]"
+                  />
+                </div>
+                <p className="text-white/30 text-xs mt-1.5">70% готово</p>
+              </motion.div>
+
+              {/* Card 3: result */}
+              <motion.div
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                className="bg-[#1A1A2E] border border-emerald-500/30 rounded-2xl p-4 shadow-xl"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
                   </div>
                   <div>
-                    <p className="text-xs text-white font-semibold">Быстро</p>
-                    <p className="text-xs text-white/40">от 24 часов</p>
+                    <p className="text-white text-sm font-semibold">Экзамен сдан на 5</p>
+                    <p className="text-emerald-400 text-xs mt-0.5">Результат получен</p>
                   </div>
                 </div>
               </motion.div>

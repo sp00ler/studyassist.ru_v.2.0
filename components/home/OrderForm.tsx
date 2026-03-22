@@ -240,12 +240,12 @@ export function OrderForm() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Оставить{' '}
+            Опиши ситуацию —{' '}
             <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-              заявку
+              ответим за 30 минут
             </span>
           </h2>
-          <p className="text-white/50">Заполните форму — и мы свяжемся с вами в течение 30 минут для согласования деталей</p>
+          <p className="text-white/50">Без регистрации. Без предоплаты. Просто напиши — и мы разберёмся.</p>
         </motion.div>
 
         <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
@@ -469,15 +469,19 @@ export function OrderForm() {
                 </div>
 
                 <div>
-                  <Label className="mb-2 block">Телефон (необязательно)</Label>
+                  <Label className="mb-2 block">Телефон или Telegram (необязательно)</Label>
                   <Input
                     value={phoneValue}
                     onChange={(e) => {
-                      const formatted = formatPhoneInput(e.target.value)
-                      setValue3('phone', formatted)
+                      const val = e.target.value
+                      if (val.startsWith('@') || val === '') {
+                        setValue3('phone', val)
+                      } else {
+                        setValue3('phone', formatPhoneInput(val))
+                      }
                     }}
-                    placeholder="+7 XXX XXX-XX-XX"
-                    type="tel"
+                    placeholder="+7 999 ... или @username"
+                    type="text"
                   />
                 </div>
 

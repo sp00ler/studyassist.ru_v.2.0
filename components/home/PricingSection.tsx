@@ -7,7 +7,7 @@ import { CheckCircle } from 'lucide-react'
 
 const plans = [
   {
-    name: 'Консультация',
+    name: 'Быстрый старт',
     price: 'от 800 ₽',
     features: [
       'Разовая сессия (1 час)',
@@ -19,7 +19,7 @@ const plans = [
     popular: false,
   },
   {
-    name: 'Консультация расширенная',
+    name: 'Разобраться',
     price: 'от 1 200 ₽',
     features: [
       'До 2 часов работы',
@@ -33,7 +33,7 @@ const plans = [
     popular: true,
   },
   {
-    name: 'Подготовка к экзамену',
+    name: 'Сдать экзамен',
     price: 'от 1 500 ₽',
     features: [
       'Систематизация знаний',
@@ -60,13 +60,13 @@ export function PricingSection() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Стоимость{' '}
+            Стоимость —{' '}
             <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-              услуг
+              честно и заранее
             </span>
           </h2>
           <p className="text-white/50 text-lg max-w-2xl mx-auto">
-            Стоимость зависит от предмета и сложности запроса. Здесь — ориентировочные стартовые цены.
+            Называем цену до начала работы. Никаких сюрпризов после.
           </p>
         </motion.div>
 
@@ -128,7 +128,7 @@ export function PricingSection() {
           transition={{ delay: 0.4 }}
           className="text-center text-white/30 text-sm mt-8"
         >
-          Точная стоимость рассчитывается индивидуально после изучения вашего запроса. Индивидуальный подход к каждому студенту.
+          Точная стоимость рассчитывается индивидуально после изучения запроса. Напиши нам — это бесплатно.
         </motion.p>
       </div>
     </section>
