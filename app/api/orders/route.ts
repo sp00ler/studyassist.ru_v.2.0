@@ -9,7 +9,7 @@ import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 
 const orderSchema = z.object({
-  type: z.enum(['coursework', 'diploma', 'essay', 'lab', 'presentation', 'other']),
+  type: z.enum(['essay', 'coursework', 'diploma', 'lab', 'presentation', 'practice-report', 'uir', 'other']),
   subject: z.string().min(2, 'Укажите предмет'),
   deadline: z.string().refine((d) => {
     const date = new Date(d)
