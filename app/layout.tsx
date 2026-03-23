@@ -35,6 +35,10 @@ export const metadata: Metadata = {
     description: 'Курсовые, дипломные, рефераты. Гарантия уникальности.',
     images: ['/og-image.png'],
   },
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+  },
   robots: {
     index: true,
     follow: true,
