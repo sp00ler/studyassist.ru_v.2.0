@@ -66,8 +66,15 @@ export async function POST(req: NextRequest) {
 
     Promise.allSettled([
       sendNewOrderEmail({ ...notificationData, files: data.files }),
-      sendNewOrderNotification(notificationData),
-    ]).catch(console.error)
+      sendNewOrderNotification({ ...notificationData, files: data.files }),
+    ]).then((results) => {
+      const labels = ['email', 'telegram']
+      results.forEach((r, i) => {
+        if (r.status === 'rejected') {
+          console.error(`Notification ${labels[i]} failed:`, r.reason)
+        }
+      })
+    })
 
     return NextResponse.json({ success: true, orderId: order.id })
   } catch (error) {

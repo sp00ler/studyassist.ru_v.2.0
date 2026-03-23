@@ -161,10 +161,10 @@
   </table>
 </body>
 </html>
-  `;await d.sendMail({from:`"StudyAssist" <${process.env.SMTP_USER}>`,to:e,subject:`Ссылка на оплату заявки ${i} — ${r.toLocaleString("ru-RU")} ₽`,html:n})}},72331:(e,t,a)=>{a.d(t,{_:()=>i});var r=a(53524);let i=globalThis.prisma??new r.PrismaClient({log:["error"]})},89833:(e,t,a)=>{a.d(t,{LE:()=>p,ch:()=>l,sh:()=>d});var r=a(66088),i=a.n(r);let n=null;function s(){return process.env.TELEGRAM_BOT_TOKEN?(n||(n=new(i())(process.env.TELEGRAM_BOT_TOKEN,{polling:!1})),n):null}function o(e){let t=e.replace(/[^0-9]/g,"").slice(-5).padStart(5,"0");return`#${t}`}async function d(e){var t;let a=s(),r=process.env.TELEGRAM_CHAT_ID;if(!a||!r){console.warn("Telegram bot not configured, skipping notification");return}let i=o(e.orderId),n={coursework:"Курсовая работа",diploma:"Дипломная работа (ВКР)",essay:"Реферат / Эссе",lab:"Лабораторная работа / Задача",presentation:"Презентация / Отчёт",other:"Другое"}[t=e.orderType]||t,d=`${process.env.NEXTAUTH_URL}/admin/orders`,l=`
-📋 *Новая заявка ${i}*
+  `;await d.sendMail({from:`"StudyAssist" <${process.env.SMTP_USER}>`,to:e,subject:`Ссылка на оплату заявки ${i} — ${r.toLocaleString("ru-RU")} ₽`,html:n})}},72331:(e,t,a)=>{a.d(t,{_:()=>i});var r=a(53524);let i=globalThis.prisma??new r.PrismaClient({log:["error"]})},89833:(e,t,a)=>{a.d(t,{LE:()=>p,ch:()=>l,sh:()=>d});var r=a(66088),i=a.n(r);let n=null;function s(){return process.env.TELEGRAM_BOT_TOKEN?(n||(n=new(i())(process.env.TELEGRAM_BOT_TOKEN,{polling:!1})),n):null}function o(e){let t=e.replace(/[^0-9]/g,"").slice(-5).padStart(5,"0");return`#${t}`}async function d(e){var t;let r=s(),i=process.env.TELEGRAM_CHAT_ID;if(!r||!i){console.warn("Telegram bot not configured, skipping notification");return}let n=o(e.orderId),d={coursework:"Курсовая работа",diploma:"Дипломная работа (ВКР)",essay:"Реферат / Эссе",lab:"Лабораторная работа / Задача",presentation:"Презентация / Отчёт",other:"Другое"}[t=e.orderType]||t,l=`${process.env.NEXTAUTH_URL}/admin/orders`,p=`
+📋 *Новая заявка ${n}*
 
-📚 *Тип:* ${n}
+📚 *Тип:* ${d}
 📖 *Предмет:* ${e.subject}
 ⏰ *Дедлайн:* ${e.deadline}
 
@@ -176,8 +176,8 @@ ${e.description.slice(0,500)}${e.description.length>500?"...":""}
 ${e.phone?`📱 *Телефон:* ${e.phone}`:""}
 📎 *Файлы:* ${e.filesCount} шт.
 
-[Открыть в панели администратора](${d})
-  `.trim();await a.sendMessage(r,l,{parse_mode:"Markdown"})}async function l(e,t,a,r){let i=s();if(!i||!e)return;let n=o(t),d=`📋 *Заявка ${n}*
+[Открыть в панели администратора](${l})
+  `.trim();if(await r.sendMessage(i,p,{parse_mode:"Markdown"}),e.files&&e.files.length>0){let t=await Promise.resolve().then(a.t.bind(a,55315,23)),n=await Promise.resolve().then(a.t.bind(a,92048,23));for(let a of e.files){let e=t.join(process.cwd(),"public",a);n.existsSync(e)&&await r.sendDocument(i,e,{},{filename:t.basename(a),contentType:"application/octet-stream"})}}}async function l(e,t,a,r){let i=s();if(!i||!e)return;let n=o(t),d=`📋 *Заявка ${n}*
 
 Статус изменён: *${{new:"Новая",in_progress:"\uD83D\uDD27 В работе",ready_for_review:"✅ Готова к проверке",awaiting_payment:"\uD83D\uDCB3 Ожидает оплаты",paid:"✅ Оплачена",completed:"\uD83C\uDF89 Завершена",cancelled:"❌ Отменена"}[a]||a}*`;"awaiting_payment"===a&&r?d+=`
 

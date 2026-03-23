@@ -37,6 +37,7 @@ export async function sendNewOrderNotification(data: {
   email: string
   phone?: string | null
   filesCount: number
+  files?: string[]
 }): Promise<void> {
   const tgBot = getBot()
   const chatId = process.env.TELEGRAM_CHAT_ID
@@ -68,6 +69,21 @@ ${data.phone ? `📱 *Телефон:* ${data.phone}` : ''}
   `.trim()
 
   await tgBot.sendMessage(chatId, message, { parse_mode: 'Markdown' })
+
+  // Отправляем файлы если есть
+  if (data.files && data.files.length > 0) {
+    const path = await import('path')
+    const fs = await import('fs')
+    for (const filePath of data.files) {
+      const fullPath = path.join(process.cwd(), 'public', filePath)
+      if (fs.existsSync(fullPath)) {
+        await tgBot.sendDocument(chatId, fullPath, {}, {
+          filename: path.basename(filePath),
+          contentType: 'application/octet-stream',
+        })
+      }
+    }
+  }
 }
 
 export async function sendStatusUpdateNotification(
