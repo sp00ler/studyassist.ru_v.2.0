@@ -146,6 +146,21 @@ export function OrderForm() {
         if (uploadRes.ok) {
           const uploadData = await uploadRes.json()
           uploadedFiles = uploadData.files || []
+          if (uploadData.skipped && uploadData.skipped.length > 0) {
+            toast({
+              title: 'Часть файлов не загружена',
+              description: `Файлы с неподдерживаемым типом пропущены: ${uploadData.skipped.join(', ')}`,
+              variant: 'destructive',
+            })
+          }
+        } else {
+          const errData = await uploadRes.json().catch(() => ({}))
+          toast({
+            title: 'Ошибка загрузки файлов',
+            description: errData.error || 'Не удалось загрузить файлы. Попробуйте ещё раз.',
+            variant: 'destructive',
+          })
+          return
         }
       }
 

@@ -55,27 +55,32 @@ export async function POST(req: NextRequest) {
     }
 
     const savedPaths: string[] = []
+    const skipped: string[] = []
 
     for (const file of files) {
       const ext = path.extname(file.name).toLowerCase()
 
-      // Проверяем расширение
-      if (!ALLOWED_EXTENSIONS.includes(ext)) {
-        return NextResponse.json(
-          { error: `Недопустимый тип файла: ${ext}` },
-          { status: 400 }
-        )
+      // Если расширение неизвестно — проверяем MIME тип как запасной вариант
+      const mimeOk = !file.type || ALLOWED_MIME_TYPES.includes(file.type) || file.type.startsWith('image/')
+      if (!ALLOWED_EXTENSIONS.includes(ext) && !mimeOk) {
+        skipped.push(file.name)
+        continue
       }
 
-      // Проверяем MIME тип
-      if (file.type && !ALLOWED_MIME_TYPES.includes(file.type) && !file.type.startsWith('image/')) {
-        return NextResponse.json(
-          { error: `Недопустимый MIME тип: ${file.type}` },
-          { status: 400 }
-        )
+      // Если нет расширения но MIME ok — пропускаем файл (небезопасно хранить без ext)
+      if (!ext && !mimeOk) {
+        skipped.push(file.name)
+        continue
       }
 
-      const safeName = sanitizeFileName(path.basename(file.name, ext)) + '_' + Date.now() + ext
+      // Если MIME тип запрещён и расширение тоже не подходит — пропускаем
+      if (file.type && !ALLOWED_MIME_TYPES.includes(file.type) && !file.type.startsWith('image/') && !ALLOWED_EXTENSIONS.includes(ext)) {
+        skipped.push(file.name)
+        continue
+      }
+
+      const safeExt = ALLOWED_EXTENSIONS.includes(ext) ? ext : ''
+      const safeName = sanitizeFileName(path.basename(file.name, ext)) + '_' + Date.now() + safeExt
       const filePath = path.join(uploadDir, safeName)
 
       const bytes = await file.arrayBuffer()
@@ -84,7 +89,7 @@ export async function POST(req: NextRequest) {
       savedPaths.push(`/uploads/${orderId}/${safeName}`)
     }
 
-    return NextResponse.json({ files: savedPaths })
+    return NextResponse.json({ files: savedPaths, skipped })
   } catch (error) {
     console.error('Upload error:', error)
     return NextResponse.json({ error: 'Ошибка загрузки файлов' }, { status: 500 })
