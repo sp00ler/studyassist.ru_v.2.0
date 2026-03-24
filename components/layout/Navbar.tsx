@@ -8,10 +8,10 @@ import { Menu, X, GraduationCap, User, LogOut, LayoutDashboard } from 'lucide-re
 import { Button } from '@/components/ui/button'
 
 const navLinks = [
-  { href: '#services', label: 'Услуги' },
-  { href: '#how-it-works', label: 'Как это работает' },
-  { href: '#pricing', label: 'Цены' },
-  { href: '#reviews', label: 'Отзывы' },
+  { href: '/#services', label: 'Услуги' },
+  { href: '/#how-it-works', label: 'Как это работает' },
+  { href: '/#pricing', label: 'Цены' },
+  { href: '/#reviews', label: 'Отзывы' },
 ]
 
 export function Navbar() {
@@ -87,7 +87,7 @@ export function Navbar() {
                     Войти
                   </Button>
                 </Link>
-                <Link href="#order">
+                <Link href="/#order">
                   <Button size="sm" className="gap-2">
                     Оставить заявку
                   </Button>
@@ -157,7 +157,7 @@ export function Navbar() {
                         Войти
                       </Button>
                     </Link>
-                    <Link href="#order" onClick={() => setMobileOpen(false)}>
+                    <Link href="/#order" onClick={() => setMobileOpen(false)}>
                       <Button size="sm" className="w-full">
                         Оставить заявку
                       </Button>

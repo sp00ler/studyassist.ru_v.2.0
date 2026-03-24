@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 
@@ -12,6 +14,10 @@ export default function ConsentMarketingPage() {
       <Navbar />
       <main className="min-h-screen pt-24 pb-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <Link href="/" className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm mb-8">
+            <ArrowLeft className="w-4 h-4" />
+            На главную
+          </Link>
           <h1 className="text-3xl font-bold text-white mb-2">
             Согласие на получение рекламных и информационных сообщений
           </h1>

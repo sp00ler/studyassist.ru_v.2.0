@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import { Mail, Clock, Phone } from 'lucide-react'
+import Link from 'next/link'
+import { Mail, Clock, Phone, ArrowLeft } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Контакты — StudyAssist',
@@ -96,6 +97,10 @@ export default function ContactsPage() {
       <Navbar />
       <main className="min-h-screen pt-24 pb-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <Link href="/" className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm mb-8">
+            <ArrowLeft className="w-4 h-4" />
+            На главную
+          </Link>
           <h1 className="text-3xl font-bold text-white mb-2">Контакты</h1>
           <p className="text-white/50 mb-8">Свяжитесь с нами любым удобным способом — ответим в течение 30 минут.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

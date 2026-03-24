@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 
@@ -12,6 +14,10 @@ export default function OfferPage() {
       <Navbar />
       <main className="min-h-screen pt-24 pb-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <Link href="/" className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm mb-8">
+            <ArrowLeft className="w-4 h-4" />
+            На главную
+          </Link>
           <h1 className="text-3xl font-bold text-white mb-8">Публичная оферта</h1>
           <div className="space-y-6 text-white/70 leading-relaxed">
             <p>Настоящая публичная оферта является официальным предложением ИП StudyAssist заключить договор об оказании образовательных консультационных услуг.</p>
