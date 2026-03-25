@@ -71,19 +71,8 @@ export default function RegisterPage() {
         return
       }
 
-      // Автоматически входим после регистрации
-      const signInResult = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      })
-
-      if (signInResult?.ok) {
-        router.push('/dashboard')
-        router.refresh()
-      } else {
-        router.push('/auth/login')
-      }
+      // Перенаправляем на страницу подтверждения email
+      router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`)
     } catch {
       setError('Произошла ошибка. Попробуйте позже.')
     } finally {

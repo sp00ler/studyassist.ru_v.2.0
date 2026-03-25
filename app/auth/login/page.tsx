@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { GraduationCap, Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { GraduationCap, Loader2, Eye, EyeOff, ArrowLeft, CheckCircle, MailWarning } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -43,10 +43,26 @@ const YandexIcon = () => (
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState<string | null>(null)
   const [error, setError] = useState('')
+  const [unverifiedEmail, setUnverifiedEmail] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+
+  useEffect(() => {
+    const verified = searchParams.get('verified')
+    const reset = searchParams.get('reset')
+    const errorParam = searchParams.get('error')
+    if (verified === '1') setSuccessMessage('Email подтверждён! Теперь вы можете войти.')
+    if (reset === '1') setSuccessMessage('Пароль успешно изменён! Войдите с новым паролем.')
+    if (errorParam === 'token_expired') setError('Ссылка устарела. Запросите новое письмо.')
+    if (errorParam === 'invalid_token') setError('Недействительная ссылка подтверждения.')
+    if (errorParam === 'OAuthSignin' || errorParam === 'OAuthCallback' || errorParam === 'OAuthCreateAccount') {
+      setError('Ошибка входа через соцсеть. Проверьте настройки OAuth-приложения.')
+    }
+  }, [searchParams])
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -62,7 +78,10 @@ export default function LoginPage() {
         redirect: false,
       })
 
-      if (result?.error) {
+      if (result?.error === 'EMAIL_NOT_VERIFIED') {
+        setUnverifiedEmail(data.email)
+        setError('')
+      } else if (result?.error) {
         setError('Неверный email или пароль')
       } else {
         router.push('/dashboard')
@@ -114,6 +133,35 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+          {/* Success message */}
+          {successMessage && (
+            <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-4 py-3 mb-6">
+              <CheckCircle className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+              <p className="text-emerald-400 text-sm">{successMessage}</p>
+            </div>
+          )}
+
+          {/* Email not verified block */}
+          {unverifiedEmail && (
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-4 mb-6">
+              <div className="flex items-start gap-3">
+                <MailWarning className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-amber-400 text-sm font-medium mb-1">Email не подтверждён</p>
+                  <p className="text-amber-300/70 text-xs mb-3">
+                    Проверьте почту и перейдите по ссылке из письма.
+                  </p>
+                  <Link
+                    href={`/auth/verify-email?email=${encodeURIComponent(unverifiedEmail)}`}
+                    className="text-xs text-amber-400 underline hover:text-amber-300 transition-colors"
+                  >
+                    Не получили письмо? Отправить повторно →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Email/password form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
             <div>
@@ -140,6 +188,11 @@ export default function LoginPage() {
                 </button>
               </div>
               {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>}
+              <div className="flex justify-end mt-1">
+                <Link href="/auth/forgot-password" className="text-xs text-white/40 hover:text-[#6C3EF4] transition-colors">
+                  Забыли пароль?
+                </Link>
+              </div>
             </div>
 
             {error && (

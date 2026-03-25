@@ -233,6 +233,146 @@ export async function sendStatusUpdateEmail(
   })
 }
 
+export async function sendVerificationEmail(
+  to: string,
+  name: string,
+  token: string
+): Promise<void> {
+  const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${encodeURIComponent(token)}`
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Подтверждение email — StudyAssist</title>
+</head>
+<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
+              <div style="display:inline-block;width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:12px;line-height:48px;font-size:24px;margin-bottom:16px;">🎓</div>
+              <h1 style="color:#fff;margin:0;font-size:24px;font-weight:700;">StudyAssist</h1>
+              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:14px;">Подтверждение email-адреса</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:40px 32px;text-align:center;">
+              <p style="color:#F1F5F9;font-size:18px;font-weight:600;margin:0 0 12px;">Привет, ${name}! 👋</p>
+              <p style="color:#94A3B8;font-size:15px;line-height:1.6;margin:0 0 32px;">
+                Вы зарегистрировались на StudyAssist.ru. Для завершения регистрации подтвердите ваш email-адрес, нажав на кнопку ниже.
+              </p>
+              <a href="${verifyUrl}"
+                 style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:16px 40px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;margin-bottom:32px;">
+                ✅ Подтвердить email
+              </a>
+              <p style="color:#64748B;font-size:13px;margin:0 0 8px;">Ссылка действует 24 часа.</p>
+              <p style="color:#64748B;font-size:12px;margin:0;">
+                Если вы не регистрировались на StudyAssist.ru — просто проигнорируйте это письмо.
+              </p>
+              <div style="margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.08);">
+                <p style="color:#475569;font-size:11px;margin:0;">
+                  Не открывается кнопка? Скопируйте ссылку:<br>
+                  <a href="${verifyUrl}" style="color:#6C3EF4;word-break:break-all;">${verifyUrl}</a>
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#0F0F1A;padding:20px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
+              <p style="color:#374151;font-size:12px;margin:0;">© 2025 StudyAssist.ru — Все права защищены</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `
+
+  await transporter.sendMail({
+    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
+    to,
+    subject: '✅ Подтвердите ваш email — StudyAssist',
+    html: htmlContent,
+  })
+}
+
+export async function sendPasswordResetEmail(
+  to: string,
+  name: string,
+  token: string
+): Promise<void> {
+  const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${encodeURIComponent(token)}`
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Восстановление пароля — StudyAssist</title>
+</head>
+<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
+              <div style="display:inline-block;width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:12px;line-height:48px;font-size:24px;margin-bottom:16px;">🎓</div>
+              <h1 style="color:#fff;margin:0;font-size:24px;font-weight:700;">StudyAssist</h1>
+              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:14px;">Восстановление пароля</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:40px 32px;text-align:center;">
+              <p style="color:#F1F5F9;font-size:18px;font-weight:600;margin:0 0 12px;">Привет, ${name}! 🔐</p>
+              <p style="color:#94A3B8;font-size:15px;line-height:1.6;margin:0 0 32px;">
+                Мы получили запрос на сброс пароля для вашего аккаунта на StudyAssist.ru. Нажмите на кнопку ниже, чтобы создать новый пароль.
+              </p>
+              <a href="${resetUrl}"
+                 style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:16px 40px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;margin-bottom:32px;">
+                🔑 Сбросить пароль
+              </a>
+              <p style="color:#64748B;font-size:13px;margin:0 0 8px;">Ссылка действует 1 час.</p>
+              <p style="color:#64748B;font-size:12px;margin:0;">
+                Если вы не запрашивали сброс пароля — просто проигнорируйте это письмо. Ваш пароль останется прежним.
+              </p>
+              <div style="margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.08);">
+                <p style="color:#475569;font-size:11px;margin:0;">
+                  Не открывается кнопка? Скопируйте ссылку:<br>
+                  <a href="${resetUrl}" style="color:#6C3EF4;word-break:break-all;">${resetUrl}</a>
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#0F0F1A;padding:20px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
+              <p style="color:#374151;font-size:12px;margin:0;">© 2025 StudyAssist.ru — Все права защищены</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `
+
+  await transporter.sendMail({
+    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
+    to,
+    subject: '🔑 Восстановление пароля — StudyAssist',
+    html: htmlContent,
+  })
+}
+
 export async function sendPaymentLinkEmail(
   to: string,
   orderId: string,

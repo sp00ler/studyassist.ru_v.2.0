@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
+import { sendVerificationEmail } from '@/lib/email'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
@@ -40,11 +42,35 @@ export async function POST(req: NextRequest) {
         email,
         passwordHash,
         provider: 'credentials',
+        emailVerified: false,
       },
+    })
+
+    // Генерируем токен подтверждения email
+    const verifyToken = crypto.randomBytes(32).toString('hex')
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 часа
+
+    // Удаляем старые токены для этого email (если есть)
+    await prisma.verificationToken.deleteMany({
+      where: { identifier: `verify:${email}` },
+    }).catch(() => {})
+
+    await prisma.verificationToken.create({
+      data: {
+        identifier: `verify:${email}`,
+        token: verifyToken,
+        expires,
+      },
+    })
+
+    // Отправляем письмо с подтверждением (не блокируем ответ при ошибке)
+    sendVerificationEmail(email, name, verifyToken).catch((err) => {
+      console.error('Failed to send verification email:', err)
     })
 
     return NextResponse.json({
       success: true,
+      requiresVerification: true,
       user: { id: user.id, name: user.name, email: user.email },
     })
   } catch (error) {

@@ -175,6 +175,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Неверный email или пароль')
         }
 
+        if (!user.emailVerified) {
+          throw new Error('EMAIL_NOT_VERIFIED')
+        }
+
         return {
           id: user.id,
           email: user.email,
@@ -220,11 +224,11 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     async createUser({ user }) {
-      // Устанавливаем provider для нового пользователя
-      if (user.email) {
+      // OAuth-пользователи создаются через адаптер — email подтверждён провайдером
+      if (user.id) {
         await prisma.user.update({
           where: { id: user.id },
-          data: { provider: 'credentials' },
+          data: { emailVerified: true },
         }).catch(() => {})
       }
     },

@@ -8,6 +8,7 @@ const nextConfig = {
       'vk.com',
       'sun9-east.userapi.com',
       'sun9-west.userapi.com',
+      'avatars.yandex.net',
     ],
     remotePatterns: [
       {
@@ -17,6 +18,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'ui-avatars.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.yandex.net',
       },
     ],
   },
