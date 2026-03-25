@@ -5,61 +5,71 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import type { Adapter } from 'next-auth/adapters'
 
-// VK OAuth 2.0 (классический API oauth.vk.com)
-// Authorization: https://oauth.vk.com/authorize
-// Token: https://oauth.vk.com/access_token
-// Userinfo: https://api.vk.com/method/users.get
+// VK ID 2.1 — без PKCE (серверный flow с client_secret)
+// Приложение зарегистрировано на id.vk.com
 // Redirect URI: https://studyassist.ru/api/auth/callback/vk
 const VKIDProvider = {
   id: 'vk',
   name: 'ВКонтакте',
   type: 'oauth' as const,
+  checks: ['state'] as const, // только state, без PKCE
   authorization: {
-    url: 'https://oauth.vk.com/authorize',
+    url: 'https://id.vk.com/authorize',
     params: {
-      scope: 'email',
+      scope: 'vkid.personal_info email',
       response_type: 'code',
-      display: 'page',
-      v: '5.131',
     },
   },
   token: {
-    url: 'https://oauth.vk.com/access_token',
+    url: 'https://id.vk.com/oauth2/auth',
     async request({ params, provider }: {
       params: Record<string, string>
       provider: Record<string, any>
     }) {
-      const url = new URL('https://oauth.vk.com/access_token')
-      url.searchParams.set('grant_type', 'authorization_code')
-      url.searchParams.set('code', params.code)
-      url.searchParams.set('redirect_uri', provider.callbackUrl)
-      url.searchParams.set('client_id', process.env.VK_CLIENT_ID!)
-      url.searchParams.set('client_secret', process.env.VK_CLIENT_SECRET!)
+      const body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: params.code,
+        redirect_uri: provider.callbackUrl,
+        client_id: process.env.VK_CLIENT_ID!,
+        client_secret: process.env.VK_CLIENT_SECRET!,
+        device_id: params.device_id || '',
+        state: params.state || '',
+      })
 
-      const response = await fetch(url.toString())
+      const response = await fetch('https://id.vk.com/oauth2/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+      })
+
       const tokens = await response.json()
+      if (tokens.error) {
+        throw new Error(`VK token error: ${tokens.error} — ${tokens.error_description}`)
+      }
       return { tokens }
     },
   },
   userinfo: {
-    url: 'https://api.vk.com/method/users.get',
+    url: 'https://id.vk.com/oauth2/user_info',
     async request({ tokens }: { tokens: Record<string, any> }) {
-      const url = new URL('https://api.vk.com/method/users.get')
-      url.searchParams.set('access_token', tokens.access_token)
-      if (tokens.user_id) url.searchParams.set('user_ids', String(tokens.user_id))
-      url.searchParams.set('fields', 'photo_200')
-      url.searchParams.set('v', '5.131')
-
-      const res = await fetch(url.toString())
+      const res = await fetch('https://id.vk.com/oauth2/user_info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${tokens.access_token}`,
+        },
+        body: new URLSearchParams({ client_id: process.env.VK_CLIENT_ID! }),
+      })
       const data = await res.json()
-      const user = data.response?.[0]
-      const userId = user?.id || tokens.user_id
-
+      if (!data.user) {
+        throw new Error(`VK userinfo failed: ${JSON.stringify(data)}`)
+      }
+      const user = data.user
       return {
-        id: String(userId),
-        name: `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || `vk_${userId}`,
-        email: tokens.email || `vk_${userId}@vk.user`,
-        image: user?.photo_200 || null,
+        id: String(user.user_id),
+        name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || `vk_${user.user_id}`,
+        email: user.email || `vk_${user.user_id}@vk.user`,
+        image: user.avatar || null,
       }
     },
   },
