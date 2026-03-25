@@ -238,7 +238,8 @@ export async function sendVerificationEmail(
   name: string,
   token: string
 ): Promise<void> {
-  const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${encodeURIComponent(token)}`
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
+  const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${encodeURIComponent(token)}`
 
   const htmlContent = `
 <!DOCTYPE html>
@@ -308,7 +309,8 @@ export async function sendPasswordResetEmail(
   name: string,
   token: string
 ): Promise<void> {
-  const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${encodeURIComponent(token)}`
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
+  const resetUrl = `${baseUrl}/auth/reset-password?token=${encodeURIComponent(token)}`
 
   const htmlContent = `
 <!DOCTYPE html>

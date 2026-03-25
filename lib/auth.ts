@@ -5,70 +5,61 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import type { Adapter } from 'next-auth/adapters'
 
-// VK ID provider (OAuth 2.1, приложение зарегистрировано на id.vk.com)
-// Authorization: https://id.vk.com/authorize
-// Token: https://id.vk.com/oauth2/auth (POST, требует device_id из callback URL)
-// Userinfo: https://id.vk.com/oauth2/user_info
+// VK OAuth 2.0 (классический API oauth.vk.com)
+// Authorization: https://oauth.vk.com/authorize
+// Token: https://oauth.vk.com/access_token
+// Userinfo: https://api.vk.com/method/users.get
 // Redirect URI: https://studyassist.ru/api/auth/callback/vk
 const VKIDProvider = {
   id: 'vk',
   name: 'ВКонтакте',
   type: 'oauth' as const,
-  checks: ['pkce', 'state'] as const,
   authorization: {
-    url: 'https://id.vk.com/authorize',
+    url: 'https://oauth.vk.com/authorize',
     params: {
-      scope: 'vkid.personal_info email',
+      scope: 'email',
       response_type: 'code',
+      display: 'page',
+      v: '5.131',
     },
   },
   token: {
-    url: 'https://id.vk.com/oauth2/auth',
-    async request({ params, checks, provider }: {
+    url: 'https://oauth.vk.com/access_token',
+    async request({ params, provider }: {
       params: Record<string, string>
-      checks: Record<string, string>
       provider: Record<string, any>
     }) {
-      // params содержит code, state, device_id из callback URL
-      const body = new URLSearchParams({
-        grant_type: 'authorization_code',
-        code: params.code,
-        redirect_uri: provider.callbackUrl,
-        client_id: process.env.VK_CLIENT_ID!,
-        client_secret: process.env.VK_CLIENT_SECRET!,
-        code_verifier: checks.code_verifier || '',
-        device_id: params.device_id || '',
-        state: params.state || '',
-      })
+      const url = new URL('https://oauth.vk.com/access_token')
+      url.searchParams.set('grant_type', 'authorization_code')
+      url.searchParams.set('code', params.code)
+      url.searchParams.set('redirect_uri', provider.callbackUrl)
+      url.searchParams.set('client_id', process.env.VK_CLIENT_ID!)
+      url.searchParams.set('client_secret', process.env.VK_CLIENT_SECRET!)
 
-      const response = await fetch('https://id.vk.com/oauth2/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body.toString(),
-      })
-
+      const response = await fetch(url.toString())
       const tokens = await response.json()
       return { tokens }
     },
   },
   userinfo: {
-    url: 'https://id.vk.com/oauth2/user_info',
-    async request({ tokens }: { tokens: { access_token: string } }) {
-      const res = await fetch('https://id.vk.com/oauth2/user_info', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Bearer ${tokens.access_token}`,
-        },
-        body: new URLSearchParams({ client_id: process.env.VK_CLIENT_ID! }),
-      })
+    url: 'https://api.vk.com/method/users.get',
+    async request({ tokens }: { tokens: Record<string, any> }) {
+      const url = new URL('https://api.vk.com/method/users.get')
+      url.searchParams.set('access_token', tokens.access_token)
+      if (tokens.user_id) url.searchParams.set('user_ids', String(tokens.user_id))
+      url.searchParams.set('fields', 'photo_200')
+      url.searchParams.set('v', '5.131')
+
+      const res = await fetch(url.toString())
       const data = await res.json()
-      const user = data.user
+      const user = data.response?.[0]
+      const userId = user?.id || tokens.user_id
+
       return {
-        id: String(user.user_id),
-        name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || `vk_${user.user_id}`,
-        email: user.email || `vk_${user.user_id}@studyassist.ru`,
-        image: user.avatar || null,
+        id: String(userId),
+        name: `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || `vk_${userId}`,
+        email: tokens.email || `vk_${userId}@vk.user`,
+        image: user?.photo_200 || null,
       }
     },
   },
@@ -99,8 +90,26 @@ const MailRuProvider = {
     },
   },
   token: 'https://oauth.mail.ru/token',
-  userinfo: 'https://oauth.mail.ru/userinfo',
-  profile(profile: { id: string; name: string; email: string; image?: string }) {
+  userinfo: {
+    url: 'https://oauth.mail.ru/userinfo',
+    async request({ tokens }: { tokens: Record<string, any> }) {
+      const res = await fetch('https://oauth.mail.ru/userinfo', {
+        headers: { Authorization: `Bearer ${tokens.access_token}` },
+      })
+      const profile = await res.json()
+      const name =
+        profile.name ||
+        `${profile.first_name || ''} ${profile.last_name || ''}`.trim() ||
+        profile.email
+      return {
+        id: String(profile.id || profile.email),
+        name,
+        email: profile.email,
+        image: profile.image || profile.pic || null,
+      }
+    },
+  },
+  profile(profile: { id: string; name: string; email: string; image?: string | null }) {
     return {
       id: profile.id,
       name: profile.name,
