@@ -6,8 +6,10 @@ import bcrypt from 'bcryptjs'
 import type { Adapter } from 'next-auth/adapters'
 
 // VK ID 2.1 (id.vk.com) — Web-приложение с PKCE
-// В настройках приложения id.vk.com → Авторизация → Redirect URI:
-//   https://studyassist.ru/api/auth/callback/vk
+// device_id ОБЯЗАТЕЛЕН в authorization URL, иначе VK вернёт "device_id is invalid"
+// Для серверного OAuth используем стабильный UUID (сервер = одно "устройство")
+const VK_DEVICE_ID = 'f47ac10b-58cc-4372-a567-0e02b2c3d479'
+
 const VKIDProvider = {
   id: 'vk',
   name: 'ВКонтакте',
@@ -18,6 +20,7 @@ const VKIDProvider = {
     params: {
       scope: 'vkid.personal_info email',
       response_type: 'code',
+      device_id: VK_DEVICE_ID,
     },
   },
   token: {
@@ -33,7 +36,7 @@ const VKIDProvider = {
         redirect_uri: provider.callbackUrl,
         client_id: process.env.VK_CLIENT_ID!,
         client_secret: process.env.VK_CLIENT_SECRET!,
-        device_id: params.device_id || '',
+        device_id: params.device_id || VK_DEVICE_ID,
         state: params.state || '',
       })
       if (checks.code_verifier) {
