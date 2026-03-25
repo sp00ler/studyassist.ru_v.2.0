@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { GraduationCap, Mail, ArrowLeft, Loader2, CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-export default function VerifyEmailPage() {
+function VerifyEmailPage() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email') || ''
   const [loading, setLoading] = useState(false)
@@ -112,5 +112,13 @@ export default function VerifyEmailPage() {
         </div>
       </motion.div>
     </div>
+  )
+}
+
+export default function VerifyEmailPageWrapper() {
+  return (
+    <Suspense>
+      <VerifyEmailPage />
+    </Suspense>
   )
 }
