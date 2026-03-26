@@ -94,6 +94,10 @@ function LoginPage() {
 
   const handleOAuth = async (provider: string) => {
     setOauthLoading(provider)
+    if (provider === 'vk') {
+      window.location.href = '/api/vk-auth'
+      return
+    }
     await signIn(provider, { callbackUrl: '/dashboard' })
   }
 
