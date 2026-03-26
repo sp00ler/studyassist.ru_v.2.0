@@ -139,28 +139,35 @@ export function OrderForm() {
 
       // Загружаем файлы если есть
       if (files.length > 0) {
-        const fd = new FormData()
-        fd.append('orderId', tempId)
-        files.forEach((f) => fd.append('files', f))
-        const uploadRes = await fetch('/api/upload', { method: 'POST', body: fd })
-        if (uploadRes.ok) {
-          const uploadData = await uploadRes.json()
-          uploadedFiles = uploadData.files || []
-          if (uploadData.skipped && uploadData.skipped.length > 0) {
+        try {
+          const fd = new FormData()
+          fd.append('orderId', tempId)
+          files.forEach((f) => fd.append('files', f))
+          const uploadRes = await fetch('/api/upload', { method: 'POST', body: fd })
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json()
+            uploadedFiles = uploadData.files || []
+            if (uploadData.skipped && uploadData.skipped.length > 0) {
+              toast({
+                title: 'Часть файлов не загружена',
+                description: `Файлы с неподдерживаемым типом пропущены: ${uploadData.skipped.join(', ')}`,
+                variant: 'destructive',
+              })
+            }
+          } else {
+            // Файлы не загрузились — не блокируем заявку, отправляем без файлов
             toast({
-              title: 'Часть файлов не загружена',
-              description: `Файлы с неподдерживаемым типом пропущены: ${uploadData.skipped.join(', ')}`,
+              title: 'Файлы не прикреплены',
+              description: 'Не удалось загрузить файлы, но заявка будет отправлена. Вы сможете прислать файлы в ответном письме.',
               variant: 'destructive',
             })
           }
-        } else {
-          const errData = await uploadRes.json().catch(() => ({}))
+        } catch {
           toast({
-            title: 'Ошибка загрузки файлов',
-            description: errData.error || 'Не удалось загрузить файлы. Попробуйте ещё раз.',
+            title: 'Файлы не прикреплены',
+            description: 'Не удалось загрузить файлы, но заявка будет отправлена.',
             variant: 'destructive',
           })
-          return
         }
       }
 

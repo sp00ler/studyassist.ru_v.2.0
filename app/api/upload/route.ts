@@ -49,10 +49,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Создаём директорию для загрузок
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', orderId)
-    if (!fs.existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true })
-    }
+    const uploadsBase = process.env.UPLOAD_DIR || path.join(process.cwd(), 'public', 'uploads')
+    const uploadDir = path.join(uploadsBase, orderId)
+    await mkdir(uploadDir, { recursive: true })
 
     const savedPaths: string[] = []
     const skipped: string[] = []
@@ -91,7 +90,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ files: savedPaths, skipped })
   } catch (error) {
-    console.error('Upload error:', error)
-    return NextResponse.json({ error: 'Ошибка загрузки файлов' }, { status: 500 })
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('Upload error:', msg)
+    return NextResponse.json({ error: `Ошибка загрузки файлов: ${msg}` }, { status: 500 })
   }
 }
