@@ -50,31 +50,43 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Шаг 2: callback от VK ──
-  const deviceId = req.cookies.get('vk_device_id')?.value
+  // VK ID 2.1 возвращает device_id в URL callback'а — используем его
+  const callbackDeviceId = searchParams.get('device_id')
   const codeVerifier = req.cookies.get('vk_code_verifier')?.value
   const storedState = req.cookies.get('vk_state')?.value
+  const cookieDeviceId = req.cookies.get('vk_device_id')?.value
+
+  // device_id приоритет: из callback URL, потом из cookie
+  const deviceId = callbackDeviceId || cookieDeviceId
+
+  console.log('VK callback params:', { code: code?.slice(0, 10), callbackDeviceId, cookieDeviceId, stateParam, storedState: storedState?.slice(0, 10) })
 
   if (!deviceId || !codeVerifier || !storedState) {
+    console.error('VK callback missing params:', { deviceId: !!deviceId, codeVerifier: !!codeVerifier, storedState: !!storedState })
     return NextResponse.redirect(`${BASE_URL}/auth/login?error=OAuthState`)
   }
   if (stateParam !== storedState) {
+    console.error('VK state mismatch:', { stateParam, storedState })
     return NextResponse.redirect(`${BASE_URL}/auth/login?error=OAuthState`)
   }
 
   // Обмен кода на токен
+  const tokenBody = new URLSearchParams({
+    grant_type: 'authorization_code',
+    code: code!,
+    redirect_uri: REDIRECT_URI,
+    client_id: VK_CLIENT_ID,
+    client_secret: VK_CLIENT_SECRET,
+    code_verifier: codeVerifier,
+    device_id: deviceId,
+    state: stateParam || '',
+  })
+  console.log('VK token request device_id:', deviceId)
+
   const tokenRes = await fetch('https://id.vk.com/oauth2/auth', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'authorization_code',
-      code: code!,
-      redirect_uri: REDIRECT_URI,
-      client_id: VK_CLIENT_ID,
-      client_secret: VK_CLIENT_SECRET,
-      code_verifier: codeVerifier,
-      device_id: deviceId,
-      state: stateParam || '',
-    }),
+    body: tokenBody,
   })
 
   const tokens = await tokenRes.json()
