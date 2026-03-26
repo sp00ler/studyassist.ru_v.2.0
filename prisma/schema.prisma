@@ -17,7 +17,7 @@ model User {
   name          String?
   phone         String?
   passwordHash  String?
-  avatar        String?
+  avatar        String?  @db.Text
   isAdmin       Boolean   @default(false)
   provider      String?   // 'vk' | 'mailru' | 'yandex' | 'credentials'
   providerId    String?
