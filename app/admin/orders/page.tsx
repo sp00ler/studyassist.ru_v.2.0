@@ -150,6 +150,9 @@ interface Order {
   files: string | null
   createdAt: string
   user?: { name: string | null; email: string; phone: string | null; telegramId: string | null } | null
+  clientName?: string | null
+  clientEmail?: string | null
+  clientPhone?: string | null
 }
 
 export default function AdminOrdersPage() {
@@ -190,6 +193,8 @@ export default function AdminOrdersPage() {
           o.subject.toLowerCase().includes(search.toLowerCase()) ||
           o.user?.email?.toLowerCase().includes(search.toLowerCase()) ||
           o.user?.name?.toLowerCase().includes(search.toLowerCase()) ||
+          o.clientEmail?.toLowerCase().includes(search.toLowerCase()) ||
+          o.clientName?.toLowerCase().includes(search.toLowerCase()) ||
           formatOrderId(o.id).includes(search)
       )
     : orders
@@ -284,8 +289,8 @@ export default function AdminOrdersPage() {
                       <td className="px-4 py-3 text-white text-sm max-w-32 truncate">{order.subject}</td>
                       <td className="px-4 py-3 text-white/60 text-sm">
                         <div>
-                          <p className="truncate max-w-28">{order.user?.name || '—'}</p>
-                          <p className="text-white/30 text-xs truncate max-w-28">{order.user?.email}</p>
+                          <p className="truncate max-w-28">{order.user?.name || order.clientName || '—'}</p>
+                          <p className="text-white/30 text-xs truncate max-w-28">{order.user?.email || order.clientEmail}</p>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-white/60 text-sm">{formatDate(order.deadline)}</td>

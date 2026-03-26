@@ -80,8 +80,12 @@ model VerificationToken {
 }
 
 model Order {
-  id          String    @id @default(cuid())
-  userId      String?
+  id           String    @id @default(cuid())
+  userId       String?
+  // Контакты гостя (если нет аккаунта)
+  clientName   String?
+  clientEmail  String?
+  clientPhone  String?
   type        String    // 'coursework' | 'diploma' | 'essay' | 'lab' | 'presentation' | 'other'
   subject     String
   deadline    DateTime

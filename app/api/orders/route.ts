@@ -40,6 +40,10 @@ export async function POST(req: NextRequest) {
     const order = await prisma.order.create({
       data: {
         userId: session?.user?.id || null,
+        // Для гостей сохраняем контакты прямо в заявке
+        clientName: session?.user?.id ? null : data.name,
+        clientEmail: session?.user?.id ? null : data.email,
+        clientPhone: session?.user?.id ? null : (data.phone || null),
         type: data.type,
         subject: data.subject,
         deadline: new Date(data.deadline),

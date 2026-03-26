@@ -1,20 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { verifyWebhookSignature } from '@/lib/yukassa'
+import { getPaymentStatus } from '@/lib/yukassa'
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text()
-    const signature = req.headers.get('x-b3-traceid') || req.headers.get('authorization')
-
-    // Верифицируем подпись YuKassa
-    if (!verifyWebhookSignature(body, signature)) {
-      // В dev режиме пропускаем проверку
-      if (process.env.NODE_ENV === 'production') {
-        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-      }
-    }
-
     const event = JSON.parse(body)
 
     if (event.type === 'payment.succeeded') {
@@ -25,7 +15,13 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'No orderId in metadata' }, { status: 400 })
       }
 
-      // Обновляем статус платежа и заказа
+      // Верифицируем через API ЮКассы — не доверяем телу запроса слепо
+      const realStatus = await getPaymentStatus(paymentId)
+      if (realStatus !== 'succeeded') {
+        console.warn(`Webhook: payment ${paymentId} status=${realStatus}, not updating order`)
+        return NextResponse.json({ status: 'ok' })
+      }
+
       await Promise.all([
         prisma.payment.updateMany({
           where: { yukassaId: paymentId },
@@ -36,6 +32,9 @@ export async function POST(req: NextRequest) {
           data: { status: 'paid' },
         }),
       ])
+
+      console.log(`Webhook: order ${orderId} marked as paid (payment ${paymentId})`)
+
     } else if (event.type === 'payment.canceled') {
       const paymentId = event.object.id
       await prisma.payment.updateMany({

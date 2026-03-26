@@ -28,6 +28,9 @@ interface Order {
   files: string | null
   createdAt: string
   user?: { name: string | null; email: string; phone: string | null; telegramId: string | null } | null
+  clientName?: string | null
+  clientEmail?: string | null
+  clientPhone?: string | null
 }
 
 interface OrderDetailModalProps {
@@ -181,16 +184,19 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
           )}
 
           {/* Client info */}
-          {order.user && (
+          {(order.user || order.clientEmail || order.clientName) && (
             <div className="bg-white/5 rounded-xl p-4">
               <p className="text-white/40 text-xs mb-3 flex items-center gap-1">
                 <User className="w-3 h-3" /> Клиент
+                {!order.user && <span className="ml-1 text-white/20">(гость)</span>}
               </p>
               <div className="space-y-1 text-sm">
-                <p className="text-white">{order.user.name || 'Без имени'}</p>
-                <p className="text-white/60">{order.user.email}</p>
-                {order.user.phone && <p className="text-white/60">{order.user.phone}</p>}
-                {order.user.telegramId && (
+                <p className="text-white">{order.user?.name || order.clientName || 'Без имени'}</p>
+                <p className="text-white/60">{order.user?.email || order.clientEmail}</p>
+                {(order.user?.phone || order.clientPhone) && (
+                  <p className="text-white/60">{order.user?.phone || order.clientPhone}</p>
+                )}
+                {order.user?.telegramId && (
                   <p className="text-white/40">Telegram ID: {order.user.telegramId}</p>
                 )}
               </div>

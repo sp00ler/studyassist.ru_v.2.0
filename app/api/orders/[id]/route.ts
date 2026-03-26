@@ -68,13 +68,23 @@ export async function PATCH(
     if (adminNote !== undefined) updateData.adminNote = adminNote
 
     // Генерируем ссылку оплаты через YuKassa
-    if (generatePaymentLink && price && order.user?.email) {
+    if (generatePaymentLink && price) {
+      // Email: из аккаунта пользователя или из контактов гостя
+      const receiptEmail = order.user?.email || order.clientEmail || null
+      const notifyEmail = receiptEmail
+
+      if (!receiptEmail) {
+        return NextResponse.json({ error: 'Нет email для выставления счёта' }, { status: 400 })
+      }
+
       const typeLabels: Record<string, string> = {
         coursework: 'Курсовая работа',
         diploma: 'Дипломная (ВКР)',
         essay: 'Реферат/Эссе',
         lab: 'Лабораторная',
         presentation: 'Презентация',
+        'practice-report': 'Отчёт по практике',
+        uir: 'УИР',
         other: 'Задание',
       }
       const description = `${typeLabels[order.type] || order.type}: ${order.subject}`
@@ -83,7 +93,7 @@ export async function PATCH(
         order.id,
         parseFloat(price),
         description,
-        order.user.email
+        receiptEmail
       )
 
       updateData.paymentLink = payment.confirmationUrl
@@ -91,10 +101,10 @@ export async function PATCH(
       updateData.status = 'awaiting_payment'
 
       // Уведомления об оплате
-      if (order.user.email) {
+      if (notifyEmail) {
         Promise.allSettled([
-          sendPaymentLinkEmail(order.user.email, order.id, payment.confirmationUrl, parseFloat(price)),
-          order.user.telegramId
+          sendPaymentLinkEmail(notifyEmail, order.id, payment.confirmationUrl, parseFloat(price)),
+          order.user?.telegramId
             ? sendPaymentLinkNotification(order.user.telegramId, order.id, payment.confirmationUrl, parseFloat(price))
             : Promise.resolve(),
         ]).catch(console.error)
