@@ -21,6 +21,22 @@ export function countryFlag(code: string): string {
   )
 }
 
+/** Название страны на русском по коду */
+export function countryName(code: string): string {
+  const names: Record<string, string> = {
+    RU: 'Россия', UA: 'Украина', BY: 'Беларусь', KZ: 'Казахстан', UZ: 'Узбекистан',
+    AZ: 'Азербайджан', AM: 'Армения', GE: 'Грузия', KG: 'Кыргызстан', TJ: 'Таджикистан',
+    TM: 'Туркменистан', MD: 'Молдова', LV: 'Латвия', LT: 'Литва', EE: 'Эстония',
+    PL: 'Польша', DE: 'Германия', FR: 'Франция', GB: 'Великобритания', IT: 'Италия',
+    ES: 'Испания', NL: 'Нидерланды', TR: 'Турция', US: 'США', CN: 'Китай',
+    IN: 'Индия', BR: 'Бразилия', CZ: 'Чехия', SK: 'Словакия', HU: 'Венгрия',
+    RO: 'Румыния', BG: 'Болгария', HR: 'Хорватия', RS: 'Сербия', AT: 'Австрия',
+    CH: 'Швейцария', SE: 'Швеция', NO: 'Норвегия', FI: 'Финляндия', DK: 'Дания',
+    PT: 'Португалия', GR: 'Греция', IL: 'Израиль', AE: 'ОАЭ', SA: 'Саудовская Аравия',
+  }
+  return names[code?.toUpperCase()] || code
+}
+
 /** Парсить ОС из user-agent строки */
 export function parseOs(ua: string | null): string {
   if (!ua) return '—'

@@ -47,3 +47,29 @@ export async function PATCH(
     return NextResponse.json({ error: 'Ошибка обновления' }, { status: 500 })
   }
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.isAdmin) {
+      return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
+    }
+    if (params.id === session.user.id) {
+      return NextResponse.json({ error: 'Нельзя удалить собственный аккаунт' }, { status: 400 })
+    }
+    // Каскадное удаление
+    await prisma.payment.deleteMany({ where: { userId: params.id } })
+    await prisma.order.deleteMany({ where: { userId: params.id } })
+    await prisma.review.deleteMany({ where: { userId: params.id } })
+    await prisma.session.deleteMany({ where: { userId: params.id } })
+    await prisma.account.deleteMany({ where: { userId: params.id } })
+    await prisma.user.delete({ where: { id: params.id } })
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Admin delete user error:', error)
+    return NextResponse.json({ error: 'Ошибка удаления' }, { status: 500 })
+  }
+}

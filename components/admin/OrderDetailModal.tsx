@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, FileText, User, Calendar, DollarSign, MessageSquare, Link2 } from 'lucide-react'
+import { Loader2, FileText, User, Calendar, DollarSign, MessageSquare, Link2, Trash2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,7 @@ interface OrderDetailModalProps {
   open: boolean
   onClose: () => void
   onUpdate: (updatedOrder: Order) => void
+  onDelete?: (orderId: string) => void
 }
 
 const STATUS_OPTIONS = [
@@ -47,12 +48,24 @@ const STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Отменена' },
 ]
 
-export function OrderDetailModal({ order, open, onClose, onUpdate }: OrderDetailModalProps) {
+export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: OrderDetailModalProps) {
   const [status, setStatus] = useState(order?.status || '')
   const [price, setPrice] = useState(order?.price ? String(order.price) : '')
   const [adminNote, setAdminNote] = useState(order?.adminNote || '')
   const [loading, setLoading] = useState(false)
   const [paymentLoading, setPaymentLoading] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+
+  const handleDelete = async () => {
+    if (!order || !confirm(`Удалить заявку ${formatOrderId(order.id)}? Это действие необратимо.`)) return
+    setDeleteLoading(true)
+    try {
+      const res = await fetch(`/api/orders/${order.id}`, { method: 'DELETE' })
+      if (res.ok) { onDelete?.(order.id); onClose() }
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
 
   if (!order) return null
 
@@ -240,7 +253,7 @@ export function OrderDetailModal({ order, open, onClose, onUpdate }: OrderDetail
               </div>
             )}
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <Button
                 onClick={handleGeneratePaymentLink}
                 disabled={paymentLoading || !price}
@@ -253,6 +266,11 @@ export function OrderDetailModal({ order, open, onClose, onUpdate }: OrderDetail
               <Button onClick={handleSave} disabled={loading} className="gap-2 flex-1">
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 Сохранить
+              </Button>
+              <Button onClick={handleDelete} disabled={deleteLoading} variant="outline"
+                className="gap-2 border-red-500/30 text-red-400 hover:bg-red-500/10">
+                {deleteLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                Удалить
               </Button>
             </div>
           </div>

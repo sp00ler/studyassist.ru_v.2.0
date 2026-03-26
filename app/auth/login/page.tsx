@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn, getSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -84,7 +84,8 @@ function LoginPage() {
       } else if (result?.error) {
         setError('Неверный email или пароль')
       } else {
-        router.push('/dashboard')
+        const session = await getSession()
+        router.push(session?.user?.isAdmin ? '/admin' : '/dashboard')
         router.refresh()
       }
     } finally {

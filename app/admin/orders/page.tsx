@@ -199,6 +199,11 @@ export default function AdminOrdersPage() {
     setSelectedOrder(null)
   }
 
+  const handleOrderDelete = (id: string) => {
+    setOrders((prev) => prev.filter((o) => o.id !== id))
+    setTotal(t => t - 1)
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -323,6 +328,7 @@ export default function AdminOrdersPage() {
         open={!!selectedOrder}
         onClose={() => setSelectedOrder(null)}
         onUpdate={handleOrderUpdate}
+        onDelete={handleOrderDelete}
       />
 
       {showCreate && (

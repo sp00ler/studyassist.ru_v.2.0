@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Users, Shield, Edit2, X, Save, Search } from 'lucide-react'
+import { Loader2, Users, Shield, Edit2, X, Save, Search, Trash2 } from 'lucide-react'
 import { formatDate, formatDateTime } from '@/lib/utils'
-import { countryFlag, parseOs, parseBrowser } from '@/lib/geo'
+import { countryFlag, countryName, parseOs, parseBrowser } from '@/lib/geo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -26,14 +26,29 @@ interface User {
   _count: { orders: number }
 }
 
-function EditUserModal({ user, onClose, onSaved }: { user: User; onClose: () => void; onSaved: (u: User) => void }) {
+function EditUserModal({ user, onClose, onSaved, onDeleted }: { user: User; onClose: () => void; onSaved: (u: User) => void; onDeleted: (id: string) => void }) {
   const [name, setName] = useState(user.name || '')
   const [phone, setPhone] = useState(user.phone || '')
   const [telegramId, setTelegramId] = useState(user.telegramId || '')
   const [email, setEmail] = useState(user.email)
   const [isAdmin, setIsAdmin] = useState(user.isAdmin)
   const [loading, setLoading] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const deleteUser = async () => {
+    if (!confirm(`Удалить пользователя ${user.email}?\nБудут удалены все его заявки и платежи. Это действие необратимо.`)) return
+    setDeleteLoading(true)
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}`, { method: 'DELETE' })
+      const d = await res.json()
+      if (!res.ok) { setError(d.error || 'Ошибка'); return }
+      onDeleted(user.id)
+      onClose()
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
 
   const save = async () => {
     setLoading(true)
@@ -89,7 +104,11 @@ function EditUserModal({ user, onClose, onSaved }: { user: User; onClose: () => 
           </div>
           {error && <p className="text-red-400 text-sm">{error}</p>}
         </div>
-        <div className="flex gap-3 p-5 border-t border-white/10">
+        <div className="flex gap-2 p-5 border-t border-white/10">
+          <Button variant="outline" onClick={deleteUser} disabled={deleteLoading}
+            className="border-red-500/30 text-red-400 hover:bg-red-500/10 px-3">
+            {deleteLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+          </Button>
           <Button variant="outline" onClick={onClose} className="flex-1 border-white/10 text-white/60">Отмена</Button>
           <Button onClick={save} disabled={loading} className="flex-1 bg-[#6C3EF4] hover:bg-[#5b2de3]">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4 mr-1" />Сохранить</>}
@@ -202,10 +221,13 @@ export default function AdminUsersPage() {
                           <div>
                             <span className="text-white/70 text-xs font-mono">{user.lastIp}</span>
                             {user.lastCountry && (
-                              <span className="ml-1 text-base" title={user.lastCountry}>{countryFlag(user.lastCountry)}</span>
+                              <span className="ml-1.5" title={user.lastCountry}>
+                                {countryFlag(user.lastCountry)}
+                                <span className="text-white/50 text-xs ml-1">{countryName(user.lastCountry)}</span>
+                              </span>
                             )}
                             {user.prevIp && user.prevIp !== user.lastIp && (
-                              <p className="text-white/30 text-xs font-mono">пред: {user.prevIp}</p>
+                              <p className="text-white/30 text-xs font-mono mt-0.5">пред: {user.prevIp}</p>
                             )}
                           </div>
                         ) : <span className="text-white/25 text-xs">—</span>}
@@ -264,6 +286,7 @@ export default function AdminUsersPage() {
           user={editUser}
           onClose={() => setEditUser(null)}
           onSaved={updated => setUsers(prev => prev.map(u => u.id === updated.id ? updated : u))}
+          onDeleted={id => { setUsers(prev => prev.filter(u => u.id !== id)); setTotal(t => t - 1) }}
         />
       )}
     </div>

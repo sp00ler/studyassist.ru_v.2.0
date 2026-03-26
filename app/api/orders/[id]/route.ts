@@ -122,3 +122,21 @@ export async function PATCH(
     return NextResponse.json({ error: 'Ошибка обновления заявки' }, { status: 500 })
   }
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id || !session.user.isAdmin) {
+      return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
+    }
+    await prisma.payment.deleteMany({ where: { orderId: params.id } })
+    await prisma.order.delete({ where: { id: params.id } })
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Delete order error:', error)
+    return NextResponse.json({ error: 'Ошибка удаления заявки' }, { status: 500 })
+  }
+}
