@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
           name: clientName || 'Клиент',
           email: clientEmail || '',
           phone: clientPhone || null,
-          filesCount: 0,
+          files: [],
         }),
         sendNewOrderNotification({
           orderId: order.id,
