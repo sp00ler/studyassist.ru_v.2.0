@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
-import fs from 'fs'
-import { writeFile, mkdir } from 'fs/promises'
+import os from 'os'
+import { writeFile, mkdir, access, constants } from 'fs/promises'
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.txt', '.zip', '.jpg', '.jpeg', '.png', '.rar', '.7z']
@@ -23,6 +23,37 @@ function sanitizeFileName(name: string): string {
     .replace(/[^a-zA-Z0-9а-яёА-ЯЁ._-]/g, '_')
     .replace(/_{2,}/g, '_')
     .slice(0, 100)
+}
+
+async function isWritable(dir: string): Promise<boolean> {
+  try {
+    await mkdir(dir, { recursive: true })
+    await access(dir, constants.W_OK)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function getUploadDir(orderId: string): Promise<{ dir: string; publicPath: string }> {
+  // Приоритет 1: переменная окружения
+  if (process.env.UPLOAD_DIR) {
+    const dir = path.join(process.env.UPLOAD_DIR, orderId)
+    await mkdir(dir, { recursive: true })
+    return { dir, publicPath: `/uploads/${orderId}` }
+  }
+
+  // Приоритет 2: public/uploads в cwd
+  const publicDir = path.join(process.cwd(), 'public', 'uploads', orderId)
+  if (await isWritable(publicDir)) {
+    return { dir: publicDir, publicPath: `/uploads/${orderId}` }
+  }
+
+  // Приоритет 3: /tmp как fallback (всегда доступен для записи)
+  const tmpDir = path.join(os.tmpdir(), 'studyassist-uploads', orderId)
+  await mkdir(tmpDir, { recursive: true })
+  console.warn(`Upload fallback to /tmp: ${tmpDir} (public/uploads not writable at ${process.cwd()})`)
+  return { dir: tmpDir, publicPath: `/uploads/${orderId}` }
 }
 
 export async function POST(req: NextRequest) {
@@ -48,31 +79,23 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Создаём директорию для загрузок
-    const uploadsBase = process.env.UPLOAD_DIR || path.join(process.cwd(), 'public', 'uploads')
-    const uploadDir = path.join(uploadsBase, orderId)
-    await mkdir(uploadDir, { recursive: true })
+    const { dir: uploadDir, publicPath: uploadPublicPath } = await getUploadDir(orderId)
 
     const savedPaths: string[] = []
     const skipped: string[] = []
 
     for (const file of files) {
       const ext = path.extname(file.name).toLowerCase()
-
-      // Если расширение неизвестно — проверяем MIME тип как запасной вариант
       const mimeOk = !file.type || ALLOWED_MIME_TYPES.includes(file.type) || file.type.startsWith('image/')
+
       if (!ALLOWED_EXTENSIONS.includes(ext) && !mimeOk) {
         skipped.push(file.name)
         continue
       }
-
-      // Если нет расширения но MIME ok — пропускаем файл (небезопасно хранить без ext)
       if (!ext && !mimeOk) {
         skipped.push(file.name)
         continue
       }
-
-      // Если MIME тип запрещён и расширение тоже не подходит — пропускаем
       if (file.type && !ALLOWED_MIME_TYPES.includes(file.type) && !file.type.startsWith('image/') && !ALLOWED_EXTENSIONS.includes(ext)) {
         skipped.push(file.name)
         continue
@@ -85,7 +108,7 @@ export async function POST(req: NextRequest) {
       const bytes = await file.arrayBuffer()
       await writeFile(filePath, Buffer.from(bytes))
 
-      savedPaths.push(`/uploads/${orderId}/${safeName}`)
+      savedPaths.push(`${uploadPublicPath}/${safeName}`)
     }
 
     return NextResponse.json({ files: savedPaths, skipped })
