@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { GraduationCap, LogOut, User, Package, CreditCard, Loader2, Plus } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 import { OrdersTable } from '@/components/dashboard/OrdersTable'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -114,11 +115,7 @@ export default function DashboardPage() {
   }
 
   if (status === 'loading' || loading) {
-    return (
-      <div className="min-h-screen bg-[#0F0F1A] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#6C3EF4] animate-spin" />
-      </div>
-    )
+    return <PageLoader />
   }
 
   if (!session) return null

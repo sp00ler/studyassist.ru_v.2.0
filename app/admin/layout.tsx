@@ -4,7 +4,8 @@ import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { GraduationCap, LayoutDashboard, Package, Star, Users, LogOut, Loader2 } from 'lucide-react'
+import { GraduationCap, LayoutDashboard, Package, Star, Users, LogOut } from 'lucide-react'
+import { PageLoader } from '@/components/ui/page-loader'
 import { signOut } from 'next-auth/react'
 
 const adminNav = [
@@ -28,11 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [status, session, router])
 
   if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-[#0F0F1A] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#6C3EF4] animate-spin" />
-      </div>
-    )
+    return <PageLoader />
   }
 
   if (!session?.user?.isAdmin) return null
