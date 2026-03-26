@@ -13,26 +13,41 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '20')
+    const search = searchParams.get('search') || ''
+
+    const where = search ? {
+      OR: [
+        { email: { contains: search } },
+        { name: { contains: search } },
+        { phone: { contains: search } },
+      ],
+    } : {}
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
+        where,
         select: {
           id: true,
           name: true,
           email: true,
           phone: true,
+          telegramId: true,
           isAdmin: true,
           provider: true,
           createdAt: true,
-          _count: {
-            select: { orders: true },
-          },
+          lastLoginAt: true,
+          prevLoginAt: true,
+          lastIp: true,
+          prevIp: true,
+          lastCountry: true,
+          lastUserAgent: true,
+          _count: { select: { orders: true } },
         },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
-      prisma.user.count(),
+      prisma.user.count({ where }),
     ])
 
     return NextResponse.json({ users, total, page, limit })

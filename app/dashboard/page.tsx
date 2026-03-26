@@ -65,6 +65,8 @@ export default function DashboardPage() {
   useEffect(() => {
     if (session?.user?.id) {
       fetchData()
+      // Трекинг входа (IP, UA, время)
+      fetch('/api/auth/track-login', { method: 'POST' }).catch(() => {})
     }
   }, [session])
 

@@ -111,6 +111,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${BASE_URL}/auth/login?error=OAuthCallback`)
   }
 
+  const ip =
+    req.headers.get('x-real-ip') ||
+    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+    '—'
+  const ua = req.headers.get('user-agent') || null
+
   const vk = userData.user
   const vkId = String(vk.user_id)
   const email = vk.email || `vk_${vkId}@vk.user`
@@ -145,6 +151,18 @@ export async function GET(req: NextRequest) {
       },
     })
   }
+
+  // Трекинг входа
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      prevIp: user.lastIp ?? null,
+      prevLoginAt: user.lastLoginAt ?? null,
+      lastIp: ip,
+      lastLoginAt: new Date(),
+      lastUserAgent: ua,
+    },
+  }).catch(() => {})
 
   // Создать NextAuth JWT-сессию вручную
   const sessionToken = await encode({

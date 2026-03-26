@@ -2,12 +2,140 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Search, Filter, Loader2, RefreshCw } from 'lucide-react'
+import { Search, Filter, Loader2, RefreshCw, Plus, X } from 'lucide-react'
 import { OrderDetailModal } from '@/components/admin/OrderDetailModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 import { formatDate, formatPrice, formatOrderId, getOrderTypeLabel, getStatusColor, getStatusLabel } from '@/lib/utils'
+
+function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const [form, setForm] = useState({
+    type: 'coursework',
+    subject: '',
+    deadline: '',
+    description: '',
+    clientName: '',
+    clientEmail: '',
+    clientPhone: '',
+    price: '',
+    source: 'phone',
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
+
+  const submit = async () => {
+    if (!form.type || !form.subject || !form.deadline) {
+      setError('Заполните тип работы, предмет и дедлайн')
+      return
+    }
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/admin/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      const d = await res.json()
+      if (!res.ok) { setError(d.error || 'Ошибка'); return }
+      onCreated()
+      onClose()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const types = [
+    { value: 'coursework', label: 'Курсовая работа' },
+    { value: 'diploma', label: 'Дипломная (ВКР)' },
+    { value: 'essay', label: 'Реферат / Эссе' },
+    { value: 'lab', label: 'Лабораторная' },
+    { value: 'presentation', label: 'Презентация' },
+    { value: 'other', label: 'Другое' },
+  ]
+
+  const sources = [
+    { value: 'phone', label: '📞 Телефон' },
+    { value: 'telegram', label: '✈️ Telegram' },
+    { value: 'whatsapp', label: '💬 WhatsApp' },
+    { value: 'email', label: '📧 Email' },
+    { value: 'other', label: 'Другое' },
+  ]
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-[#0f1117] border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 bg-[#0f1117]">
+          <h2 className="text-white font-semibold">Новая заявка вручную</h2>
+          <button onClick={onClose} className="text-white/40 hover:text-white"><X className="w-5 h-5" /></button>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-white/60 text-xs">Тип работы *</Label>
+              <select value={form.type} onChange={e => set('type', e.target.value)}
+                className="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm">
+                {types.map(t => <option key={t.value} value={t.value} className="bg-[#0f1117]">{t.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <Label className="text-white/60 text-xs">Источник</Label>
+              <select value={form.source} onChange={e => set('source', e.target.value)}
+                className="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm">
+                {sources.map(s => <option key={s.value} value={s.value} className="bg-[#0f1117]">{s.label}</option>)}
+              </select>
+            </div>
+          </div>
+          <div>
+            <Label className="text-white/60 text-xs">Предмет / Тема *</Label>
+            <Input value={form.subject} onChange={e => set('subject', e.target.value)}
+              className="mt-1 bg-white/5 border-white/10 text-white" placeholder="Например: Экономика организации" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-white/60 text-xs">Дедлайн *</Label>
+              <Input type="date" value={form.deadline} onChange={e => set('deadline', e.target.value)}
+                className="mt-1 bg-white/5 border-white/10 text-white" />
+            </div>
+            <div>
+              <Label className="text-white/60 text-xs">Стоимость (₽)</Label>
+              <Input type="number" value={form.price} onChange={e => set('price', e.target.value)}
+                className="mt-1 bg-white/5 border-white/10 text-white" placeholder="0" />
+            </div>
+          </div>
+          <div>
+            <Label className="text-white/60 text-xs">Описание задания</Label>
+            <textarea value={form.description} onChange={e => set('description', e.target.value)}
+              className="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm resize-none h-20 placeholder:text-white/30"
+              placeholder="Подробности..." />
+          </div>
+          <div className="border-t border-white/10 pt-4">
+            <p className="text-white/50 text-xs mb-3">Данные клиента (необязательно)</p>
+            <div className="space-y-3">
+              <Input value={form.clientName} onChange={e => set('clientName', e.target.value)}
+                className="bg-white/5 border-white/10 text-white" placeholder="Имя клиента" />
+              <Input value={form.clientEmail} onChange={e => set('clientEmail', e.target.value)}
+                className="bg-white/5 border-white/10 text-white" placeholder="Email" type="email" />
+              <Input value={form.clientPhone} onChange={e => set('clientPhone', e.target.value)}
+                className="bg-white/5 border-white/10 text-white" placeholder="Телефон" />
+            </div>
+          </div>
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+        </div>
+        <div className="flex gap-3 p-5 border-t border-white/10">
+          <Button variant="outline" onClick={onClose} className="flex-1 border-white/10 text-white/60">Отмена</Button>
+          <Button onClick={submit} disabled={loading} className="flex-1 bg-[#6C3EF4] hover:bg-[#5b2de3]">
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Создать заявку'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 interface Order {
   id: string
@@ -32,6 +160,7 @@ export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [showCreate, setShowCreate] = useState(false)
 
   const fetchOrders = async () => {
     setLoading(true)
@@ -77,10 +206,14 @@ export default function AdminOrdersPage() {
           <h1 className="text-2xl font-bold text-white">Заявки</h1>
           <p className="text-white/50 text-sm">Всего: {total}</p>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchOrders} className="gap-2">
-          <RefreshCw className="w-4 h-4" />
-          Обновить
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" onClick={() => setShowCreate(true)} className="gap-2 bg-[#6C3EF4] hover:bg-[#5b2de3]">
+            <Plus className="w-4 h-4" /> Новая заявка
+          </Button>
+          <Button variant="outline" size="sm" onClick={fetchOrders} className="gap-2">
+            <RefreshCw className="w-4 h-4" /> Обновить
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -191,6 +324,13 @@ export default function AdminOrdersPage() {
         onClose={() => setSelectedOrder(null)}
         onUpdate={handleOrderUpdate}
       />
+
+      {showCreate && (
+        <CreateOrderModal
+          onClose={() => setShowCreate(false)}
+          onCreated={() => { fetchOrders(); setShowCreate(false) }}
+        />
+      )}
     </div>
   )
 }

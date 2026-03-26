@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { CreditCard, Eye } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { PaymentModal } from './PaymentModal'
+import { OrderViewModal } from './OrderViewModal'
 import { formatDate, formatPrice, formatOrderId, getOrderTypeLabel, getStatusLabel, getStatusColor } from '@/lib/utils'
 
 interface Order {
@@ -29,6 +29,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
     amount: null,
     link: null,
   })
+  const [viewOrderId, setViewOrderId] = useState<string | null>(null)
 
   if (orders.length === 0) {
     return (
@@ -59,7 +60,8 @@ export function OrdersTable({ orders }: OrdersTableProps) {
             {orders.map((order, idx) => (
               <tr
                 key={order.id}
-                className={`border-b border-white/5 hover:bg-white/3 transition-colors ${idx % 2 === 0 ? '' : 'bg-white/[0.02]'}`}
+                className={`border-b border-white/5 hover:bg-white/[0.05] transition-colors cursor-pointer ${idx % 2 === 0 ? '' : 'bg-white/[0.02]'}`}
+                onClick={() => setViewOrderId(order.id)}
               >
                 <td className="px-6 py-4">
                   <span className="text-white/60 text-sm font-mono">{formatOrderId(order.id)}</span>
@@ -81,7 +83,7 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                 <td className="px-6 py-4">
                   <span className="text-white/80 text-sm font-medium">{formatPrice(order.price)}</span>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
                   {order.status === 'awaiting_payment' && order.price ? (
                     <Button
                       size="sm"
@@ -152,6 +154,11 @@ export function OrdersTable({ orders }: OrdersTableProps) {
         orderId={paymentModal.orderId}
         amount={paymentModal.amount}
         existingPaymentLink={paymentModal.link}
+      />
+
+      <OrderViewModal
+        orderId={viewOrderId}
+        onClose={() => setViewOrderId(null)}
       />
     </>
   )
