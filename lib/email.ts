@@ -6,14 +6,18 @@ import fs from 'fs'
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.beget.com',
   port: parseInt(process.env.SMTP_PORT || '465'),
-  secure: true, // SSL
+  secure: true,
   auth: {
     user: process.env.SMTP_USER || 'support@studyassist.ru',
     pass: process.env.SMTP_PASS || '',
   },
   tls: {
     rejectUnauthorized: false,
+    minVersion: 'TLSv1',
   },
+  connectionTimeout: 15000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
 })
 
 export interface OrderEmailData {

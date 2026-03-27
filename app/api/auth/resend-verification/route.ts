@@ -37,8 +37,9 @@ export async function POST(req: NextRequest) {
     await sendVerificationEmail(email, user.name || 'пользователь', verifyToken)
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Resend verification error:', error)
-    return NextResponse.json({ error: 'Ошибка отправки письма' }, { status: 500 })
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('Resend verification error:', msg)
+    return NextResponse.json({ error: `Ошибка отправки письма: ${msg}` }, { status: 500 })
   }
 }
