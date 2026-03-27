@@ -1,6 +1,8 @@
 import TelegramBot from 'node-telegram-bot-api'
 import { prisma } from '@/lib/prisma'
-import { formatOrderId, getStatusLabel } from '@/lib/utils'
+import { formatOrderId, getStatusLabel, getOrderTypeLabel } from '@/lib/utils'
+import { format } from 'date-fns'
+import { ru } from 'date-fns/locale'
 
 function makeBot(): TelegramBot | null {
   if (!process.env.TELEGRAM_BOT_TOKEN) return null
@@ -8,6 +10,12 @@ function makeBot(): TelegramBot | null {
 }
 
 const BASE_URL = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
+
+const STATUS_EMOJI: Record<string, string> = {
+  new: '🆕', in_progress: '🔧', ready_for_review: '✅',
+  awaiting_payment: '💳', paid: '✅', completed: '🎉',
+  revision: '🔄', cancelled: '❌',
+}
 
 // ─── Главный обработчик апдейтов ────────────────────────────────────────────
 
@@ -52,7 +60,6 @@ async function handleMessage(bot: TelegramBot, msg: TelegramBot.Message) {
     return
   }
 
-  // Неизвестная команда
   const user = await prisma.user.findFirst({ where: { telegramId: chatId } })
   if (!user) {
     await bot.sendMessage(chatId,
@@ -69,15 +76,14 @@ async function handleStart(bot: TelegramBot, chatId: string, firstName: string) 
 
   if (user) {
     await bot.sendMessage(chatId,
-      `👋 Привет, ${user.name || firstName}! Ваш аккаунт StudyAssist уже привязан.\n\n` +
-      `📋 /orders — список заявок\n` +
-      `❓ /help — помощь`,
+      `👋 Привет, ${user.name || firstName}!\n\n` +
+      `Выберите, что хотите сделать:`,
       {
         parse_mode: 'Markdown',
         reply_markup: {
           inline_keyboard: [
             [{ text: '📂 Мои заявки', callback_data: 'cmd:orders' }],
-            [{ text: '🌐 Перейти в ЛК', url: `${BASE_URL}/dashboard` }],
+            [{ text: '🌐 Личный кабинет', url: `${BASE_URL}/dashboard` }],
           ],
         },
       }
@@ -122,7 +128,6 @@ async function handleLinkToken(bot: TelegramBot, chatId: string, firstName: stri
     return
   }
 
-  // Привязываем
   await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -135,8 +140,7 @@ async function handleLinkToken(bot: TelegramBot, chatId: string, firstName: stri
   await bot.sendMessage(chatId,
     `✅ *Аккаунт привязан!*\n\n` +
     `Добро пожаловать, ${user.name || firstName}!\n\n` +
-    `Теперь вы будете получать уведомления о статусе заявок прямо здесь.\n\n` +
-    `📋 /orders — ваши заявки`,
+    `Теперь вы будете получать уведомления о статусе заявок прямо здесь.`,
     {
       parse_mode: 'Markdown',
       reply_markup: {
@@ -149,7 +153,7 @@ async function handleLinkToken(bot: TelegramBot, chatId: string, firstName: stri
   )
 }
 
-// ─── /orders ─────────────────────────────────────────────────────────────────
+// ─── Список заявок ───────────────────────────────────────────────────────────
 
 async function handleOrdersList(bot: TelegramBot, chatId: string) {
   const user = await prisma.user.findFirst({ where: { telegramId: chatId } })
@@ -165,7 +169,7 @@ async function handleOrdersList(bot: TelegramBot, chatId: string) {
   const orders = await prisma.order.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: 'desc' },
-    take: 5,
+    take: 8,
   })
 
   if (orders.length === 0) {
@@ -179,25 +183,89 @@ async function handleOrdersList(bot: TelegramBot, chatId: string) {
     return
   }
 
-  const STATUS_EMOJI: Record<string, string> = {
-    new: '🆕', in_progress: '🔧', ready_for_review: '✅',
-    awaiting_payment: '💳', paid: '✅', completed: '🎉',
-    revision: '🔄', cancelled: '❌',
-  }
-
-  let text = `📋 *Ваши заявки (последние 5):*\n\n`
-  for (const o of orders) {
+  const keyboard: TelegramBot.InlineKeyboardButton[][] = orders.map(o => {
     const emoji = STATUS_EMOJI[o.status] || '❓'
-    const label = getStatusLabel(o.status)
-    text += `${emoji} *${formatOrderId(o.id)}* — ${o.subject}\n`
-    text += `   Статус: ${label}\n\n`
+    const label = o.subject.length > 25 ? o.subject.slice(0, 25) + '…' : o.subject
+    return [{ text: `${emoji} ${formatOrderId(o.id)} — ${label}`, callback_data: `order:${o.id}` }]
+  })
+
+  keyboard.push([{ text: '🔄 Обновить список', callback_data: 'cmd:orders' }])
+
+  await bot.sendMessage(chatId,
+    `📋 *Ваши заявки* (${orders.length}):\n\nНажмите на заявку для подробной информации:`,
+    {
+      parse_mode: 'Markdown',
+      reply_markup: { inline_keyboard: keyboard },
+    }
+  )
+}
+
+// ─── Детали заявки ───────────────────────────────────────────────────────────
+
+async function handleOrderDetail(bot: TelegramBot, chatId: string, orderId: string) {
+  const user = await prisma.user.findFirst({ where: { telegramId: chatId } })
+  if (!user) return
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+  })
+
+  if (!order || order.userId !== user.id) {
+    await bot.sendMessage(chatId, '❌ Заявка не найдена.')
+    return
   }
 
-  await bot.sendMessage(chatId, text.trim(), {
+  const emoji = STATUS_EMOJI[order.status] || '❓'
+  const statusLabel = getStatusLabel(order.status)
+  const typeLabel = getOrderTypeLabel(order.type)
+  const deadlineStr = format(new Date(order.deadline), 'dd.MM.yyyy', { locale: ru })
+  const resultFiles: string[] = (() => { try { return order.resultFiles ? JSON.parse(order.resultFiles) : [] } catch { return [] } })()
+
+  let text = `📋 *Заявка ${formatOrderId(order.id)}*\n\n`
+  text += `📚 *Тип:* ${typeLabel}\n`
+  text += `📖 *Предмет:* ${order.subject}\n`
+  text += `📅 *Дедлайн:* ${deadlineStr}\n`
+  text += `${emoji} *Статус:* ${statusLabel}\n`
+
+  if (order.price) {
+    const priceNum = parseFloat(String(order.price))
+    text += `💰 *Стоимость:* ${priceNum.toLocaleString('ru-RU')} ₽\n`
+  }
+
+  if (order.adminNote) {
+    text += `\n💬 *Сообщение от администратора:*\n${order.adminNote}`
+  }
+
+  if (resultFiles.length > 0) {
+    text += `\n\n📥 *Готовая работа:* ${resultFiles.length} файл${resultFiles.length === 1 ? '' : 'а'} доступн${resultFiles.length === 1 ? '' : 'ы'} для скачивания`
+  }
+
+  if (order.revisionNote) {
+    text += `\n\n🔄 *Ваш запрос на доработку отправлен*`
+  }
+
+  // Кнопки действий
+  const buttons: TelegramBot.InlineKeyboardButton[][] = []
+
+  if (order.status === 'awaiting_payment' && order.paymentLink) {
+    const priceNum = order.price ? parseFloat(String(order.price)).toLocaleString('ru-RU') : ''
+    buttons.push([{ text: `💳 Оплатить${priceNum ? ` ${priceNum} ₽` : ''}`, url: order.paymentLink }])
+  }
+
+  if (resultFiles.length > 0) {
+    buttons.push([{ text: '📥 Скачать работу', url: `${BASE_URL}/dashboard` }])
+  }
+
+  if (order.status === 'completed' && resultFiles.length > 0) {
+    buttons.push([{ text: '🔄 Запросить доработку', url: `${BASE_URL}/dashboard` }])
+  }
+
+  buttons.push([{ text: '🌐 Открыть в личном кабинете', url: `${BASE_URL}/dashboard` }])
+  buttons.push([{ text: '‹ Назад к заявкам', callback_data: 'cmd:orders' }])
+
+  await bot.sendMessage(chatId, text, {
     parse_mode: 'Markdown',
-    reply_markup: {
-      inline_keyboard: [[{ text: '🌐 Открыть в ЛК', url: `${BASE_URL}/dashboard` }]],
-    },
+    reply_markup: { inline_keyboard: buttons },
   })
 }
 
@@ -221,14 +289,19 @@ async function handleCallbackQuery(bot: TelegramBot, query: TelegramBot.Callback
   const msgId = query.message?.message_id
   const data = query.data || ''
 
-  // Всегда отвечаем на callback
   await bot.answerCallbackQuery(query.id).catch(() => {})
 
   if (!chatId) return
 
-  // cmd:orders
   if (data === 'cmd:orders') {
     await handleOrdersList(bot, chatId)
+    return
+  }
+
+  // order:ORDER_ID — детали заявки
+  if (data.startsWith('order:')) {
+    const orderId = data.slice(6)
+    await handleOrderDetail(bot, chatId, orderId)
     return
   }
 
@@ -250,7 +323,6 @@ async function handleAdminSetStatus(
   orderId: string,
   newStatus: string
 ) {
-  // Проверяем, является ли пользователь администратором
   const admin = await prisma.user.findFirst({
     where: { telegramId: chatId, isAdmin: true },
   })
@@ -271,7 +343,6 @@ async function handleAdminSetStatus(
   const label = getStatusLabel(newStatus)
   await bot.answerCallbackQuery(callbackId, { text: `✅ Статус изменён: ${label}` })
 
-  // Обновляем сообщение — убираем кнопку "Взять в работу"
   if (msgId) {
     await bot.editMessageReplyMarkup(
       {
@@ -285,16 +356,17 @@ async function handleAdminSetStatus(
   }
 
   // Уведомляем клиента
-  const clientTelegramId = (await prisma.order.findUnique({
+  const updated = await prisma.order.findUnique({
     where: { id: orderId },
     include: { user: true },
-  }))?.user?.telegramId
-
-  if (clientTelegramId) {
-    const orderLabel = formatOrderId(orderId)
-    await bot.sendMessage(clientTelegramId,
-      `📋 *Заявка ${orderLabel}*\n\nСтатус изменён: *${label}*\n\n[Посмотреть в ЛК](${BASE_URL}/dashboard)`,
-      { parse_mode: 'Markdown' }
+  })
+  if (updated?.user?.telegramId) {
+    await bot.sendMessage(updated.user.telegramId,
+      `📋 *Заявка ${formatOrderId(orderId)}*\n\nСтатус изменён: *${label}*`,
+      {
+        parse_mode: 'Markdown',
+        reply_markup: { inline_keyboard: [[{ text: '📂 Мои заявки', callback_data: 'cmd:orders' }]] },
+      }
     ).catch(() => {})
   }
 }
