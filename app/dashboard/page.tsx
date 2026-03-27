@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { GraduationCap, LogOut, User, Package, CreditCard, Loader2, Plus } from 'lucide-react'
+import { GraduationCap, LogOut, User, Package, CreditCard, Loader2, Plus, Send, CheckCircle, X } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
 import { OrdersTable } from '@/components/dashboard/OrdersTable'
 import { Button } from '@/components/ui/button'
@@ -55,7 +55,9 @@ export default function DashboardPage() {
   const [profileSaving, setProfileSaving] = useState(false)
   const [profileName, setProfileName] = useState('')
   const [profilePhone, setProfilePhone] = useState('')
-  const [profileTelegram, setProfileTelegram] = useState('')
+  const [tgLinking, setTgLinking] = useState(false)
+  const [tgDeepLink, setTgDeepLink] = useState<string | null>(null)
+  const [tgUnlinking, setTgUnlinking] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -86,7 +88,6 @@ export default function DashboardPage() {
         setProfile(profileData.user)
         setProfileName(profileData.user.name || '')
         setProfilePhone(profileData.user.phone || '')
-        setProfileTelegram(profileData.user.telegramId || '')
       }
     } finally {
       setLoading(false)
@@ -99,11 +100,7 @@ export default function DashboardPage() {
       const res = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: profileName,
-          phone: profilePhone || null,
-          telegramId: profileTelegram || null,
-        }),
+        body: JSON.stringify({ name: profileName, phone: profilePhone || null }),
       })
       if (res.ok) {
         const data = await res.json()
@@ -111,6 +108,34 @@ export default function DashboardPage() {
       }
     } finally {
       setProfileSaving(false)
+    }
+  }
+
+  const handleLinkTelegram = async () => {
+    setTgLinking(true)
+    setTgDeepLink(null)
+    try {
+      const res = await fetch('/api/telegram/link', { method: 'POST' })
+      if (res.ok) {
+        const { deepLink } = await res.json()
+        setTgDeepLink(deepLink)
+      }
+    } finally {
+      setTgLinking(false)
+    }
+  }
+
+  const handleUnlinkTelegram = async () => {
+    if (!confirm('Отвязать Telegram от аккаунта?')) return
+    setTgUnlinking(true)
+    try {
+      const res = await fetch('/api/telegram/link', { method: 'DELETE' })
+      if (res.ok) {
+        setProfile(prev => prev ? { ...prev, telegramId: null } : null)
+        setTgDeepLink(null)
+      }
+    } finally {
+      setTgUnlinking(false)
     }
   }
 
@@ -265,10 +290,64 @@ export default function DashboardPage() {
                   <Input value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} placeholder="+7 XXX XXX-XX-XX" />
                 </div>
 
-                <div>
-                  <Label className="mb-2 block">Telegram ID (для уведомлений)</Label>
-                  <Input value={profileTelegram} onChange={(e) => setProfileTelegram(e.target.value)} placeholder="Например: 123456789" />
-                  <p className="text-white/30 text-xs mt-1">Укажите ваш Telegram user ID для получения уведомлений о статусе заявок</p>
+                {/* Telegram linking */}
+                <div className="space-y-2">
+                  <Label className="block">Telegram уведомления</Label>
+
+                  {profile?.telegramId ? (
+                    <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-400" />
+                        <div>
+                          <p className="text-emerald-400 text-sm font-medium">Telegram привязан</p>
+                          <p className="text-white/40 text-xs">ID: {profile.telegramId}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={handleUnlinkTelegram}
+                        disabled={tgUnlinking}
+                        className="text-white/30 hover:text-red-400 transition-colors"
+                        title="Отвязать"
+                      >
+                        {tgUnlinking ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  ) : tgDeepLink ? (
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 space-y-3">
+                      <p className="text-white/70 text-sm">Нажмите кнопку ниже — откроется Telegram. Нажмите <b>Start</b> в боте:</p>
+                      <a
+                        href={tgDeepLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 w-full bg-[#2AABEE] hover:bg-[#1e96d3] text-white rounded-lg py-2.5 text-sm font-semibold transition-colors"
+                      >
+                        <Send className="w-4 h-4" />
+                        Открыть в Telegram
+                      </a>
+                      <button
+                        onClick={fetchData}
+                        className="w-full text-white/40 hover:text-white/70 text-xs text-center transition-colors"
+                      >
+                        Уже нажал Start → Проверить
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Button
+                        variant="outline"
+                        onClick={handleLinkTelegram}
+                        disabled={tgLinking}
+                        className="w-full gap-2 border-[#2AABEE]/40 text-[#2AABEE] hover:bg-[#2AABEE]/10"
+                      >
+                        {tgLinking
+                          ? <Loader2 className="w-4 h-4 animate-spin" />
+                          : <Send className="w-4 h-4" />
+                        }
+                        Привязать Telegram
+                      </Button>
+                      <p className="text-white/30 text-xs mt-1.5">Получайте уведомления о статусе заявок прямо в Telegram</p>
+                    </div>
+                  )}
                 </div>
 
                 <Button onClick={saveProfile} disabled={profileSaving} className="w-full gap-2">

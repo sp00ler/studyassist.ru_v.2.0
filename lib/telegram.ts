@@ -58,17 +58,27 @@ export async function sendNewOrderNotification(data: {
 ⏰ *Дедлайн:* ${data.deadline}
 
 📝 *Описание:*
-${data.description.slice(0, 500)}${data.description.length > 500 ? '...' : ''}
+${data.description.slice(0, 400)}${data.description.length > 400 ? '...' : ''}
 
 👤 *Клиент:* ${data.name}
 📧 *Email:* ${data.email}
 ${data.phone ? `📱 *Телефон:* ${data.phone}` : ''}
 📎 *Файлы:* ${data.filesCount} шт.
-
-[Открыть в панели администратора](${adminUrl})
   `.trim()
 
-  await tgBot.sendMessage(chatId, message, { parse_mode: 'Markdown' })
+  await tgBot.sendMessage(chatId, message, {
+    parse_mode: 'Markdown',
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: '✅ Взять в работу', callback_data: `set_status:${data.orderId}:in_progress` },
+        ],
+        [
+          { text: '📋 Открыть в панели', url: adminUrl },
+        ],
+      ],
+    },
+  })
 
   // Отправляем файлы если есть
   if (data.files && data.files.length > 0) {
@@ -103,6 +113,7 @@ export async function sendStatusUpdateNotification(
     awaiting_payment: '💳 Ожидает оплаты',
     paid: '✅ Оплачена',
     completed: '🎉 Завершена',
+    revision: '🔄 На доработке',
     cancelled: '❌ Отменена',
   }
 
@@ -110,14 +121,25 @@ export async function sendStatusUpdateNotification(
   let message = `📋 *Заявка ${orderLabel}*\n\nСтатус изменён: *${statusLabel}*`
 
   if (newStatus === 'awaiting_payment' && paymentLink) {
-    message += `\n\nВаша работа готова! Перейдите по ссылке для оплаты:\n[Оплатить работу](${paymentLink})`
+    message += `\n\nВаша работа готова! Перейдите по ссылке для оплаты.`
   } else if (newStatus === 'completed') {
-    message += `\n\nРабота передана. Спасибо за доверие! 🎓`
+    message += `\n\nРабота завершена. Спасибо за доверие! 🎓`
+  } else if (newStatus === 'revision') {
+    message += `\n\nВаш запрос на доработку принят. Мы свяжемся с вами.`
   }
 
-  message += `\n\n[Перейти в личный кабинет](${process.env.NEXTAUTH_URL}/dashboard)`
+  const dashboardUrl = `${process.env.NEXTAUTH_URL}/dashboard`
 
-  await tgBot.sendMessage(telegramId, message, { parse_mode: 'Markdown' })
+  const buttons: TelegramBot.InlineKeyboardButton[][] = []
+  if (newStatus === 'awaiting_payment' && paymentLink) {
+    buttons.push([{ text: '💳 Оплатить сейчас', url: paymentLink }])
+  }
+  buttons.push([{ text: '📂 Открыть в ЛК', url: dashboardUrl }])
+
+  await tgBot.sendMessage(telegramId, message, {
+    parse_mode: 'Markdown',
+    reply_markup: { inline_keyboard: buttons },
+  })
 }
 
 export async function sendPaymentLinkNotification(
@@ -130,17 +152,17 @@ export async function sendPaymentLinkNotification(
   if (!tgBot || !telegramId) return
 
   const orderLabel = formatOrderId(orderId)
-  const message = `
-💳 *Ссылка на оплату — ${orderLabel}*
+  const message = `💳 *Ссылка на оплату — ${orderLabel}*\n\nСтоимость работы: *${amount.toLocaleString('ru-RU')} ₽*`
 
-Стоимость работы: *${amount.toLocaleString('ru-RU')} ₽*
-
-[Оплатить работу](${paymentLink})
-
-После оплаты работа будет доступна в [личном кабинете](${process.env.NEXTAUTH_URL}/dashboard)
-  `.trim()
-
-  await tgBot.sendMessage(telegramId, message, { parse_mode: 'Markdown' })
+  await tgBot.sendMessage(telegramId, message, {
+    parse_mode: 'Markdown',
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: `💳 Оплатить ${amount.toLocaleString('ru-RU')} ₽`, url: paymentLink }],
+        [{ text: '📂 Личный кабинет', url: `${process.env.NEXTAUTH_URL}/dashboard` }],
+      ],
+    },
+  })
 }
 
 export async function sendWorkCompletedNotification(
@@ -154,9 +176,17 @@ export async function sendWorkCompletedNotification(
   const orderLabel = formatOrderId(orderId)
   const dashboardUrl = `${process.env.NEXTAUTH_URL}/dashboard`
 
-  const message = `🎉 *Работа по заявке ${orderLabel} готова!*\n\nФайлы готовой работы (${fileCount} шт.) доступны для скачивания.\n\nЕсли есть замечания, вы можете запросить доработку прямо из личного кабинета.\n\n[Скачать работу](${dashboardUrl})`
-
-  await tgBot.sendMessage(telegramId, message, { parse_mode: 'Markdown' })
+  await tgBot.sendMessage(telegramId,
+    `🎉 *Работа по заявке ${orderLabel} готова!*\n\nФайлов: ${fileCount} шт. — доступны для скачивания.\nЕсли есть замечания — запросите доработку в личном кабинете.`,
+    {
+      parse_mode: 'Markdown',
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📥 Скачать работу', url: dashboardUrl }],
+        ],
+      },
+    }
+  )
 }
 
 export async function sendRevisionRequestNotification(
@@ -172,9 +202,16 @@ export async function sendRevisionRequestNotification(
   const orderLabel = formatOrderId(orderId)
   const adminUrl = `${process.env.NEXTAUTH_URL}/admin/orders`
 
-  const message = `🔄 *Запрос на доработку — ${orderLabel}*\n\n👤 *Клиент:* ${clientName} (${clientEmail})\n\n📝 *Замечания:*\n${note.slice(0, 500)}${note.length > 500 ? '...' : ''}\n\n[Открыть заявку](${adminUrl})`
+  const message = `🔄 *Запрос на доработку — ${orderLabel}*\n\n👤 *Клиент:* ${clientName} (${clientEmail})\n\n📝 *Замечания:*\n${note.slice(0, 400)}${note.length > 400 ? '...' : ''}`
 
-  await tgBot.sendMessage(chatId, message, { parse_mode: 'Markdown' })
+  await tgBot.sendMessage(chatId, message, {
+    parse_mode: 'Markdown',
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: '📋 Открыть заявку', url: adminUrl }],
+      ],
+    },
+  })
 }
 
 export async function setWebhook(webhookUrl: string): Promise<void> {

@@ -21,7 +21,9 @@ model User {
   isAdmin       Boolean   @default(false)
   provider      String?   // 'vk' | 'mailru' | 'yandex' | 'credentials'
   providerId    String?
-  telegramId    String?   // для DM через бот
+  telegramId         String?   // для DM через бот
+  telegramLinkToken  String?   @unique  // временный токен для привязки бота
+  telegramLinkExpiry DateTime?          // срок действия токена
   // Трекинг входов
   lastLoginAt   DateTime?
   prevLoginAt   DateTime?
