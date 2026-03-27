@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useSession, signOut } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -47,7 +47,6 @@ type Tab = 'orders' | 'profile' | 'payments'
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<Tab>('orders')
   const [orders, setOrders] = useState<Order[]>([])
   const [payments, setPayments] = useState<Payment[]>([])
@@ -63,7 +62,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/auth/login')
+      const callbackUrl = encodeURIComponent(window.location.pathname + window.location.search)
+      router.push(`/auth/login?callbackUrl=${callbackUrl}`)
     }
   }, [status, router])
 
@@ -92,18 +92,16 @@ export default function DashboardPage() {
         setProfilePhone(profileData.user.phone || '')
 
         // Авто-привязка Telegram если пришли из бота (?tg=link) и ещё не привязан
-        if (searchParams.get('tg') === 'link' && !profileData.user.telegramId && !autoLinkedRef.current) {
+        const urlParams = new URLSearchParams(window.location.search)
+        if (urlParams.get('tg') === 'link' && !profileData.user.telegramId && !autoLinkedRef.current) {
           autoLinkedRef.current = true
           setActiveTab('profile')
-          // Небольшая задержка, чтобы вкладка успела открыться
           setTimeout(() => {
             fetch('/api/telegram/link', { method: 'POST' })
               .then(r => r.json())
               .then(d => { if (d.deepLink) setTgDeepLink(d.deepLink) })
               .catch(() => {})
           }, 300)
-        } else if (searchParams.get('tg') === 'link' && !profileData.user.telegramId) {
-          setActiveTab('profile')
         }
       }
     } finally {

@@ -85,7 +85,11 @@ function LoginPage() {
         setError('Неверный email или пароль')
       } else {
         const session = await getSession()
-        router.push(session?.user?.isAdmin ? '/admin' : '/dashboard')
+        const callbackUrl = searchParams.get('callbackUrl')
+        const dest = callbackUrl
+          ? decodeURIComponent(callbackUrl)
+          : (session?.user?.isAdmin ? '/admin' : '/dashboard')
+        router.push(dest)
         router.refresh()
       }
     } finally {
@@ -95,11 +99,14 @@ function LoginPage() {
 
   const handleOAuth = async (provider: string) => {
     setOauthLoading(provider)
+    const callbackUrl = searchParams.get('callbackUrl')
+      ? decodeURIComponent(searchParams.get('callbackUrl')!)
+      : '/dashboard'
     if (provider === 'vk') {
-      window.location.href = '/api/vk-auth'
+      window.location.href = `/api/vk-auth?callbackUrl=${encodeURIComponent(callbackUrl)}`
       return
     }
-    await signIn(provider, { callbackUrl: '/dashboard' })
+    await signIn(provider, { callbackUrl })
   }
 
   return (
