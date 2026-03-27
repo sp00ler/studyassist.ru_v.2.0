@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useSession, signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -47,6 +47,7 @@ type Tab = 'orders' | 'profile' | 'payments'
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<Tab>('orders')
   const [orders, setOrders] = useState<Order[]>([])
   const [payments, setPayments] = useState<Payment[]>([])
@@ -58,6 +59,7 @@ export default function DashboardPage() {
   const [tgLinking, setTgLinking] = useState(false)
   const [tgDeepLink, setTgDeepLink] = useState<string | null>(null)
   const [tgUnlinking, setTgUnlinking] = useState(false)
+  const autoLinkedRef = useRef(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -88,6 +90,21 @@ export default function DashboardPage() {
         setProfile(profileData.user)
         setProfileName(profileData.user.name || '')
         setProfilePhone(profileData.user.phone || '')
+
+        // Авто-привязка Telegram если пришли из бота (?tg=link) и ещё не привязан
+        if (searchParams.get('tg') === 'link' && !profileData.user.telegramId && !autoLinkedRef.current) {
+          autoLinkedRef.current = true
+          setActiveTab('profile')
+          // Небольшая задержка, чтобы вкладка успела открыться
+          setTimeout(() => {
+            fetch('/api/telegram/link', { method: 'POST' })
+              .then(r => r.json())
+              .then(d => { if (d.deepLink) setTgDeepLink(d.deepLink) })
+              .catch(() => {})
+          }, 300)
+        } else if (searchParams.get('tg') === 'link' && !profileData.user.telegramId) {
+          setActiveTab('profile')
+        }
       }
     } finally {
       setLoading(false)

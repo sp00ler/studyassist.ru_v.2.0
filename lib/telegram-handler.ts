@@ -86,12 +86,17 @@ async function handleStart(bot: TelegramBot, chatId: string, firstName: string) 
     await bot.sendMessage(chatId,
       `🎓 *StudyAssist — помощь с учёбой*\n\n` +
       `Я буду присылать уведомления о ваших заявках.\n\n` +
-      `Чтобы начать — привяжите ваш аккаунт:`,
+      `*Как привязать аккаунт:*\n` +
+      `1️⃣ Нажмите кнопку ниже\n` +
+      `2️⃣ Войдите на сайт (если ещё не вошли)\n` +
+      `3️⃣ Нажмите *«Открыть в Telegram»*\n` +
+      `4️⃣ Нажмите Start в боте\n\n` +
+      `Готово! Уведомления будут приходить сюда 👇`,
       {
         parse_mode: 'Markdown',
         reply_markup: {
           inline_keyboard: [
-            [{ text: '🔗 Привязать аккаунт', url: `${BASE_URL}/dashboard` }],
+            [{ text: '🔗 Привязать аккаунт', url: `${BASE_URL}/dashboard?tg=link` }],
           ],
         },
       }
