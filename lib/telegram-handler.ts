@@ -51,9 +51,9 @@ const sessions = new Map<string, OrderSession>()
 // Очищаем устаревшие сессии (> 30 мин)
 function cleanSessions() {
   const now = Date.now()
-  for (const [key, s] of sessions) {
+  Array.from(sessions.entries()).forEach(([key, s]) => {
     if (now - s.createdAt > 30 * 60 * 1000) sessions.delete(key)
-  }
+  })
 }
 
 // ─── Главный обработчик апдейтов ────────────────────────────────────────────
