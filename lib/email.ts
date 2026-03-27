@@ -469,7 +469,7 @@ export async function sendRevisionRequestEmail(
 
   await transporter.sendMail({
     from: `"StudyAssist" <${process.env.SMTP_USER}>`,
-    to: [...new Set(['support@studyassist.ru', 'admin@studyassist.ru'])].join(', '),
+    to: Array.from(new Set(['support@studyassist.ru', 'admin@studyassist.ru'])).join(', '),
     subject: `🔄 Доработка по заявке ${orderLabel} от ${clientName}`,
     html,
   })
