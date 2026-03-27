@@ -148,6 +148,9 @@ interface Order {
   paymentLink: string | null
   adminNote: string | null
   files: string | null
+  resultFiles: string | null
+  revisionNote: string | null
+  revisionFiles: string | null
   createdAt: string
   user?: { name: string | null; email: string; phone: string | null; telegramId: string | null } | null
   clientName?: string | null
@@ -250,6 +253,7 @@ export default function AdminOrdersPage() {
             <SelectItem value="awaiting_payment">Ожидают оплаты</SelectItem>
             <SelectItem value="paid">Оплачены</SelectItem>
             <SelectItem value="completed">Завершены</SelectItem>
+            <SelectItem value="revision">На доработке</SelectItem>
             <SelectItem value="cancelled">Отменены</SelectItem>
           </SelectContent>
         </Select>

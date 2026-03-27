@@ -375,6 +375,106 @@ export async function sendPasswordResetEmail(
   })
 }
 
+export async function sendWorkCompletedEmail(
+  to: string,
+  orderId: string,
+  fileCount: number
+): Promise<void> {
+  const orderLabel = formatOrderId(orderId)
+  const dashboardUrl = `${process.env.NEXTAUTH_URL || 'https://studyassist.ru'}/dashboard`
+
+  const html = `
+<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Работа готова</title></head>
+<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(16,185,129,0.3);">
+        <tr><td style="background:linear-gradient(135deg,#059669,#10B981);padding:32px;text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:26px;">🎉 Ваша работа готова!</h1>
+          <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;">Заявка ${orderLabel}</p>
+        </td></tr>
+        <tr><td style="padding:32px;text-align:center;">
+          <p style="color:#F1F5F9;font-size:17px;margin:0 0 12px;">Мы завершили работу над вашим заданием.</p>
+          <p style="color:#94A3B8;font-size:15px;">Файлы готовой работы (${fileCount} шт.) доступны для скачивания в личном кабинете.</p>
+          <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#059669,#10B981);color:#fff;padding:16px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;margin:24px 0;">
+            Скачать работу
+          </a>
+          <p style="color:#64748B;font-size:13px;margin-top:16px;">
+            Если у вас есть замечания, вы можете запросить доработку прямо из личного кабинета.
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`
+
+  await transporter.sendMail({
+    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
+    to,
+    subject: `🎉 Работа по заявке ${orderLabel} готова — скачайте файлы`,
+    html,
+  })
+}
+
+export async function sendRevisionRequestEmail(
+  orderId: string,
+  clientName: string,
+  clientEmail: string,
+  note: string,
+  fileCount: number
+): Promise<void> {
+  const orderLabel = formatOrderId(orderId)
+  const adminUrl = `${process.env.NEXTAUTH_URL || 'https://studyassist.ru'}/admin/orders`
+
+  const html = `
+<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Запрос на доработку</title></head>
+<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(245,158,11,0.3);">
+        <tr><td style="background:linear-gradient(135deg,#D97706,#F59E0B);padding:32px;text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:24px;">🔄 Запрос на доработку</h1>
+          <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;">Заявка ${orderLabel}</p>
+        </td></tr>
+        <tr><td style="padding:32px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+              <span style="color:#94A3B8;font-size:13px;">Клиент</span><br>
+              <span style="color:#F1F5F9;font-size:15px;">${clientName} (${clientEmail})</span>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+              <span style="color:#94A3B8;font-size:13px;">Замечания</span><br>
+              <span style="color:#F1F5F9;font-size:15px;line-height:1.6;">${note.replace(/\n/g, '<br>')}</span>
+            </td></tr>
+            <tr><td style="padding:10px 0;">
+              <span style="color:#94A3B8;font-size:13px;">Прикреплено файлов</span><br>
+              <span style="color:#F1F5F9;font-size:15px;">${fileCount} шт.</span>
+            </td></tr>
+          </table>
+          <div style="text-align:center;margin-top:24px;">
+            <a href="${adminUrl}" style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">
+              Открыть заявку в панели
+            </a>
+          </div>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`
+
+  const recipients = ['support@studyassist.ru', 'admin@studyassist.ru'].filter(
+    (e, i, arr) => arr.indexOf(e) === i && e !== process.env.SMTP_USER
+  )
+  recipients.unshift(process.env.SMTP_USER || 'support@studyassist.ru')
+
+  await transporter.sendMail({
+    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
+    to: [...new Set(['support@studyassist.ru', 'admin@studyassist.ru'])].join(', '),
+    subject: `🔄 Доработка по заявке ${orderLabel} от ${clientName}`,
+    html,
+  })
+}
+
 export async function sendPaymentLinkEmail(
   to: string,
   orderId: string,

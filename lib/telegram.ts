@@ -143,6 +143,40 @@ export async function sendPaymentLinkNotification(
   await tgBot.sendMessage(telegramId, message, { parse_mode: 'Markdown' })
 }
 
+export async function sendWorkCompletedNotification(
+  telegramId: string,
+  orderId: string,
+  fileCount: number
+): Promise<void> {
+  const tgBot = getBot()
+  if (!tgBot || !telegramId) return
+
+  const orderLabel = formatOrderId(orderId)
+  const dashboardUrl = `${process.env.NEXTAUTH_URL}/dashboard`
+
+  const message = `🎉 *Работа по заявке ${orderLabel} готова!*\n\nФайлы готовой работы (${fileCount} шт.) доступны для скачивания.\n\nЕсли есть замечания, вы можете запросить доработку прямо из личного кабинета.\n\n[Скачать работу](${dashboardUrl})`
+
+  await tgBot.sendMessage(telegramId, message, { parse_mode: 'Markdown' })
+}
+
+export async function sendRevisionRequestNotification(
+  orderId: string,
+  clientName: string,
+  clientEmail: string,
+  note: string
+): Promise<void> {
+  const tgBot = getBot()
+  const chatId = process.env.TELEGRAM_CHAT_ID
+  if (!tgBot || !chatId) return
+
+  const orderLabel = formatOrderId(orderId)
+  const adminUrl = `${process.env.NEXTAUTH_URL}/admin/orders`
+
+  const message = `🔄 *Запрос на доработку — ${orderLabel}*\n\n👤 *Клиент:* ${clientName} (${clientEmail})\n\n📝 *Замечания:*\n${note.slice(0, 500)}${note.length > 500 ? '...' : ''}\n\n[Открыть заявку](${adminUrl})`
+
+  await tgBot.sendMessage(chatId, message, { parse_mode: 'Markdown' })
+}
+
 export async function setWebhook(webhookUrl: string): Promise<void> {
   const tgBot = getBot()
   if (!tgBot) return

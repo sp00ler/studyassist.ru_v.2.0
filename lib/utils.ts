@@ -48,6 +48,7 @@ export function getStatusLabel(status: string): string {
     awaiting_payment: 'Ожидает оплаты',
     paid: 'Оплачена',
     completed: 'Завершена',
+    revision: 'На доработке',
     cancelled: 'Отменена',
   }
   return statuses[status] || status
@@ -61,6 +62,7 @@ export function getStatusColor(status: string): string {
     awaiting_payment: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
     paid: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
     completed: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+    revision: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
     cancelled: 'bg-red-500/20 text-red-400 border-red-500/30',
   }
   return colors[status] || 'bg-gray-500/20 text-gray-400 border-gray-500/30'

@@ -97,6 +97,9 @@ model Order {
   paymentLink String?   @db.Text
   paymentId   String?
   adminNote   String?   @db.Text
+  resultFiles  String?   @db.Text  // JSON: файлы готовой работы от админа
+  revisionNote String?   @db.Text  // Текст замечаний от заказчика
+  revisionFiles String?  @db.Text  // JSON: файлы замечаний от заказчика
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   user        User?     @relation(fields: [userId], references: [id])
