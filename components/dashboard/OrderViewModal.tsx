@@ -5,6 +5,12 @@ import { X, FileText, Calendar, Tag, MessageSquare, CreditCard, ExternalLink, Do
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { formatDate, formatPrice, formatOrderId, getOrderTypeLabel, getStatusLabel, getStatusColor } from '@/lib/utils'
+
+function toFileUrl(p: string) {
+  if (!p) return p
+  if (p.startsWith('/uploads/')) return '/api/files/' + p.slice('/uploads/'.length)
+  return p
+}
 import { PaymentModal } from './PaymentModal'
 
 interface OrderDetail {
@@ -163,7 +169,7 @@ export function OrderViewModal({ orderId, onClose }: OrderViewModalProps) {
                     {files.map((f, i) => (
                       <a
                         key={i}
-                        href={f}
+                        href={toFileUrl(f)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm transition-colors"
@@ -187,7 +193,7 @@ export function OrderViewModal({ orderId, onClose }: OrderViewModalProps) {
                     {resultFiles.map((f, i) => (
                       <a
                         key={i}
-                        href={f}
+                        href={toFileUrl(f)}
                         download
                         target="_blank"
                         rel="noopener noreferrer"

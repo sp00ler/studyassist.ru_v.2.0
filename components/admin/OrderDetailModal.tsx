@@ -15,6 +15,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { formatDate, formatOrderId, getOrderTypeLabel, getStatusColor, getStatusLabel } from '@/lib/utils'
 
+function toFileUrl(p: string) {
+  if (!p) return p
+  // /uploads/foo/bar.pdf → /api/files/foo/bar.pdf
+  if (p.startsWith('/uploads/')) return '/api/files/' + p.slice('/uploads/'.length)
+  return p
+}
+
 interface Order {
   id: string
   type: string
@@ -218,7 +225,7 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
                 {files.map((f, i) => (
                   <a
                     key={i}
-                    href={f}
+                    href={toFileUrl(f)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 bg-white/5 hover:bg-white/10 rounded-lg px-3 py-2 text-sm text-[#6C3EF4] transition-colors"
@@ -248,7 +255,7 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
                   {revisionFiles.map((f, i) => (
                     <a
                       key={i}
-                      href={f}
+                      href={toFileUrl(f)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-amber-400 hover:text-amber-300 text-sm transition-colors"
@@ -296,7 +303,7 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
                   <div key={i} className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
                     <FileText className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     <a
-                      href={f}
+                      href={toFileUrl(f)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-emerald-300 text-sm hover:underline flex-1 truncate"

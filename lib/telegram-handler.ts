@@ -615,8 +615,17 @@ async function handleCallbackQuery(bot: TelegramBot, query: TelegramBot.Callback
   const msgId = query.message?.message_id
   const data = query.data || ''
 
-  await bot.answerCallbackQuery(query.id).catch(() => {})
   if (!chatId) return
+
+  // set_status — НЕ отвечаем заранее, handleAdminSetStatus сам ответит
+  if (data.startsWith('set_status:')) {
+    const [, orderId, newStatus] = data.split(':')
+    await handleAdminSetStatus(bot, chatId, msgId, query.id, orderId, newStatus)
+    return
+  }
+
+  // Для остальных кнопок — сразу сбрасываем индикатор загрузки
+  await bot.answerCallbackQuery(query.id).catch(() => {})
 
   if (data === 'cmd:orders') { await handleOrdersList(bot, chatId); return }
   if (data === 'cmd:profile') { await handleProfile(bot, chatId); return }
@@ -677,13 +686,6 @@ async function handleCallbackQuery(bot: TelegramBot, query: TelegramBot.Callback
   // Отправить заявку
   if (data === 'form_submit') {
     await submitOrder(bot, chatId)
-    return
-  }
-
-  // Изменение статуса (для админов)
-  if (data.startsWith('set_status:')) {
-    const [, orderId, newStatus] = data.split(':')
-    await handleAdminSetStatus(bot, chatId, msgId, query.id, orderId, newStatus)
     return
   }
 }
