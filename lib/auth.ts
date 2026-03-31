@@ -51,18 +51,20 @@ const MailRuProvider = {
   userinfo: {
     url: 'https://oauth.mail.ru/userinfo',
     async request({ tokens }: { tokens: Record<string, any> }) {
-      const res = await fetch('https://oauth.mail.ru/userinfo', {
-        headers: { Authorization: `Bearer ${tokens.access_token}` },
-      })
+      // Mail.ru требует access_token как query-параметр
+      const url = `https://oauth.mail.ru/userinfo?access_token=${tokens.access_token}`
+      const res = await fetch(url)
       const profile = await res.json()
+      console.log('[MailRu] userinfo response:', JSON.stringify(profile))
+      const email = profile.email || profile.mail || null
       const name =
         profile.name ||
         `${profile.first_name || ''} ${profile.last_name || ''}`.trim() ||
-        profile.email
+        email
       return {
-        id: String(profile.id || profile.email),
-        name,
-        email: profile.email,
+        id: String(profile.id || email),
+        name: name || null,
+        email,
         image: profile.image || profile.pic || null,
       }
     },
