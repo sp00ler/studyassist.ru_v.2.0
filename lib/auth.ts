@@ -3,7 +3,28 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
-import type { Adapter } from 'next-auth/adapters'
+import type { Adapter, AdapterUser } from 'next-auth/adapters'
+
+// PrismaAdapter ожидает emailVerified как DateTime?, но у нас Boolean.
+// Переопределяем createUser и updateUser чтобы избежать конфликта типов.
+function buildAdapter(): Adapter {
+  const base = PrismaAdapter(prisma) as Adapter
+  return {
+    ...base,
+    createUser: async (data: Omit<AdapterUser, 'id'>) => {
+      const { emailVerified: _ev, ...rest } = data as any
+      return prisma.user.create({
+        data: { ...rest, emailVerified: true },
+      }) as any
+    },
+    updateUser: async ({ emailVerified: _ev, ...data }: Partial<AdapterUser> & Pick<AdapterUser, 'id'>) => {
+      return prisma.user.update({
+        where: { id: data.id },
+        data: data as any,
+      }) as any
+    },
+  }
+}
 
 // Mail.ru custom provider
 const MailRuProvider = {
@@ -78,7 +99,7 @@ const YandexProvider = {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as Adapter,
+  adapter: buildAdapter(),
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 дней
