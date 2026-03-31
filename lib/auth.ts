@@ -100,6 +100,11 @@ const YandexProvider = {
 
 export const authOptions: NextAuthOptions = {
   adapter: buildAdapter(),
+  debug: process.env.NODE_ENV !== 'production',
+  logger: {
+    error(code, ...message) { console.error('[NextAuth][error]', code, ...message) },
+    warn(code, ...message) { console.warn('[NextAuth][warn]', code, ...message) },
+  },
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 дней
