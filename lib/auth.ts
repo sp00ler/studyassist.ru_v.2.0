@@ -5,22 +5,31 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import type { Adapter, AdapterUser } from 'next-auth/adapters'
 
-// PrismaAdapter ожидает emailVerified как DateTime?, но у нас Boolean.
-// Переопределяем createUser и updateUser чтобы избежать конфликта типов.
+// PrismaAdapter ожидает поля: emailVerified DateTime?, image String?
+// У нас: emailVerified Boolean, avatar String? (вместо image)
+// Переопределяем createUser/updateUser чтобы исправить маппинг.
 function buildAdapter(): Adapter {
   const base = PrismaAdapter(prisma) as Adapter
   return {
     ...base,
     createUser: async (data: Omit<AdapterUser, 'id'>) => {
-      const { emailVerified: _ev, ...rest } = data as any
+      const { emailVerified: _ev, image, ...rest } = data as any
       return prisma.user.create({
-        data: { ...rest, emailVerified: true },
+        data: {
+          ...rest,
+          emailVerified: true,
+          ...(image ? { avatar: image } : {}),
+        },
       }) as any
     },
-    updateUser: async ({ emailVerified: _ev, ...data }: Partial<AdapterUser> & Pick<AdapterUser, 'id'>) => {
+    updateUser: async (data: Partial<AdapterUser> & Pick<AdapterUser, 'id'>) => {
+      const { emailVerified: _ev, image, ...rest } = data as any
       return prisma.user.update({
-        where: { id: data.id },
-        data: data as any,
+        where: { id: rest.id },
+        data: {
+          ...rest,
+          ...(image !== undefined ? { avatar: image } : {}),
+        },
       }) as any
     },
   }
