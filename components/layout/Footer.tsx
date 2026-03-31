@@ -51,6 +51,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/cookies" className="text-white/50 hover:text-white text-sm transition-colors">
+                  Политика cookie
+                </Link>
+              </li>
+              <li>
                 <Link href="/contacts" className="text-white/50 hover:text-white text-sm transition-colors">
                   Контакты
                 </Link>

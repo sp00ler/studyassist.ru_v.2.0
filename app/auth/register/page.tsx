@@ -18,7 +18,9 @@ const registerSchema = z.object({
   email: z.string().email('Некорректный email'),
   password: z.string().min(6, 'Пароль должен содержать минимум 6 символов'),
   confirmPassword: z.string(),
-  consent: z.boolean().refine((v) => v === true, 'Необходимо принять условия'),
+  consentOffer: z.boolean().refine((v) => v === true, 'Необходимо принять условия использования'),
+  consentPd: z.boolean().refine((v) => v === true, 'Необходимо дать согласие на обработку персональных данных'),
+  consentMarketing: z.boolean().optional(),
 }).refine((d) => d.password === d.confirmPassword, {
   message: 'Пароли не совпадают',
   path: ['confirmPassword'],
@@ -62,7 +64,12 @@ export default function RegisterPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: data.name, email: data.email, password: data.password }),
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          consentMarketing: data.consentMarketing ?? false,
+        }),
       })
 
       const result = await res.json()
@@ -168,21 +175,53 @@ export default function RegisterPage() {
               {errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{errors.confirmPassword.message}</p>}
             </div>
 
+            {/* Чекбокс 1: принятие оферты */}
             <div className="flex items-start gap-3">
               <input
                 type="checkbox"
-                id="consent"
-                {...register('consent')}
-                className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 accent-[#6C3EF4] cursor-pointer"
+                id="consentOffer"
+                {...register('consentOffer')}
+                className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 accent-[#6C3EF4] cursor-pointer flex-shrink-0"
               />
-              <label htmlFor="consent" className="text-white/50 text-sm cursor-pointer">
-                Я принимаю{' '}
-                <Link href="/offer" className="text-[#6C3EF4] hover:underline">Условия использования</Link>
-                {' '}и{' '}
-                <Link href="/privacy" className="text-[#6C3EF4] hover:underline">Политику конфиденциальности</Link>
+              <label htmlFor="consentOffer" className="text-white/50 text-sm cursor-pointer">
+                Я ознакомился(ась) с{' '}
+                <Link href="/offer" className="text-[#6C3EF4] hover:underline">Публичной офертой</Link>
+                {' '}и принимаю её условия *
               </label>
             </div>
-            {errors.consent && <p className="text-red-400 text-xs">{errors.consent.message}</p>}
+            {errors.consentOffer && <p className="text-red-400 text-xs -mt-2">{errors.consentOffer.message}</p>}
+
+            {/* Чекбокс 2: согласие на обработку ПД */}
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="consentPd"
+                {...register('consentPd')}
+                className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 accent-[#6C3EF4] cursor-pointer flex-shrink-0"
+              />
+              <label htmlFor="consentPd" className="text-white/50 text-sm cursor-pointer">
+                Я даю согласие на обработку моих персональных данных (ФИО, email, телефон) в целях
+                регистрации аккаунта и исполнения заказов в соответствии с{' '}
+                <Link href="/privacy" className="text-[#6C3EF4] hover:underline">Политикой конфиденциальности</Link>.
+                Согласие можно отозвать, написав на{' '}
+                <a href="mailto:support@studyassist.ru" className="text-[#6C3EF4] hover:underline">support@studyassist.ru</a> *
+              </label>
+            </div>
+            {errors.consentPd && <p className="text-red-400 text-xs -mt-2">{errors.consentPd.message}</p>}
+
+            {/* Чекбокс 3: маркетинговые рассылки (необязательный) */}
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="consentMarketing"
+                {...register('consentMarketing')}
+                className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 accent-[#6C3EF4] cursor-pointer flex-shrink-0"
+              />
+              <label htmlFor="consentMarketing" className="text-white/50 text-sm cursor-pointer">
+                Я согласен(а) получать рекламные рассылки: акции, скидки, новые услуги.
+                Можно отписаться в любой момент.
+              </label>
+            </div>
 
             {error && (
               <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">

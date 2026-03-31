@@ -9,6 +9,7 @@ const registerSchema = z.object({
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
   email: z.string().email('Некорректный email'),
   password: z.string().min(6, 'Пароль должен содержать минимум 6 символов'),
+  consentMarketing: z.boolean().optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { name, email, password } = parsed.data
+    const { name, email, password, consentMarketing } = parsed.data
 
     // Проверяем существующего пользователя
     const existing = await prisma.user.findUnique({ where: { email } })
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 12)
 
+    const now = new Date()
     const user = await prisma.user.create({
       data: {
         name,
@@ -43,6 +45,9 @@ export async function POST(req: NextRequest) {
         passwordHash,
         provider: 'credentials',
         emailVerified: false,
+        consentPdAt: now,
+        consentMarketing: consentMarketing ?? false,
+        consentMarketingAt: consentMarketing ? now : null,
       },
     })
 

@@ -50,20 +50,15 @@ export async function sendNewOrderNotification(data: {
   const typeLabel = getOrderTypeLabel(data.orderType)
   const adminUrl = `${process.env.NEXTAUTH_URL}/admin/orders`
 
+  // Персональные данные клиента не передаются в Telegram (трансграничная передача).
+  // Полные данные доступны только в защищённой admin-панели.
   const message = `
 📋 *Новая заявка ${orderLabel}*
 
 📚 *Тип:* ${typeLabel}
 📖 *Предмет:* ${data.subject}
 ⏰ *Дедлайн:* ${data.deadline}
-
-📝 *Описание:*
-${data.description.slice(0, 400)}${data.description.length > 400 ? '...' : ''}
-
-👤 *Клиент:* ${data.name}
-📧 *Email:* ${data.email}
-${data.phone ? `📱 *Телефон:* ${data.phone}` : ''}
-📎 *Файлы:* ${data.filesCount} шт.
+📎 *Файлов:* ${data.filesCount} шт.
   `.trim()
 
   await tgBot.sendMessage(chatId, message, {
@@ -202,7 +197,8 @@ export async function sendRevisionRequestNotification(
   const orderLabel = formatOrderId(orderId)
   const adminUrl = `${process.env.NEXTAUTH_URL}/admin/orders`
 
-  const message = `🔄 *Запрос на доработку — ${orderLabel}*\n\n👤 *Клиент:* ${clientName} (${clientEmail})\n\n📝 *Замечания:*\n${note.slice(0, 400)}${note.length > 400 ? '...' : ''}`
+  // ПД клиента не передаются в Telegram
+  const message = `🔄 *Запрос на доработку — ${orderLabel}*\n\n📝 *Замечания:*\n${note.slice(0, 400)}${note.length > 400 ? '...' : ''}`
 
   await tgBot.sendMessage(chatId, message, {
     parse_mode: 'Markdown',

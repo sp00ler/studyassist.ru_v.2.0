@@ -514,12 +514,17 @@ export function OrderForm() {
                     type="checkbox"
                     id="consent"
                     {...register3('consent')}
-                    className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 text-[#6C3EF4] cursor-pointer accent-[#6C3EF4]"
+                    className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 text-[#6C3EF4] cursor-pointer accent-[#6C3EF4] flex-shrink-0"
                   />
                   <label htmlFor="consent" className="text-white/50 text-sm cursor-pointer">
-                    Я согласен(а) на обработку персональных данных в соответствии с{' '}
+                    Я даю согласие на обработку моих персональных данных (ФИО, email, телефон) в целях
+                    обработки заявки и связи по её исполнению в соответствии с{' '}
                     <a href="/privacy" className="text-[#6C3EF4] hover:underline">
                       Политикой конфиденциальности
+                    </a>.
+                    {' '}Согласие можно отозвать, написав на{' '}
+                    <a href="mailto:support@studyassist.ru" className="text-[#6C3EF4] hover:underline">
+                      support@studyassist.ru
                     </a>
                   </label>
                 </div>

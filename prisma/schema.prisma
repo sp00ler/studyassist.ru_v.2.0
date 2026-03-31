@@ -24,6 +24,10 @@ model User {
   telegramId         String?   // для DM через бот
   telegramLinkToken  String?   @unique  // временный токен для привязки бота
   telegramLinkExpiry DateTime?          // срок действия токена
+  // Согласия (152-ФЗ)
+  consentPdAt        DateTime? // дата согласия на обработку ПД
+  consentMarketing   Boolean   @default(false) // согласие на маркетинговые рассылки
+  consentMarketingAt DateTime? // дата согласия на рассылки
   // Трекинг входов
   lastLoginAt   DateTime?
   prevLoginAt   DateTime?
