@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
-import { sendNewOrderEmail } from '@/lib/email'
+import { sendNewOrderEmail, sendOrderReceivedEmail } from '@/lib/email'
 import { sendNewOrderNotification } from '@/lib/telegram'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -70,9 +70,10 @@ export async function POST(req: NextRequest) {
 
     Promise.allSettled([
       sendNewOrderEmail({ ...notificationData, files: data.files }),
+      sendOrderReceivedEmail({ ...notificationData, files: data.files }),
       sendNewOrderNotification({ ...notificationData, files: data.files }),
     ]).then((results) => {
-      const labels = ['email', 'telegram']
+      const labels = ['admin-email', 'client-email', 'telegram']
       results.forEach((r, i) => {
         if (r.status === 'rejected') {
           console.error(`Notification ${labels[i]} failed:`, r.reason)
