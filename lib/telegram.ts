@@ -1,4 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api'
+import path from 'path'
+import { resolveStoredFileAbsolutePath } from '@/lib/file-storage'
 
 let bot: TelegramBot | null = null
 
@@ -77,11 +79,9 @@ export async function sendNewOrderNotification(data: {
 
   // Отправляем файлы если есть
   if (data.files && data.files.length > 0) {
-    const path = await import('path')
-    const fs = await import('fs')
     for (const filePath of data.files) {
-      const fullPath = path.join(process.cwd(), 'public', filePath)
-      if (fs.existsSync(fullPath)) {
+      const fullPath = resolveStoredFileAbsolutePath(filePath)
+      if (fullPath) {
         await tgBot.sendDocument(chatId, fullPath, {}, {
           filename: path.basename(filePath),
           contentType: 'application/octet-stream',
