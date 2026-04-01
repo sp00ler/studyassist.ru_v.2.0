@@ -18,7 +18,9 @@ export async function GET(
   const candidates = [
     path.join(process.cwd(), 'public', 'uploads', filePath),
     path.join(os.tmpdir(), 'studyassist-uploads', filePath),
+    path.join(os.tmpdir(), 'studyassist-results', filePath.replace(/^results\//, '')),
     ...(process.env.UPLOAD_DIR ? [path.join(process.env.UPLOAD_DIR, filePath)] : []),
+    ...(process.env.RESULT_DIR ? [path.join(process.env.RESULT_DIR, filePath)] : []),
   ]
 
   for (const fullPath of candidates) {

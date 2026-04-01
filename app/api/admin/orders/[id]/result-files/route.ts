@@ -8,6 +8,9 @@ import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import os from 'os'
 
+export const maxDuration = 60
+export const dynamic = 'force-dynamic'
+
 async function saveFile(file: File, orderId: string): Promise<string> {
   const bytes = await file.arrayBuffer()
   const buffer = Buffer.from(bytes)
@@ -15,17 +18,24 @@ async function saveFile(file: File, orderId: string): Promise<string> {
   const timestamp = Date.now()
   const filename = `${timestamp}_${safeName}`
 
-  // Try public/uploads/results first, fallback to /tmp
+  // Try RESULT_DIR env, then public/uploads/results, fallback to /tmp
+  if (process.env.RESULT_DIR) {
+    const dir = path.join(process.env.RESULT_DIR, orderId)
+    await mkdir(dir, { recursive: true })
+    await writeFile(path.join(dir, filename), buffer)
+    return `/api/files/results/${orderId}/${filename}`
+  }
+
   const publicDir = path.join(process.cwd(), 'public', 'uploads', 'results', orderId)
   try {
     await mkdir(publicDir, { recursive: true })
     await writeFile(path.join(publicDir, filename), buffer)
-    return `/uploads/results/${orderId}/${filename}`
+    return `/api/files/results/${orderId}/${filename}`
   } catch {
     const tmpDir = path.join(os.tmpdir(), 'studyassist-results', orderId)
     await mkdir(tmpDir, { recursive: true })
     await writeFile(path.join(tmpDir, filename), buffer)
-    return `/uploads/results/${orderId}/${filename}`
+    return `/api/files/results/${orderId}/${filename}`
   }
 }
 

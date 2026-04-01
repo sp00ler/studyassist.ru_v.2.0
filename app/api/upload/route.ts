@@ -3,6 +3,9 @@ import path from 'path'
 import os from 'os'
 import { writeFile, mkdir, access, constants } from 'fs/promises'
 
+export const maxDuration = 60
+export const dynamic = 'force-dynamic'
+
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.txt', '.zip', '.jpg', '.jpeg', '.png', '.rar', '.7z']
 const ALLOWED_MIME_TYPES = [
@@ -36,24 +39,24 @@ async function isWritable(dir: string): Promise<boolean> {
 }
 
 async function getUploadDir(orderId: string): Promise<{ dir: string; publicPath: string }> {
-  // Приоритет 1: переменная окружения
+  // Приоритет 1: переменная окружения UPLOAD_DIR
   if (process.env.UPLOAD_DIR) {
     const dir = path.join(process.env.UPLOAD_DIR, orderId)
     await mkdir(dir, { recursive: true })
-    return { dir, publicPath: `/uploads/${orderId}` }
+    return { dir, publicPath: `/api/files/${orderId}` }
   }
 
   // Приоритет 2: public/uploads в cwd
   const publicDir = path.join(process.cwd(), 'public', 'uploads', orderId)
   if (await isWritable(publicDir)) {
-    return { dir: publicDir, publicPath: `/uploads/${orderId}` }
+    return { dir: publicDir, publicPath: `/api/files/${orderId}` }
   }
 
   // Приоритет 3: /tmp как fallback (всегда доступен для записи)
   const tmpDir = path.join(os.tmpdir(), 'studyassist-uploads', orderId)
   await mkdir(tmpDir, { recursive: true })
   console.warn(`Upload fallback to /tmp: ${tmpDir} (public/uploads not writable at ${process.cwd()})`)
-  return { dir: tmpDir, publicPath: `/uploads/${orderId}` }
+  return { dir: tmpDir, publicPath: `/api/files/${orderId}` }
 }
 
 export async function POST(req: NextRequest) {
