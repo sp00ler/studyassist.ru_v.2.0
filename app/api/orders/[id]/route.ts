@@ -116,12 +116,14 @@ export async function PATCH(
       data: updateData,
     })
 
-    // Уведомление об изменении статуса
-    if (status && order.user?.email && status !== order.status) {
+    // Уведомление об изменении статуса (и для пользователей, и для гостевых заявок)
+    const notifyEmail = order.user?.email || order.clientEmail
+    const effectivePaymentLink = (updateData.paymentLink as string | undefined) || order.paymentLink || undefined
+    if (status && notifyEmail && status !== order.status) {
       Promise.allSettled([
-        sendStatusUpdateEmail(order.user.email, order.id, status, order.paymentLink),
-        order.user.telegramId
-          ? sendStatusUpdateNotification(order.user.telegramId, order.id, status, order.paymentLink)
+        sendStatusUpdateEmail(notifyEmail, order.id, status, effectivePaymentLink),
+        order.user?.telegramId
+          ? sendStatusUpdateNotification(order.user.telegramId, order.id, status, effectivePaymentLink)
           : Promise.resolve(),
       ]).catch(console.error)
     }

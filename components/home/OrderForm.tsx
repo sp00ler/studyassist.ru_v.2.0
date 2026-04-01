@@ -140,25 +140,117 @@ export function OrderForm() {
       // Загружаем файлы если есть
       if (files.length > 0) {
         try {
-          const fd = new FormData()
-          fd.append('orderId', tempId)
-          files.forEach((f) => fd.append('files', f))
-          const uploadRes = await fetch('/api/upload', { method: 'POST', body: fd })
-          if (uploadRes.ok) {
-            const uploadData = await uploadRes.json()
-            uploadedFiles = uploadData.files || []
-            if (uploadData.skipped && uploadData.skipped.length > 0) {
-              toast({
-                title: 'Часть файлов не загружена',
-                description: `Файлы с неподдерживаемым типом пропущены: ${uploadData.skipped.join(', ')}`,
-                variant: 'destructive',
-              })
+          const parseUploadError = async (res: Response): Promise<string> => {
+            const fallback = `HTTP ${res.status}`
+            try {
+              const payload = await res.json()
+              if (payload?.error && typeof payload.error === 'string') return payload.error
+            } catch {
+              // ignore JSON parse errors
             }
-          } else {
-            // Файлы не загрузились — не блокируем заявку, отправляем без файлов
+            return fallback
+          }
+
+          const uploadBatch = async (batchFiles: File[]): Promise<{ files: string[]; skipped: string[]; error?: string }> => {
+            const fd = new FormData()
+            fd.append('orderId', tempId)
+            batchFiles.forEach((f) => fd.append('files', f))
+            const uploadRes = await fetch('/api/upload', { method: 'POST', body: fd })
+            if (!uploadRes.ok) {
+              return { files: [], skipped: [], error: await parseUploadError(uploadRes) }
+            }
+            const uploadData = await uploadRes.json()
+            return {
+              files: uploadData.files || [],
+              skipped: uploadData.skipped || [],
+            }
+          }
+
+          const chunkUploadFile = async (file: File): Promise<{ files: string[]; skipped: string[]; error?: string }> => {
+            const CHUNK_SIZE = 1 * 1024 * 1024 // 1MB
+            const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
+            const uploadId = `${tempId}_${file.name}_${file.size}_${Date.now()}`
+
+            for (let index = 0; index < totalChunks; index++) {
+              const start = index * CHUNK_SIZE
+              const end = Math.min(start + CHUNK_SIZE, file.size)
+              const chunk = file.slice(start, end)
+              const fd = new FormData()
+              fd.append('orderId', tempId)
+              fd.append('uploadId', uploadId)
+              fd.append('fileName', file.name)
+              fd.append('chunkIndex', String(index))
+              fd.append('totalChunks', String(totalChunks))
+              fd.append('chunk', chunk, file.name)
+
+              const res = await fetch('/api/upload', { method: 'POST', body: fd })
+              if (!res.ok) {
+                return { files: [], skipped: [], error: await parseUploadError(res) }
+              }
+
+              // На последнем чанке сервер возвращает итоговые пути
+              if (index === totalChunks - 1) {
+                const uploadData = await res.json()
+                return {
+                  files: uploadData.files || [],
+                  skipped: uploadData.skipped || [],
+                }
+              }
+            }
+
+            return { files: [], skipped: [], error: 'Не удалось завершить chunk-загрузку' }
+          }
+
+          const batchResult = await uploadBatch(files)
+          uploadedFiles = batchResult.files
+          const skippedNames = [...batchResult.skipped]
+          const failedNames: string[] = []
+          let fallbackError = batchResult.error
+
+          // Fallback: если пакетная загрузка упала (часто из-за лимита body), пробуем по одному файлу
+          if (batchResult.error) {
+            uploadedFiles = []
+            for (const file of files) {
+              const single = await uploadBatch([file])
+              if (single.files.length > 0) {
+                uploadedFiles.push(...single.files)
+                skippedNames.push(...single.skipped)
+                continue
+              }
+
+              // Если даже одиночный файл вернул 413, отправляем его частями
+              const shouldTryChunk = single.error?.includes('413') || single.error?.toLowerCase().includes('too large')
+              if (shouldTryChunk) {
+                const chunked = await chunkUploadFile(file)
+                if (chunked.files.length > 0) {
+                  uploadedFiles.push(...chunked.files)
+                  skippedNames.push(...chunked.skipped)
+                  continue
+                }
+                failedNames.push(file.name)
+                fallbackError = chunked.error || single.error || fallbackError
+                continue
+              }
+
+              failedNames.push(file.name)
+              if (!fallbackError && single.error) fallbackError = single.error
+            }
+          }
+
+          if (skippedNames.length > 0 || failedNames.length > 0) {
+            const parts: string[] = []
+            if (skippedNames.length > 0) parts.push(`Пропущены: ${skippedNames.join(', ')}`)
+            if (failedNames.length > 0) parts.push(`Не загружены: ${failedNames.join(', ')}`)
+
+            toast({
+              title: uploadedFiles.length > 0 ? 'Часть файлов не загружена' : 'Файлы не прикреплены',
+              description: `${parts.join('. ')}${fallbackError ? `. Причина: ${fallbackError}` : ''}`,
+              variant: 'destructive',
+            })
+          } else if (batchResult.error && uploadedFiles.length === 0) {
             toast({
               title: 'Файлы не прикреплены',
-              description: 'Не удалось загрузить файлы, но заявка будет отправлена. Вы сможете прислать файлы в ответном письме.',
+              description: `Не удалось загрузить файлы (${fallbackError || 'неизвестная ошибка'}), но заявка будет отправлена.`,
               variant: 'destructive',
             })
           }
