@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
 import type Mail from 'nodemailer/lib/mailer'
 import path from 'path'
-import fs from 'fs'
+import { resolveStoredFileAbsolutePath } from '@/lib/file-storage'
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.beget.com',
@@ -58,8 +58,8 @@ export async function sendNewOrderEmail(data: OrderEmailData): Promise<void> {
   const attachments: Mail.Attachment[] = []
   if (data.files && data.files.length > 0) {
     for (const filePath of data.files) {
-      const fullPath = path.join(process.cwd(), 'public', filePath)
-      if (fs.existsSync(fullPath)) {
+      const fullPath = resolveStoredFileAbsolutePath(filePath)
+      if (fullPath) {
         attachments.push({
           filename: path.basename(filePath),
           path: fullPath,
