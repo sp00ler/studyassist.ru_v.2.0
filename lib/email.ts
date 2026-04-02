@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
 import type Mail from 'nodemailer/lib/mailer'
 import path from 'path'
-import fs from 'fs'
+import { resolveStoredFileAbsolutePath } from '@/lib/file-storage'
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.beget.com',
@@ -39,6 +39,8 @@ function getOrderTypeLabel(type: string): string {
     essay: 'Реферат / Эссе',
     lab: 'Лабораторная работа / Задача',
     presentation: 'Презентация / Отчёт',
+    'practice-report': 'Отчёт по практике',
+    uir: 'УИР',
     other: 'Другое',
   }
   return types[type] || type
@@ -58,8 +60,8 @@ export async function sendNewOrderEmail(data: OrderEmailData): Promise<void> {
   const attachments: Mail.Attachment[] = []
   if (data.files && data.files.length > 0) {
     for (const filePath of data.files) {
-      const fullPath = path.join(process.cwd(), 'public', filePath)
-      if (fs.existsSync(fullPath)) {
+      const fullPath = resolveStoredFileAbsolutePath(filePath)
+      if (fullPath) {
         attachments.push({
           filename: path.basename(filePath),
           path: fullPath,
@@ -165,6 +167,75 @@ export async function sendNewOrderEmail(data: OrderEmailData): Promise<void> {
     subject: `📋 Новая заявка ${orderLabel} — ${typeLabel} (${data.subject})`,
     html: htmlContent,
     attachments,
+  })
+}
+
+export async function sendOrderReceivedEmail(data: OrderEmailData): Promise<void> {
+  const orderLabel = formatOrderId(data.orderId)
+  const typeLabel = getOrderTypeLabel(data.orderType)
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заявка принята — StudyAssist</title>
+</head>
+<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
+          <tr>
+            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
+              <div style="display:inline-block;width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:12px;line-height:48px;font-size:24px;margin-bottom:16px;">✅</div>
+              <h1 style="color:#fff;margin:0;font-size:24px;font-weight:700;">Заявка ${orderLabel} принята</h1>
+              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:14px;">StudyAssist.ru</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:40px 32px;text-align:center;">
+              <p style="color:#F1F5F9;font-size:18px;font-weight:600;margin:0 0 12px;">${data.name}, спасибо за обращение! 👋</p>
+              <p style="color:#94A3B8;font-size:15px;line-height:1.6;margin:0 0 24px;">
+                Мы получили вашу заявку и уже передали её менеджеру.
+                Обычно связываемся в течение 30 минут в рабочее время.
+              </p>
+              <div style="display:inline-block;background:rgba(108,62,244,0.2);border:1px solid rgba(108,62,244,0.45);border-radius:10px;padding:14px 22px;margin-bottom:24px;">
+                <p style="margin:0;color:#A78BFA;font-size:13px;">Номер заявки</p>
+                <p style="margin:4px 0 0;color:#E2E8F0;font-size:26px;font-weight:700;">${orderLabel}</p>
+              </div>
+              <table width="100%" cellpadding="0" cellspacing="0" style="text-align:left;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;">
+                <tr><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#94A3B8;font-size:13px;">Тип работы</td><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#F1F5F9;font-size:14px;">${typeLabel}</td></tr>
+                <tr><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#94A3B8;font-size:13px;">Предмет</td><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#F1F5F9;font-size:14px;">${data.subject}</td></tr>
+                <tr><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#94A3B8;font-size:13px;">Дедлайн</td><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#FCD34D;font-size:14px;font-weight:700;">${data.deadline}</td></tr>
+                <tr><td style="padding:12px 14px;color:#94A3B8;font-size:13px;">Файлов прикреплено</td><td style="padding:12px 14px;color:#F1F5F9;font-size:14px;">${data.files?.length || 0}</td></tr>
+              </table>
+              <a href="${baseUrl}/dashboard"
+                 style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:14px 30px;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;margin-top:26px;">
+                Открыть личный кабинет
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#0F0F1A;padding:20px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
+              <p style="color:#374151;font-size:12px;margin:0;">© 2026 StudyAssist.ru — Все права защищены</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `
+
+  await transporter.sendMail({
+    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
+    to: data.email,
+    subject: `✅ Заявка ${orderLabel} принята — StudyAssist`,
+    html: htmlContent,
   })
 }
 
