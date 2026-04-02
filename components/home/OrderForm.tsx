@@ -147,22 +147,7 @@ export function OrderForm() {
               if (payload?.error && typeof payload.error === 'string') return payload.error
             } catch {
               // ignore JSON parse errors
-            }
-            return fallback
-          }
 
-          const uploadBatch = async (batchFiles: File[]): Promise<{ files: string[]; skipped: string[]; error?: string }> => {
-            const fd = new FormData()
-            fd.append('orderId', tempId)
-            batchFiles.forEach((f) => fd.append('files', f))
-            const uploadRes = await fetch('/api/upload', { method: 'POST', body: fd })
-            if (!uploadRes.ok) {
-              return { files: [], skipped: [], error: await parseUploadError(uploadRes) }
-            }
-            const uploadData = await uploadRes.json()
-            return {
-              files: uploadData.files || [],
-              skipped: uploadData.skipped || [],
 
           if (skippedNames.length > 0 || failedNames.length > 0) {
             const parts: string[] = []
