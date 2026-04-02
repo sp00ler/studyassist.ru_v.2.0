@@ -163,29 +163,6 @@ export function OrderForm() {
             return {
               files: uploadData.files || [],
               skipped: uploadData.skipped || [],
-            }
-          }
-
-          const batchResult = await uploadBatch(files)
-          uploadedFiles = batchResult.files
-          const skippedNames = [...batchResult.skipped]
-          const failedNames: string[] = []
-          let fallbackError = batchResult.error
-
-          // Fallback: если пакетная загрузка упала (часто из-за лимита body), пробуем по одному файлу
-          if (batchResult.error) {
-            uploadedFiles = []
-            for (const file of files) {
-              const single = await uploadBatch([file])
-              if (single.files.length > 0) {
-                uploadedFiles.push(...single.files)
-                skippedNames.push(...single.skipped)
-                continue
-              }
-              failedNames.push(file.name)
-              if (!fallbackError && single.error) fallbackError = single.error
-            }
-          }
 
           if (skippedNames.length > 0 || failedNames.length > 0) {
             const parts: string[] = []
