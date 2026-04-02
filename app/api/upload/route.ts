@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 const MAX_TOTAL_SIZE = 50 * 1024 * 1024 // 50MB на все файлы в одном запросе
 const MAX_SINGLE_FILE_SIZE = 30 * 1024 * 1024 // 30MB на 1 файл
-const CHUNK_SIZE = 1 * 1024 * 1024 // 1MB
+
 const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.txt', '.zip', '.jpg', '.jpeg', '.png', '.rar', '.7z']
 const ALLOWED_MIME_TYPES = [
   'application/pdf',
@@ -191,7 +191,7 @@ export async function POST(req: NextRequest) {
     const lower = msg.toLowerCase()
     if (lower.includes('body') && (lower.includes('too large') || lower.includes('size'))) {
       return NextResponse.json(
-        { error: `Слишком большой запрос. Попробуйте загрузить файл частями (chunk upload, ${CHUNK_SIZE / (1024 * 1024)}MB).` },
+
         { status: 413 }
       )
     }
