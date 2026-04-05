@@ -232,7 +232,10 @@ export async function sendSupportSessionToTelegram(data: {
 }): Promise<number | null> {
   const tgBot = getBot()
   const chatId = process.env.SUPPORT_CHAT_ID || process.env.TELEGRAM_CHAT_ID
-  if (!tgBot || !chatId) return null
+  if (!tgBot || !chatId) {
+    console.warn('sendSupportSessionToTelegram skipped: missing TELEGRAM_BOT_TOKEN or SUPPORT_CHAT_ID/TELEGRAM_CHAT_ID')
+    return null
+  }
 
   const who = data.name || 'Аноним'
   const contactLine = data.contact ? `📱 ${data.contact}` : ''
@@ -265,7 +268,10 @@ export async function sendSupportMessageToTelegram(data: {
 }): Promise<void> {
   const tgBot = getBot()
   const chatId = process.env.SUPPORT_CHAT_ID || process.env.TELEGRAM_CHAT_ID
-  if (!tgBot || !chatId) return
+  if (!tgBot || !chatId) {
+    console.warn('sendSupportMessageToTelegram skipped: missing TELEGRAM_BOT_TOKEN or SUPPORT_CHAT_ID/TELEGRAM_CHAT_ID')
+    return
+  }
 
   const msgText = `💬 ${data.name || 'Посетитель'}: ${data.text}\n\n▫️ [session:${data.sessionId}]`
 

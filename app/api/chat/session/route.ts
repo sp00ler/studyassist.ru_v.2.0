@@ -36,10 +36,16 @@ export async function POST(req: NextRequest) {
         if (tgMsgId) {
           prisma.chatSession
             .update({ where: { id: session.id }, data: { tgGroupMsgId: tgMsgId } })
-            .catch(console.error)
+            .catch(err => console.error('Chat session tgGroupMsgId update error:', { sessionId: session.id, err }))
+        } else {
+          console.warn('Support chat: Telegram message not sent, tgMsgId is null', {
+            sessionId: session.id,
+            hasSupportChatId: Boolean(process.env.SUPPORT_CHAT_ID || process.env.TELEGRAM_CHAT_ID),
+            hasBotToken: Boolean(process.env.TELEGRAM_BOT_TOKEN),
+          })
         }
       })
-      .catch(console.error)
+      .catch(err => console.error('Support chat: sendSupportSessionToTelegram error:', { sessionId: session.id, err }))
 
     return NextResponse.json({
       sessionId: session.id,
