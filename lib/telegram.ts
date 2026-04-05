@@ -237,17 +237,18 @@ export async function sendSupportSessionToTelegram(data: {
   const who = data.name || 'Аноним'
   const contactLine = data.contact ? `📱 ${data.contact}` : ''
   const msgText = (
-    `💬 *Новый чат с поддержкой*\n` +
+    `💬 Новый чат с поддержкой\n` +
     `👤 ${who}${contactLine ? ' | ' + contactLine : ''}\n\n` +
     `${data.text}\n\n` +
     `▫️ [session:${data.sessionId}]`
   )
 
   try {
-    const msg = await tgBot.sendMessage(chatId, msgText, { parse_mode: 'Markdown' })
+    // Важно: без parse_mode, чтобы текст пользователя/контакт не ломал Markdown-парсер Telegram.
+    const msg = await tgBot.sendMessage(chatId, msgText)
     return msg.message_id
   } catch (err) {
-    console.error('sendSupportSessionToTelegram error:', err)
+    console.error('sendSupportSessionToTelegram error:', { chatId, err })
     return null
   }
 }
@@ -270,5 +271,7 @@ export async function sendSupportMessageToTelegram(data: {
 
   await tgBot.sendMessage(chatId, msgText, {
     ...(data.tgGroupMsgId ? { reply_to_message_id: data.tgGroupMsgId } : {}),
+  }).catch(err => {
+    console.error('sendSupportMessageToTelegram error:', { chatId, err })
   })
 }
