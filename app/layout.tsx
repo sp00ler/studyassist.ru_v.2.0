@@ -4,6 +4,7 @@ import { SessionProvider } from '@/components/providers/SessionProvider'
 import { Toaster } from '@/components/ui/toaster'
 import { CookieBanner } from '@/components/CookieBanner'
 import { MetrikaScript } from '@/components/MetrikaScript'
+import { ChatWidget } from '@/components/ChatWidget'
 
 export const metadata: Metadata = {
   title: 'StudyAssist — Помощь студентам с учёбой | Курсовые, дипломные, рефераты',
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <Toaster />
           <CookieBanner />
+          <ChatWidget />
           {metrikaId && <MetrikaScript metrikaId={metrikaId} />}
         </SessionProvider>
       </body>

@@ -151,3 +151,29 @@ model Review {
   @@index([approved])
   @@index([userId])
 }
+
+model ChatSession {
+  id           String        @id @default(cuid())
+  name         String?
+  contact      String?       // email / телефон / @telegram / vk.com/... / wa:...
+  tgGroupMsgId Int?          // message_id первого сообщения бота в группе поддержки
+  status       String        @default("open") // open | closed
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  messages     ChatMessage[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  sessionId String
+  text      String      @db.Text
+  fromAdmin Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
+}

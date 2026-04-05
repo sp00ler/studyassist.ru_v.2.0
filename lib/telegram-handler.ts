@@ -91,9 +91,34 @@ export async function handleUpdate(update: TelegramBot.Update): Promise<void> {
 
 // ─── Сообщения ───────────────────────────────────────────────────────────────
 
+// ─── Реплай оператора в группе поддержки → сохраняем в чат-сессию ──────────
+
+async function handleSupportGroupReply(msg: TelegramBot.Message): Promise<void> {
+  const replyText = msg.reply_to_message?.text || ''
+  const sessionMatch = /\[session:([^\]]+)\]/.exec(replyText)
+  if (!sessionMatch || !msg.text?.trim()) return
+
+  const sessionId = sessionMatch[1]
+  try {
+    await prisma.chatMessage.create({
+      data: { sessionId, text: msg.text.trim(), fromAdmin: true },
+    })
+  } catch (err) {
+    console.error('Support reply save error:', err)
+  }
+}
+
 async function handleMessage(bot: TelegramBot, msg: TelegramBot.Message) {
   const chatId = msg.chat.id.toString()
   const text = (msg.text || '').trim()
+
+  // ─── Сообщения из группы/супергруппы — только реплаи поддержки ─────────────
+  if (msg.chat.type === 'group' || msg.chat.type === 'supergroup') {
+    if (msg.reply_to_message?.text) {
+      await handleSupportGroupReply(msg)
+    }
+    return
+  }
 
   // ─── Admin session check (higher priority than user session) ─────────────────
   const adminSession = adminSessions.get(chatId)

@@ -215,3 +215,60 @@ export async function setWebhook(webhookUrl: string): Promise<void> {
   if (!tgBot) return
   await tgBot.setWebHook(webhookUrl)
 }
+
+// ─── Онлайн-чат поддержки ────────────────────────────────────────────────────
+// SUPPORT_CHAT_ID — ID группы для чатов поддержки (по умолчанию = TELEGRAM_CHAT_ID)
+// Важно: в боте должен быть отключён Group Privacy (BotFather → Bot Settings → Group Privacy → off)
+
+/**
+ * Отправляет первое сообщение новой чат-сессии в группу поддержки.
+ * Возвращает message_id отправленного сообщения (для реплаев).
+ */
+export async function sendSupportSessionToTelegram(data: {
+  sessionId: string
+  name: string | null
+  contact: string | null
+  text: string
+}): Promise<number | null> {
+  const tgBot = getBot()
+  const chatId = process.env.SUPPORT_CHAT_ID || process.env.TELEGRAM_CHAT_ID
+  if (!tgBot || !chatId) return null
+
+  const who = data.name || 'Аноним'
+  const contactLine = data.contact ? `📱 ${data.contact}` : ''
+  const msgText = (
+    `💬 *Новый чат с поддержкой*\n` +
+    `👤 ${who}${contactLine ? ' | ' + contactLine : ''}\n\n` +
+    `${data.text}\n\n` +
+    `▫️ [session:${data.sessionId}]`
+  )
+
+  try {
+    const msg = await tgBot.sendMessage(chatId, msgText, { parse_mode: 'Markdown' })
+    return msg.message_id
+  } catch (err) {
+    console.error('sendSupportSessionToTelegram error:', err)
+    return null
+  }
+}
+
+/**
+ * Отправляет последующее сообщение посетителя в группу поддержки
+ * как реплай на первое сообщение сессии.
+ */
+export async function sendSupportMessageToTelegram(data: {
+  sessionId: string
+  name: string | null
+  tgGroupMsgId: number | null
+  text: string
+}): Promise<void> {
+  const tgBot = getBot()
+  const chatId = process.env.SUPPORT_CHAT_ID || process.env.TELEGRAM_CHAT_ID
+  if (!tgBot || !chatId) return
+
+  const msgText = `💬 ${data.name || 'Посетитель'}: ${data.text}\n\n▫️ [session:${data.sessionId}]`
+
+  await tgBot.sendMessage(chatId, msgText, {
+    ...(data.tgGroupMsgId ? { reply_to_message_id: data.tgGroupMsgId } : {}),
+  })
+}
