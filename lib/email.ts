@@ -32,6 +32,15 @@ export interface OrderEmailData {
   files?: string[]
 }
 
+interface OrderReceivedEmailData {
+  orderId: string
+  orderType: string
+  subject: string
+  deadline: string
+  name: string
+  email: string
+}
+
 function getOrderTypeLabel(type: string): string {
   const types: Record<string, string> = {
     coursework: 'Курсовая работа',
@@ -170,7 +179,7 @@ export async function sendNewOrderEmail(data: OrderEmailData): Promise<void> {
   })
 }
 
-export async function sendOrderReceivedEmail(data: OrderEmailData): Promise<void> {
+export async function sendOrderReceivedEmail(data: OrderReceivedEmailData): Promise<void> {
   const orderLabel = formatOrderId(data.orderId)
   const typeLabel = getOrderTypeLabel(data.orderType)
   const baseUrl = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
@@ -210,7 +219,6 @@ export async function sendOrderReceivedEmail(data: OrderEmailData): Promise<void
                 <tr><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#94A3B8;font-size:13px;">Тип работы</td><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#F1F5F9;font-size:14px;">${typeLabel}</td></tr>
                 <tr><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#94A3B8;font-size:13px;">Предмет</td><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#F1F5F9;font-size:14px;">${data.subject}</td></tr>
                 <tr><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#94A3B8;font-size:13px;">Дедлайн</td><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#FCD34D;font-size:14px;font-weight:700;">${data.deadline}</td></tr>
-                <tr><td style="padding:12px 14px;color:#94A3B8;font-size:13px;">Файлов прикреплено</td><td style="padding:12px 14px;color:#F1F5F9;font-size:14px;">${data.files?.length || 0}</td></tr>
               </table>
               <a href="${baseUrl}/dashboard"
                  style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:14px 30px;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;margin-top:26px;">

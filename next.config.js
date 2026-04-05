@@ -29,9 +29,6 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '52mb',
     },
-    // Важно для multipart upload через reverse-proxy:
-    // без этого Next может отдавать 413 до входа в Route Handler.
-    proxyClientMaxBodySize: 55 * 1024 * 1024,
   },
   // Отключаем eslint во время build для production
   eslint: {

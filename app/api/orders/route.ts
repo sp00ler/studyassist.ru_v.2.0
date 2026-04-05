@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     Promise.allSettled([
       sendNewOrderEmail({ ...notificationData, files: data.files }),
-      sendOrderReceivedEmail({ ...notificationData, files: data.files }),
+      sendOrderReceivedEmail(notificationData),
       sendNewOrderNotification({ ...notificationData, files: data.files }),
     ]).then((results) => {
       const labels = ['admin-email', 'client-email', 'telegram']

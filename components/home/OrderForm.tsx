@@ -147,7 +147,95 @@ export function OrderForm() {
               if (payload?.error && typeof payload.error === 'string') return payload.error
             } catch {
               // ignore JSON parse errors
+            }
+            return fallback
+          }
 
+          const uploadBatch = async (batchFiles: File[]): Promise<{ files: string[]; skipped: string[]; error?: string }> => {
+            const fd = new FormData()
+            fd.append('orderId', tempId)
+            batchFiles.forEach((f) => fd.append('files', f))
+            const uploadRes = await fetch('/api/upload', { method: 'POST', body: fd })
+            if (!uploadRes.ok) {
+              return { files: [], skipped: [], error: await parseUploadError(uploadRes) }
+            }
+            const uploadData = await uploadRes.json()
+            return {
+              files: uploadData.files || [],
+              skipped: uploadData.skipped || [],
+            }
+          }
+
+          const chunkUploadFile = async (file: File): Promise<{ files: string[]; skipped: string[]; error?: string }> => {
+            const CHUNK_SIZE = 256 * 1024 // 256KB
+            const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
+            const uploadId = `${tempId}_${file.name}_${file.size}_${Date.now()}`
+
+            for (let index = 0; index < totalChunks; index++) {
+              const start = index * CHUNK_SIZE
+              const end = Math.min(start + CHUNK_SIZE, file.size)
+              const chunk = file.slice(start, end)
+
+              const fd = new FormData()
+              fd.append('orderId', tempId)
+              fd.append('uploadId', uploadId)
+              fd.append('fileName', file.name)
+              fd.append('chunkIndex', String(index))
+              fd.append('totalChunks', String(totalChunks))
+              fd.append('chunk', chunk, file.name)
+
+              const res = await fetch('/api/upload', { method: 'POST', body: fd })
+              if (!res.ok) {
+                return { files: [], skipped: [], error: await parseUploadError(res) }
+              }
+
+              if (index === totalChunks - 1) {
+                const uploadData = await res.json()
+                return {
+                  files: uploadData.files || [],
+                  skipped: uploadData.skipped || [],
+                }
+              }
+            }
+
+            return { files: [], skipped: [], error: 'Не удалось завершить chunk-загрузку' }
+          }
+
+          const skippedNames: string[] = []
+          const failedNames: string[] = []
+          let fallbackError: string | undefined
+
+          // Загружаем по одному файлу; при 413/size — chunk fallback
+          for (const file of files) {
+            const single = await uploadBatch([file])
+            if (single.files.length > 0) {
+              uploadedFiles.push(...single.files)
+              skippedNames.push(...single.skipped)
+              continue
+            }
+
+            const errorText = single.error?.toLowerCase() || ''
+            const shouldTryChunk =
+              errorText.includes('413') ||
+              errorText.includes('too large') ||
+              errorText.includes('слишком большой') ||
+              errorText.includes('payload')
+
+            if (shouldTryChunk) {
+              const chunked = await chunkUploadFile(file)
+              if (chunked.files.length > 0) {
+                uploadedFiles.push(...chunked.files)
+                skippedNames.push(...chunked.skipped)
+                continue
+              }
+              failedNames.push(file.name)
+              fallbackError = chunked.error || single.error || fallbackError
+              continue
+            }
+
+            failedNames.push(file.name)
+            if (!fallbackError && single.error) fallbackError = single.error
+          }
 
           if (skippedNames.length > 0 || failedNames.length > 0) {
             const parts: string[] = []
@@ -159,7 +247,7 @@ export function OrderForm() {
               description: `${parts.join('. ')}${fallbackError ? `. Причина: ${fallbackError}` : ''}`,
               variant: 'destructive',
             })
-          } else if (batchResult.error && uploadedFiles.length === 0) {
+          } else if (uploadedFiles.length === 0) {
             toast({
               title: 'Файлы не прикреплены',
               description: `Не удалось загрузить файлы (${fallbackError || 'неизвестная ошибка'}), но заявка будет отправлена.`,
@@ -195,7 +283,6 @@ export function OrderForm() {
       if (res.ok) {
         setOrderId(result.orderId)
         setSuccess(true)
-        // Yandex Metrika goal
         if (typeof window !== 'undefined' && (window as Window & { ym?: Function }).ym) {
           (window as Window & { ym?: Function }).ym?.(process.env.NEXT_PUBLIC_METRIKA_ID, 'reachGoal', 'order_submit')
         }
