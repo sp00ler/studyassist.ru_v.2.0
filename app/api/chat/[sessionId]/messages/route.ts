@@ -55,7 +55,13 @@ export async function POST(
       name: session.name,
       tgGroupMsgId: session.tgGroupMsgId,
       text: text.trim(),
-    }).catch(console.error)
+    }).catch(err => {
+      console.error('Support chat: sendSupportMessageToTelegram error:', {
+        sessionId: params.sessionId,
+        tgGroupMsgId: session.tgGroupMsgId,
+        err,
+      })
+    })
 
     return NextResponse.json({ message })
   } catch (err) {
