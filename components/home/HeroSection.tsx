@@ -47,16 +47,25 @@ function pickRandom<T>(arr: T[], seed: number): T {
   return arr[seed % arr.length]
 }
 
+interface StampPos { right: number; top: number; rotate: number }
+
 export function HeroSection() {
   // SSR-безопасная рандомизация: начальное значение детерминировано,
   // после гидрации useEffect подставляет случайные данные
   const [card, setCard] = useState<HeroCard>(HERO_POOL[0])
   const [mounted, setMounted] = useState(false)
+  const [stampPos, setStampPos] = useState<StampPos>({ right: 12, top: 50, rotate: -10 })
 
   useEffect(() => {
     const idx = Math.floor(Math.random() * HERO_POOL.length)
     setCard(HERO_POOL[idx])
     setMounted(true)
+    // Случайное положение и угол печати при каждом обновлении страницы
+    setStampPos({
+      right:  Math.floor(Math.random() * 55) + 5,   // 5–60px от правого края
+      top:    Math.floor(Math.random() * 60) + 20,  // 20–80% по высоте
+      rotate: Math.floor(Math.random() * 60) - 30,  // −30…+30 градусов
+    })
   }, [])
 
   return (
@@ -213,7 +222,7 @@ export function HeroSection() {
               <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="relative bg-[#F5EACF] border border-[#001bb3]/20 rounded-2xl p-4 shadow-xl overflow-visible"
+                className="relative bg-[#F5EACF] border border-[#001bb3]/20 rounded-2xl p-4 shadow-xl overflow-hidden"
               >
                 {/* SVG-фильтр для эффекта чернильной печати с непрокрасом */}
                 <svg className="absolute w-0 h-0" aria-hidden="true">
@@ -238,17 +247,22 @@ export function HeroSection() {
                   </div>
                 </div>
 
-                {/* Штамп ЗАЧЁТ — круглая печать */}
+                {/* Штамп ЗАЧЁТ — случайное положение при каждом обновлении */}
                 <motion.div
-                  initial={{ scale: 0, rotate: 5, opacity: 0 }}
-                  animate={{ scale: 1, rotate: -10, opacity: 1 }}
+                  initial={{ scale: 0, rotate: stampPos.rotate - 20, opacity: 0 }}
+                  animate={{ scale: 1, rotate: stampPos.rotate, opacity: 1 }}
                   transition={{
                     type: 'spring',
                     stiffness: 500,
                     damping: 12,
                     delay: 1.8,
                   }}
-                  className="absolute -right-3 top-1/2 -translate-y-1/2"
+                  style={{
+                    position: 'absolute',
+                    right: stampPos.right,
+                    top: `${stampPos.top}%`,
+                    translateY: '-50%',
+                  }}
                 >
                   <svg
                     width="90"
