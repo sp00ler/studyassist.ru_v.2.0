@@ -2,6 +2,7 @@ import TelegramBot from 'node-telegram-bot-api'
 import path from 'path'
 import { resolveStoredFileAbsolutePath } from '@/lib/file-storage'
 
+// ─── Бот для заявок и admin-уведомлений (@ask_studyassistBot) ────────────────
 let bot: TelegramBot | null = null
 
 function getBot(): TelegramBot | null {
@@ -10,6 +11,19 @@ function getBot(): TelegramBot | null {
     bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: false })
   }
   return bot
+}
+
+// ─── Бот онлайн-чата поддержки (@beseda_studysupport_bot) ────────────────────
+// Использует SUPPORT_BOT_TOKEN; если не задан — fallback на основной бот.
+let supportBot: TelegramBot | null = null
+
+function getSupportBot(): TelegramBot | null {
+  const token = process.env.SUPPORT_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN
+  if (!token) return null
+  if (!supportBot) {
+    supportBot = new TelegramBot(token, { polling: false })
+  }
+  return supportBot
 }
 
 function getOrderTypeLabel(type: string): string {
@@ -230,10 +244,10 @@ export async function sendSupportSessionToTelegram(data: {
   contact: string | null
   text: string
 }): Promise<number | null> {
-  const tgBot = getBot()
+  const tgBot = getSupportBot()
   const chatId = process.env.SUPPORT_CHAT_ID || process.env.TELEGRAM_CHAT_ID
   if (!tgBot || !chatId) {
-    console.warn('sendSupportSessionToTelegram skipped: missing TELEGRAM_BOT_TOKEN or SUPPORT_CHAT_ID/TELEGRAM_CHAT_ID')
+    console.warn('sendSupportSessionToTelegram skipped: missing SUPPORT_BOT_TOKEN/TELEGRAM_BOT_TOKEN or SUPPORT_CHAT_ID/TELEGRAM_CHAT_ID')
     return null
   }
 
@@ -266,10 +280,10 @@ export async function sendSupportMessageToTelegram(data: {
   tgGroupMsgId: number | null
   text: string
 }): Promise<void> {
-  const tgBot = getBot()
+  const tgBot = getSupportBot()
   const chatId = process.env.SUPPORT_CHAT_ID || process.env.TELEGRAM_CHAT_ID
   if (!tgBot || !chatId) {
-    console.warn('sendSupportMessageToTelegram skipped: missing TELEGRAM_BOT_TOKEN or SUPPORT_CHAT_ID/TELEGRAM_CHAT_ID')
+    console.warn('sendSupportMessageToTelegram skipped: missing SUPPORT_BOT_TOKEN/TELEGRAM_BOT_TOKEN or SUPPORT_CHAT_ID/TELEGRAM_CHAT_ID')
     return
   }
 
