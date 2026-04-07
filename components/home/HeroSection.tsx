@@ -213,15 +213,15 @@ export function HeroSection() {
               <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="relative bg-[#E8F6F7] border border-[#128890]/25 rounded-2xl p-4 shadow-xl overflow-hidden"
+                className="relative bg-[#F5EACF] border border-[#001bb3]/20 rounded-2xl p-4 shadow-xl overflow-visible"
               >
                 {/* SVG-фильтр для эффекта чернильной печати с непрокрасом */}
-                <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden="true">
+                <svg className="absolute w-0 h-0" aria-hidden="true">
                   <defs>
-                    <filter id="stamp-ink" x="-15%" y="-15%" width="130%" height="130%">
-                      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="3" seed="8" stitchTiles="stitch" result="noise"/>
+                    <filter id="stamp-ink" x="-20%" y="-20%" width="140%" height="140%">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="4" seed="12" stitchTiles="stitch" result="noise"/>
                       <feColorMatrix type="matrix"
-                        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3.8 4.6"
+                        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3.5 4.4"
                         in="noise" result="mask"/>
                       <feComposite in="SourceGraphic" in2="mask" operator="in"/>
                     </filter>
@@ -229,16 +229,16 @@ export function HeroSection() {
                 </svg>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#128890]/15 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="w-5 h-5 text-[#128890]" />
+                  <div className="w-10 h-10 rounded-full bg-[#001bb3]/12 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 text-[#001bb3]" />
                   </div>
                   <div>
-                    <p className="text-[#0B3335] text-sm font-semibold">Сдано на отлично</p>
-                    <p className="text-[#128890] text-xs mt-0.5 font-medium">{card.subject}</p>
+                    <p className="text-[#001238] text-sm font-semibold">Сдано на отлично</p>
+                    <p className="text-[#001bb3] text-xs mt-0.5 font-medium">{card.subject}</p>
                   </div>
                 </div>
 
-                {/* Штамп ЗАЧЁТ — круглая печать в стиле почтового штемпеля */}
+                {/* Штамп ЗАЧЁТ — круглая печать */}
                 <motion.div
                   initial={{ scale: 0, rotate: 5, opacity: 0 }}
                   animate={{ scale: 1, rotate: -10, opacity: 1 }}
@@ -248,29 +248,29 @@ export function HeroSection() {
                     damping: 12,
                     delay: 1.8,
                   }}
-                  className="absolute right-1 top-1/2 -translate-y-1/2"
+                  className="absolute -right-3 top-1/2 -translate-y-1/2"
                 >
                   <svg
-                    width="88"
-                    height="88"
-                    viewBox="0 0 88 88"
+                    width="90"
+                    height="90"
+                    viewBox="0 0 90 90"
                     style={{ filter: 'url(#stamp-ink)' }}
                   >
                     {/* Внешнее толстое кольцо */}
-                    <circle cx="44" cy="44" r="41" stroke="#128890" strokeWidth="4" fill="none"/>
+                    <circle cx="45" cy="45" r="42" stroke="#001bb3" strokeWidth="4.5" fill="none"/>
                     {/* Внутреннее тонкое кольцо */}
-                    <circle cx="44" cy="44" r="32" stroke="#128890" strokeWidth="1.4" fill="none"/>
+                    <circle cx="45" cy="45" r="33" stroke="#001bb3" strokeWidth="1.6" fill="none"/>
                     {/* Горизонтальная линия выше текста */}
-                    <line x1="17" y1="37" x2="71" y2="37" stroke="#128890" strokeWidth="1.2"/>
+                    <line x1="18" y1="38" x2="72" y2="38" stroke="#001bb3" strokeWidth="1.3"/>
                     {/* Горизонтальная линия ниже текста */}
-                    <line x1="17" y1="52" x2="71" y2="52" stroke="#128890" strokeWidth="1.2"/>
+                    <line x1="18" y1="53" x2="72" y2="53" stroke="#001bb3" strokeWidth="1.3"/>
                     {/* ЗАЧЁТ */}
                     <text
-                      x="44"
-                      y="45"
+                      x="45"
+                      y="46"
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fill="#128890"
+                      fill="#001bb3"
                       fontFamily='"Courier New", Courier, monospace'
                       fontWeight="900"
                       fontSize="12"
@@ -278,9 +278,9 @@ export function HeroSection() {
                     >
                       ЗАЧЁТ
                     </text>
-                    {/* Декоративные точки сверху и снизу между кольцами */}
-                    <circle cx="44" cy="8"  r="1.8" fill="#128890"/>
-                    <circle cx="44" cy="80" r="1.8" fill="#128890"/>
+                    {/* Декоративные точки между кольцами */}
+                    <circle cx="45" cy="8"  r="2" fill="#001bb3"/>
+                    <circle cx="45" cy="82" r="2" fill="#001bb3"/>
                   </svg>
                 </motion.div>
               </motion.div>
