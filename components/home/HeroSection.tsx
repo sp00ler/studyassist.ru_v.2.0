@@ -213,15 +213,28 @@ export function HeroSection() {
               <motion.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="relative bg-[#1A1A2E] border border-emerald-500/30 rounded-2xl p-4 shadow-xl overflow-hidden"
+                className="relative bg-[#E8F6F7] border border-[#128890]/25 rounded-2xl p-4 shadow-xl overflow-hidden"
               >
+                {/* SVG-фильтр для эффекта чернильной печати с непрокрасом */}
+                <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden="true">
+                  <defs>
+                    <filter id="stamp-ink" x="-15%" y="-15%" width="130%" height="130%">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="3" seed="8" stitchTiles="stitch" result="noise"/>
+                      <feColorMatrix type="matrix"
+                        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3.8 4.6"
+                        in="noise" result="mask"/>
+                      <feComposite in="SourceGraphic" in2="mask" operator="in"/>
+                    </filter>
+                  </defs>
+                </svg>
+
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  <div className="w-10 h-10 rounded-full bg-[#128890]/15 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 text-[#128890]" />
                   </div>
                   <div>
-                    <p className="text-white text-sm font-semibold">Сдано на отлично</p>
-                    <p className="text-emerald-400 text-xs mt-0.5">Результат получен</p>
+                    <p className="text-[#0B3335] text-sm font-semibold">Сдано на отлично</p>
+                    <p className="text-[#128890] text-xs mt-0.5 font-medium">{card.subject}</p>
                   </div>
                 </div>
 
@@ -231,42 +244,43 @@ export function HeroSection() {
                   animate={{ scale: 1, rotate: -12, opacity: 1 }}
                   transition={{
                     type: 'spring',
-                    stiffness: 400,
-                    damping: 12,
+                    stiffness: 550,
+                    damping: 13,
                     delay: 1.8,
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
                 >
-                  <motion.div
-                    animate={{ opacity: [1, 0.75, 1] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                    className="relative"
+                  <svg
+                    width="84"
+                    height="56"
+                    viewBox="0 0 84 56"
+                    style={{ filter: 'url(#stamp-ink)' }}
                   >
-                    {/* Внешняя рамка штампа */}
-                    <div
-                      className="px-2.5 py-1 rounded"
-                      style={{
-                        border: '2.5px solid #34D399',
-                        boxShadow: '0 0 8px rgba(52, 211, 153, 0.5), inset 0 0 6px rgba(52, 211, 153, 0.08)',
-                      }}
+                    {/* Внешняя толстая рамка */}
+                    <rect x="2" y="2" width="80" height="52" rx="4" ry="4"
+                      stroke="#128890" strokeWidth="3.5" fill="none"/>
+                    {/* Внутренняя тонкая рамка */}
+                    <rect x="8" y="8" width="68" height="40" rx="2" ry="2"
+                      stroke="#128890" strokeWidth="1.3" fill="none"/>
+                    {/* Декоративная линия сверху */}
+                    <line x1="14" y1="20" x2="70" y2="20" stroke="#128890" strokeWidth="1.2"/>
+                    {/* Декоративная линия снизу */}
+                    <line x1="14" y1="38" x2="70" y2="38" stroke="#128890" strokeWidth="1.2"/>
+                    {/* ЗАЧЁТ */}
+                    <text
+                      x="42"
+                      y="29"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fill="#128890"
+                      fontFamily='"Courier New", Courier, monospace'
+                      fontWeight="900"
+                      fontSize="13"
+                      letterSpacing="3"
                     >
-                      {/* Линии-декор сверху и снизу */}
-                      <div className="flex flex-col items-center gap-0.5">
-                        <div className="h-px w-full" style={{ background: '#34D399', opacity: 0.6 }} />
-                        <span
-                          className="font-black tracking-[0.2em] text-xs uppercase leading-none py-0.5"
-                          style={{
-                            color: '#34D399',
-                            fontFamily: '"Courier New", Courier, monospace',
-                            textShadow: '0 0 6px rgba(52, 211, 153, 0.7)',
-                          }}
-                        >
-                          ЗАЧЁТ
-                        </span>
-                        <div className="h-px w-full" style={{ background: '#34D399', opacity: 0.6 }} />
-                      </div>
-                    </div>
-                  </motion.div>
+                      ЗАЧЁТ
+                    </text>
+                  </svg>
                 </motion.div>
               </motion.div>
 
