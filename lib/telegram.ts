@@ -4,22 +4,29 @@ import { resolveStoredFileAbsolutePath } from '@/lib/file-storage'
 
 // ─── Бот для заявок и admin-уведомлений (@ask_studyassistBot) ────────────────
 let bot: TelegramBot | null = null
+let botUsername: string | null = null  // кэшируем username для логов
 
 function getBot(): TelegramBot | null {
   if (!process.env.TELEGRAM_BOT_TOKEN) return null
   if (!bot) {
     bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: false })
+    botUsername = null // сбрасываем при создании нового инстанса
   }
   return bot
 }
 
 // ─── Бот онлайн-чата поддержки (@beseda_studysupport_bot) ────────────────────
-// Использует SUPPORT_BOT_TOKEN; если не задан — fallback на основной бот.
+// Использует SUPPORT_BOT_TOKEN; НЕ используется для заявок и admin-уведомлений.
 let supportBot: TelegramBot | null = null
 
 function getSupportBot(): TelegramBot | null {
-  const token = process.env.SUPPORT_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN
-  if (!token) return null
+  const token = process.env.SUPPORT_BOT_TOKEN
+  if (!token) {
+    // Если SUPPORT_BOT_TOKEN не задан — НЕ делаем fallback на TELEGRAM_BOT_TOKEN,
+    // чтобы не перепутать боты. Просто скипаем support-уведомление.
+    console.warn('[telegram:support] SUPPORT_BOT_TOKEN не задан, сообщение чата не отправлено')
+    return null
+  }
   if (!supportBot) {
     supportBot = new TelegramBot(token, { polling: false })
   }
@@ -58,8 +65,18 @@ export async function sendNewOrderNotification(data: {
   const tgBot = getBot()
   const chatId = process.env.TELEGRAM_CHAT_ID
   if (!tgBot || !chatId) {
-    console.warn('Telegram bot not configured, skipping notification')
+    console.warn('[telegram:orders] TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID не заданы, уведомление пропущено')
     return
+  }
+
+  // При первом вызове логируем имя бота — для диагностики в pm2 logs
+  if (!botUsername) {
+    tgBot.getMe().then(me => {
+      botUsername = me.username || me.first_name
+      console.info(`[telegram:orders] Уведомления о заявках отправляет: @${botUsername} → chatId=${chatId}`)
+    }).catch(() => {
+      console.warn('[telegram:orders] Не удалось получить getMe()')
+    })
   }
 
   const orderLabel = formatOrderId(data.orderId)
