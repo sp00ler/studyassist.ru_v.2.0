@@ -238,48 +238,49 @@ export function HeroSection() {
                   </div>
                 </div>
 
-                {/* Штамп ЗАЧЁТ */}
+                {/* Штамп ЗАЧЁТ — круглая печать в стиле почтового штемпеля */}
                 <motion.div
-                  initial={{ scale: 0, rotate: -8, opacity: 0 }}
-                  animate={{ scale: 1, rotate: -12, opacity: 1 }}
+                  initial={{ scale: 0, rotate: 5, opacity: 0 }}
+                  animate={{ scale: 1, rotate: -10, opacity: 1 }}
                   transition={{
                     type: 'spring',
-                    stiffness: 550,
-                    damping: 13,
+                    stiffness: 500,
+                    damping: 12,
                     delay: 1.8,
                   }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  className="absolute right-1 top-1/2 -translate-y-1/2"
                 >
                   <svg
-                    width="84"
-                    height="56"
-                    viewBox="0 0 84 56"
+                    width="88"
+                    height="88"
+                    viewBox="0 0 88 88"
                     style={{ filter: 'url(#stamp-ink)' }}
                   >
-                    {/* Внешняя толстая рамка */}
-                    <rect x="2" y="2" width="80" height="52" rx="4" ry="4"
-                      stroke="#128890" strokeWidth="3.5" fill="none"/>
-                    {/* Внутренняя тонкая рамка */}
-                    <rect x="8" y="8" width="68" height="40" rx="2" ry="2"
-                      stroke="#128890" strokeWidth="1.3" fill="none"/>
-                    {/* Декоративная линия сверху */}
-                    <line x1="14" y1="20" x2="70" y2="20" stroke="#128890" strokeWidth="1.2"/>
-                    {/* Декоративная линия снизу */}
-                    <line x1="14" y1="38" x2="70" y2="38" stroke="#128890" strokeWidth="1.2"/>
+                    {/* Внешнее толстое кольцо */}
+                    <circle cx="44" cy="44" r="41" stroke="#128890" strokeWidth="4" fill="none"/>
+                    {/* Внутреннее тонкое кольцо */}
+                    <circle cx="44" cy="44" r="32" stroke="#128890" strokeWidth="1.4" fill="none"/>
+                    {/* Горизонтальная линия выше текста */}
+                    <line x1="17" y1="37" x2="71" y2="37" stroke="#128890" strokeWidth="1.2"/>
+                    {/* Горизонтальная линия ниже текста */}
+                    <line x1="17" y1="52" x2="71" y2="52" stroke="#128890" strokeWidth="1.2"/>
                     {/* ЗАЧЁТ */}
                     <text
-                      x="42"
-                      y="29"
+                      x="44"
+                      y="45"
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill="#128890"
                       fontFamily='"Courier New", Courier, monospace'
                       fontWeight="900"
-                      fontSize="13"
-                      letterSpacing="3"
+                      fontSize="12"
+                      letterSpacing="2.5"
                     >
                       ЗАЧЁТ
                     </text>
+                    {/* Декоративные точки сверху и снизу между кольцами */}
+                    <circle cx="44" cy="8"  r="1.8" fill="#128890"/>
+                    <circle cx="44" cy="80" r="1.8" fill="#128890"/>
                   </svg>
                 </motion.div>
               </motion.div>
