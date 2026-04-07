@@ -8,6 +8,21 @@ import { sendNewOrderNotification } from '@/lib/telegram'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 
+const estimatedPriceSchema = z.object({
+  label: z.string(),
+  kind: z.enum(['from', 'range', 'manual']),
+  min: z.number(),
+  max: z.number().optional(),
+  confidence: z.enum(['low', 'medium', 'high']),
+  snapshot: z.object({
+    basePrice: z.number(),
+    deadlineCoef: z.number(),
+    subjectCoef: z.number(),
+    complexityCoef: z.number(),
+    daysLeft: z.number(),
+  }),
+}).optional().nullable()
+
 const orderSchema = z.object({
   type: z.enum(['essay', 'coursework', 'diploma', 'lab', 'presentation', 'practice-report', 'uir', 'other']),
   subject: z.string().min(2, 'Укажите предмет'),
@@ -20,6 +35,7 @@ const orderSchema = z.object({
   email: z.string().email('Некорректный email'),
   phone: z.string().optional().nullable(),
   files: z.array(z.string()).optional(),
+  estimatedPrice: estimatedPriceSchema,
 })
 
 export async function POST(req: NextRequest) {
@@ -80,6 +96,16 @@ export async function POST(req: NextRequest) {
         }
       })
     })
+
+    // Log pricing estimate for analytics / admin review (not stored in DB, no migration needed)
+    if (data.estimatedPrice) {
+      console.info(
+        `[pricing] order=${order.id} type=${data.type} subject="${data.subject}" ` +
+        `estimate="${data.estimatedPrice.label}" kind=${data.estimatedPrice.kind} ` +
+        `confidence=${data.estimatedPrice.confidence} ` +
+        `snapshot=${JSON.stringify(data.estimatedPrice.snapshot)}`,
+      )
+    }
 
     return NextResponse.json({ success: true, orderId: order.id })
   } catch (error) {

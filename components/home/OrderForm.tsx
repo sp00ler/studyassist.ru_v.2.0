@@ -1,19 +1,24 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Upload, X, CheckCircle, Loader2, ChevronRight, ChevronLeft, File } from 'lucide-react'
+import {
+  Upload, X, CheckCircle, Loader2, ChevronRight, ChevronLeft, File,
+  Info, TrendingUp, AlertCircle,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
+import { calculateEstimate, type PriceEstimate, type WorkType } from '@/lib/pricing'
 
-// Step 1 schema
+// ─── Zod schemas ──────────────────────────────────────────────────────────────
+
 const step1Schema = z.object({
   type: z.enum(['essay', 'coursework', 'diploma', 'lab', 'presentation', 'practice-report', 'uir', 'other'], {
     errorMap: () => ({ message: 'Выберите тип работы' }),
@@ -29,12 +34,10 @@ const step1Schema = z.object({
   }, 'Дедлайн должен быть не раньше завтра'),
 })
 
-// Step 2 schema
 const step2Schema = z.object({
   description: z.string().min(50, 'Описание должно содержать минимум 50 символов'),
 })
 
-// Step 3 schema
 const step3Schema = z.object({
   name: z.string().min(2, 'Укажите ваше имя'),
   email: z.string().email('Некорректный email'),
@@ -44,11 +47,22 @@ const step3Schema = z.object({
 
 type FormData = z.infer<typeof step1Schema> & z.infer<typeof step2Schema> & z.infer<typeof step3Schema>
 
-const stepTitles = [
-  'Тип услуги',
-  'Описание запроса',
-  'Контактные данные',
-]
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const stepTitles = ['Тип услуги', 'Описание запроса', 'Контактные данные']
+
+const WORK_TYPE_LABELS: Record<WorkType | 'other', string> = {
+  essay: 'Реферат / эссе',
+  coursework: 'Курсовая работа',
+  diploma: 'ВКР / Дипломная работа',
+  lab: 'Лабораторная / практическая',
+  presentation: 'Презентация',
+  'practice-report': 'Отчёт по практике',
+  uir: 'УИР',
+  other: 'Другой тип работы',
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatPhoneInput(value: string): string {
   const digits = value.replace(/\D/g, '')
@@ -68,6 +82,106 @@ const getTomorrowDate = () => {
   d.setDate(d.getDate() + 1)
   return d.toISOString().split('T')[0]
 }
+
+// ─── PriceEstimateBlock ───────────────────────────────────────────────────────
+
+interface PriceEstimateBlockProps {
+  estimate: PriceEstimate
+  compact?: boolean
+}
+
+function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockProps) {
+  const [showFlags, setShowFlags] = useState(false)
+
+  const confidenceLabel =
+    estimate.kind === 'manual'
+      ? null
+      : estimate.confidence === 'high'
+      ? 'Высокая точность'
+      : estimate.confidence === 'medium'
+      ? 'Средняя точность'
+      : 'Предварительная оценка'
+
+  const confidenceColor =
+    estimate.confidence === 'high'
+      ? 'text-emerald-400'
+      : estimate.confidence === 'medium'
+      ? 'text-yellow-400'
+      : 'text-white/40'
+
+  if (compact) {
+    return (
+      <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-white/50 text-sm">
+          <TrendingUp className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+          <span>Предв. стоимость</span>
+        </div>
+        <span className={`font-bold text-base ${estimate.kind === 'manual' ? 'text-white/60' : 'text-[#A78BFA]'}`}>
+          {estimate.label}
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-2xl border border-[#6C3EF4]/30 bg-gradient-to-br from-[#6C3EF4]/10 to-[#3B82F6]/5 p-5">
+      <div className="flex items-start justify-between gap-3 mb-1">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-[#A78BFA] flex-shrink-0" aria-hidden="true" />
+          <span className="text-sm font-medium text-white/70">Предварительная стоимость</span>
+        </div>
+        {confidenceLabel && (
+          <span className={`text-xs ${confidenceColor}`}>{confidenceLabel}</span>
+        )}
+      </div>
+
+      <div className={`text-2xl font-bold mb-3 ${estimate.kind === 'manual' ? 'text-white/60' : 'text-white'}`}>
+        {estimate.label}
+      </div>
+
+      {estimate.kind !== 'manual' && estimate.flags.length > 0 && (
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowFlags((v) => !v)}
+            className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/60 transition-colors"
+            aria-expanded={showFlags}
+          >
+            <Info className="w-3 h-3" aria-hidden="true" />
+            {showFlags ? 'Скрыть факторы' : `Факторы расчёта (${estimate.flags.length})`}
+          </button>
+          <AnimatePresence>
+            {showFlags && (
+              <motion.ul
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="mt-2 space-y-1 overflow-hidden"
+              >
+                {estimate.flags.map((flag, i) => (
+                  <li key={i} className="flex items-center gap-1.5 text-xs text-white/50">
+                    <span className="w-1 h-1 rounded-full bg-[#6C3EF4] flex-shrink-0" />
+                    {flag}
+                  </li>
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {estimate.kind === 'manual' && (
+        <p className="text-xs text-white/40 flex items-start gap-1.5">
+          <AlertCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+          Уточним стоимость после изучения деталей
+        </p>
+      )}
+    </div>
+  )
+}
+
+// ─── OrderForm ────────────────────────────────────────────────────────────────
 
 export function OrderForm() {
   const { toast } = useToast()
@@ -102,6 +216,30 @@ export function OrderForm() {
     formState: { errors: errors3 },
   } = useForm<z.infer<typeof step3Schema>>({ resolver: zodResolver(step3Schema) })
 
+  // ─── Pricing state ──────────────────────────────────────────────────────────
+
+  const step1Type = watch1('type') as WorkType | undefined
+  const step1Subject = watch1('subject') || ''
+  const step1Deadline = watch1('deadline') || ''
+  const description = watch2('description') || ''
+
+  // Live estimate — recomputes on every relevant change
+  const estimate = useMemo<PriceEstimate | null>(() => {
+    const type = step1Type || formData.type
+    const subject = step1Subject || formData.subject || ''
+    const deadline = step1Deadline || formData.deadline || ''
+    if (!type || !subject || !deadline) return null
+    return calculateEstimate({
+      type: type as WorkType,
+      subject,
+      deadline,
+      description: description || formData.description || '',
+      filesCount: files.length,
+    })
+  }, [step1Type, step1Subject, step1Deadline, description, files.length, formData])
+
+  // ─── File handlers ──────────────────────────────────────────────────────────
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     setDragOver(false)
@@ -117,6 +255,8 @@ export function OrderForm() {
   const removeFile = (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index))
   }
+
+  // ─── Step handlers ──────────────────────────────────────────────────────────
 
   const onStep1Submit = (data: z.infer<typeof step1Schema>) => {
     setFormData((prev) => ({ ...prev, ...data }))
@@ -134,10 +274,8 @@ export function OrderForm() {
       const allData = { ...formData, ...data }
       let uploadedFiles: string[] = []
 
-      // Временный ID для загрузки файлов
       const tempId = `temp_${Date.now()}`
 
-      // Загружаем файлы если есть
       if (files.length > 0) {
         try {
           const parseUploadError = async (res: Response): Promise<string> => {
@@ -167,7 +305,7 @@ export function OrderForm() {
           }
 
           const chunkUploadFile = async (file: File): Promise<{ files: string[]; skipped: string[]; error?: string }> => {
-            const CHUNK_SIZE = 256 * 1024 // 256KB
+            const CHUNK_SIZE = 256 * 1024
             const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
             const uploadId = `${tempId}_${file.name}_${file.size}_${Date.now()}`
 
@@ -205,7 +343,6 @@ export function OrderForm() {
           const failedNames: string[] = []
           let fallbackError: string | undefined
 
-          // Загружаем по одному файлу; при 413/size — chunk fallback
           for (const file of files) {
             const single = await uploadBatch([file])
             if (single.files.length > 0) {
@@ -263,7 +400,18 @@ export function OrderForm() {
         }
       }
 
-      // Создаём заявку
+      // Build estimate snapshot for logging
+      const estimatePayload = estimate
+        ? {
+            label: estimate.label,
+            kind: estimate.kind,
+            min: estimate.min,
+            max: estimate.max,
+            confidence: estimate.confidence,
+            snapshot: estimate.snapshot,
+          }
+        : null
+
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -276,6 +424,7 @@ export function OrderForm() {
           email: allData.email,
           phone: allData.phone || null,
           files: uploadedFiles,
+          estimatedPrice: estimatePayload,
         }),
       })
 
@@ -301,14 +450,17 @@ export function OrderForm() {
     }
   }
 
-  const descriptionLength = watch2('description')?.length || 0
+  // ─── Derived values ─────────────────────────────────────────────────────────
+
+  const descriptionLength = description.length
   const phoneValue = watch3('phone') || ''
-  const consentValue = watch3('consent')
 
   const formatOrderId = (id: string) => {
     const hash = id.replace(/[^0-9]/g, '').slice(-5).padStart(5, '0')
     return `#${hash}`
   }
+
+  // ─── Success screen ─────────────────────────────────────────────────────────
 
   if (success) {
     return (
@@ -325,9 +477,7 @@ export function OrderForm() {
               <CheckCircle className="w-10 h-10 text-emerald-400" />
             </div>
             <h3 className="text-3xl font-bold text-white mb-3">Заявка принята!</h3>
-            <p className="text-white/50 mb-4">
-              Ваша заявка успешно отправлена
-            </p>
+            <p className="text-white/50 mb-4">Ваша заявка успешно отправлена</p>
             <div className="inline-block bg-[#6C3EF4]/20 border border-[#6C3EF4]/30 rounded-xl px-6 py-3 mb-6">
               <p className="text-white/70 text-sm">Номер заявки</p>
               <p className="text-2xl font-bold text-[#A78BFA]">{formatOrderId(orderId)}</p>
@@ -341,6 +491,8 @@ export function OrderForm() {
       </section>
     )
   }
+
+  // ─── Form render ─────────────────────────────────────────────────────────────
 
   return (
     <section id="order" className="py-24">
@@ -390,7 +542,7 @@ export function OrderForm() {
           </div>
 
           <AnimatePresence mode="wait">
-            {/* Step 1 */}
+            {/* ── Step 1 ── */}
             {step === 1 && (
               <motion.form
                 key="step1"
@@ -453,7 +605,7 @@ export function OrderForm() {
               </motion.form>
             )}
 
-            {/* Step 2 */}
+            {/* ── Step 2 ── */}
             {step === 2 && (
               <motion.form
                 key="step2"
@@ -536,6 +688,11 @@ export function OrderForm() {
                   )}
                 </div>
 
+                {/* ── Price estimate block (step 2) ── */}
+                {estimate && (
+                  <PriceEstimateBlock estimate={estimate} />
+                )}
+
                 <div className="flex gap-3">
                   <Button type="button" variant="outline" onClick={() => setStep(1)} className="gap-2 flex-1">
                     <ChevronLeft className="w-4 h-4" /> Назад
@@ -547,7 +704,7 @@ export function OrderForm() {
               </motion.form>
             )}
 
-            {/* Step 3 */}
+            {/* ── Step 3 ── */}
             {step === 3 && (
               <motion.form
                 key="step3"
@@ -620,6 +777,35 @@ export function OrderForm() {
                   </label>
                 </div>
                 {errors3.consent && <p className="text-red-400 text-xs">{errors3.consent.message}</p>}
+
+                {/* ── Compact price summary (step 3) ── */}
+                {estimate && (
+                  <div className="space-y-2">
+                    {/* Order summary line */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/50 space-y-1">
+                      <div className="flex justify-between gap-2">
+                        <span>Тип работы</span>
+                        <span className="text-white/70 text-right">
+                          {formData.type ? WORK_TYPE_LABELS[formData.type as WorkType] : '—'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between gap-2">
+                        <span>Предмет</span>
+                        <span className="text-white/70 truncate max-w-[55%] text-right">{formData.subject || '—'}</span>
+                      </div>
+                    </div>
+
+                    {/* Compact price */}
+                    <PriceEstimateBlock estimate={estimate} compact />
+
+                    {/* Disclaimer */}
+                    <p className="text-xs text-white/35 flex items-start gap-1.5 leading-snug">
+                      <Info className="w-3 h-3 mt-0.5 flex-shrink-0 text-white/30" aria-hidden="true" />
+                      Цена ориентировочная. После изучения всех условий задания итоговая стоимость может
+                      быть уточнена — как в большую, так и в меньшую сторону.
+                    </p>
+                  </div>
+                )}
 
                 <div className="flex gap-3">
                   <Button type="button" variant="outline" onClick={() => setStep(2)} className="gap-2 flex-1">
