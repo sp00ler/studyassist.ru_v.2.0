@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /auth/
-Disallow: /dashboard/
-Disallow: /admin/
-Disallow: /api/
-
-Sitemap: https://studyassist.ru/sitemap.xml
