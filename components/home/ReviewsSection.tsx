@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { Star, Send, Loader2 } from 'lucide-react'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
@@ -164,7 +163,8 @@ export function ReviewsSection() {
                     className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0"
                     style={{ border: `1px solid ${review.color}40` }}
                   >
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src={review.avatar}
                       alt={review.name}
                       width={48}
