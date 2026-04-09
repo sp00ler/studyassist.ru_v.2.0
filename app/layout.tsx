@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { CookieBanner } from '@/components/CookieBanner'
 import { MetrikaScript } from '@/components/MetrikaScript'
 import { ChatWidget } from '@/components/ChatWidget'
+import { YandexBrowserBanner } from '@/components/YandexBrowserBanner'
 
 export const metadata: Metadata = {
   title: 'StudyAssist — Помощь студентам с учёбой | Курсовые, дипломные, рефераты',
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Перейти к основному содержанию
         </a>
+        <YandexBrowserBanner />
         <SessionProvider>
           {children}
           <Toaster />
