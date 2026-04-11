@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
   title: 'Согласие на получение рекламных сообщений — StudyAssist',
+  description: 'Согласие на получение рекламных и информационных сообщений от StudyAssist.',
 }
 
 export default function ConsentMarketingPage() {

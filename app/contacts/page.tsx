@@ -6,6 +6,7 @@ import { Mail, Clock, Phone, ArrowLeft } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Контакты — StudyAssist',
+  description: 'Свяжитесь с командой StudyAssist: email, Telegram и время работы поддержки. Ответим в течение 30 минут.',
 }
 
 function TelegramIcon() {

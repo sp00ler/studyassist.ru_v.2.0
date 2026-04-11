@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
   title: 'Правила возврата и оплаты — StudyAssist',
+  description: 'Условия оплаты и возврата средств на StudyAssist. Оплата после проверки работы, возврат в течение 14 дней.',
 }
 
 export default function RefundPage() {

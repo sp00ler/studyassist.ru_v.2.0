@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
   title: 'Политика использования cookie — StudyAssist',
+  description: 'Политика использования cookie на сайте StudyAssist: какие данные собираются и как управлять настройками.',
 }
 
 export default function CookiesPage() {

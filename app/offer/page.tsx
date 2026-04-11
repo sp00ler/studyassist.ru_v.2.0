@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
   title: 'Публичная оферта — StudyAssist',
+  description: 'Публичная оферта StudyAssist: условия оказания образовательных консультаций, права и обязанности сторон.',
 }
 
 export default function OfferPage() {
