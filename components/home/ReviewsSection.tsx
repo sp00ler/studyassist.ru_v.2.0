@@ -4,63 +4,54 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { Star, Send, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/use-toast'
-
-// Аватарки студентов должны быть размещены в папке /public/avatars/
-// Файлы: anna.png, dmitriy.png, elena.png, mikhail.png, olga.png
 
 const STATIC_REVIEWS = [
   {
     id: '1',
-    name: 'Анна М.',
-    role: 'Экономика',
+    name: 'Алина К.',
+    role: 'Экономика, 3 курс · Курсовая работа',
     rating: 5,
-    text: 'Попросила помочь разобраться с темой по микроэкономике — объяснили всё максимально понятно, с примерами. Теперь сдаю экзамены намного увереннее. Спасибо!',
-    date: '12.11.2024',
-    avatar: '/avatars/anna.png',
-    color: '#6C3EF4',
+    text: 'Дедлайн был через 2 дня, курсовая — 40 страниц. Думала, всё пропало. Написали за ночь, преподаватель поставила «отлично». Единственные, кто не кинул и сделал реально хорошо.',
+    initial: 'А',
+    wide: true,
   },
   {
     id: '2',
-    name: 'Дмитрий К.',
-    role: 'Студент, Юриспруденция',
+    name: 'Максим Р.',
+    role: 'IT, 4 курс · ВКР',
     rating: 5,
-    text: 'Брал консультации по гражданскому праву перед сессией. Специалист объяснил сложные моменты простым языком, подобрал нужные нормативные акты. Очень доволен.',
-    date: '03.10.2024',
-    avatar: '/avatars/dmitriy.png',
-    color: '#3B82F6',
+    text: 'Диплом по IT — тема сложная, специфика серьёзная. Всё сделали на уровне, защитился на пять.',
+    initial: 'М',
+    wide: false,
   },
   {
     id: '3',
-    name: 'Елена С.',
-    role: 'Магистрант, Психология',
+    name: 'Дарья С.',
+    role: 'Юриспруденция · Реферат',
     rating: 5,
-    text: 'Помогли подобрать актуальную литературу и источники для исследования по психологии. Сэкономила массу времени. Структурировали список и дали рекомендации. Отлично!',
-    date: '28.06.2024',
-    avatar: '/avatars/elena.png',
-    color: '#8B5CF6',
+    text: 'Ответили за 20 минут, цену назвали честно, без накруток. Реферат по праву — чисто, по теме.',
+    initial: 'Д',
+    wide: false,
   },
   {
     id: '4',
-    name: 'Михаил П.',
-    role: 'Студент, IT',
+    name: 'Светлана В.',
+    role: 'Психология · Отчёт по практике',
     rating: 5,
-    text: 'Брал консультации по алгоритмам и структурам данных. Разобрали несколько сложных задач пошагово. Цена адекватная, отвечают быстро. Рекомендую всем айтишникам.',
-    date: '19.09.2024',
-    avatar: '/avatars/mikhail.png',
-    color: '#06B6D4',
+    text: 'Отчёт по практике — сложная тема, не знала с чего начать. Оформили грамотно, правки сделали быстро.',
+    initial: 'С',
+    wide: false,
   },
   {
     id: '5',
-    name: 'Ольга В.',
-    role: 'Студентка, Медицина',
+    name: 'Игорь Т.',
+    role: 'Медицина, 5 курс · Курсовая',
     rating: 5,
-    text: 'Готовилась к экзамену по фармакологии — помогли систематизировать весь материал, разобрали сложные препараты по группам. Сдала на отлично, спасибо!',
-    date: '07.11.2024',
-    avatar: '/avatars/olga.png',
-    color: '#F59E0B',
+    text: 'Медицина — специфика серьёзная. Справились. Поставили пять.',
+    initial: 'И',
+    wide: false,
   },
 ]
 
@@ -82,8 +73,8 @@ function StarRating({ rating, onChange }: { rating: number; onChange?: (r: numbe
           <Star
             className="w-5 h-5"
             aria-hidden="true"
-            fill={star <= (hovered || rating) ? '#F59E0B' : 'none'}
-            stroke={star <= (hovered || rating) ? '#F59E0B' : '#ffffff30'}
+            fill={star <= (hovered || rating) ? '#C5FF45' : 'none'}
+            stroke={star <= (hovered || rating) ? '#C5FF45' : 'rgba(255,255,255,.2)'}
           />
         </button>
       ))}
@@ -126,67 +117,41 @@ export function ReviewsSection() {
   }
 
   return (
-    <section id="reviews" className="py-24 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0F0F1A] via-[#1A1A2E]/30 to-[#0F0F1A]" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div id="reviews" className="bg-[#0E0E1C] border-t border-b border-white/[.06]">
+      <section className="py-[120px] max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Отзывы{' '}
-            <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-              студентов
-            </span>
-          </h2>
-          <p className="text-white/50 text-lg max-w-2xl mx-auto">
-            Более 1000 студентов уже получили наши консультации и улучшили свои результаты
-          </p>
+          <span className="section-tag">// Отзывы</span>
+          <h2 className="section-heading">Говорят студенты</h2>
         </motion.div>
 
-        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 list-none">
-          {STATIC_REVIEWS.map((review, index) => (
+        {/* Masonry grid */}
+        <ul className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16 list-none">
+          {STATIC_REVIEWS.map((rev, i) => (
             <motion.li
-              key={review.id}
+              key={rev.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.08 }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              className={rev.wide ? 'md:col-span-2' : ''}
             >
-              <article className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 h-full">
-                <div className="flex items-start gap-4 mb-4">
-                  <div
-                    className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0"
-                    style={{ border: `1px solid ${review.color}40` }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={review.avatar}
-                      alt={review.name}
-                      width={48}
-                      height={48}
-                      className="w-full h-full object-cover"
-                    />
+              <article className="bg-[#141428] border border-white/[.06] rounded-3xl p-8 hover:border-[#C5FF45]/[.18] hover:-translate-y-[3px] transition-all duration-250 h-full">
+                <div className="text-[#C5FF45] text-[16px] tracking-[3px] mb-3.5">★★★★★</div>
+                <p className="text-[14px] leading-[1.75] text-[#F0F0EC] italic mb-5">&quot;{rev.text}&quot;</p>
+                <div className="flex items-center gap-3 mt-auto">
+                  <div className="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-[#7C3AED] to-[#C5FF45] flex items-center justify-center font-bold text-[15px] text-[#07070E] flex-shrink-0">
+                    {rev.initial}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white font-semibold">{review.name}</p>
-                    <p className="text-white/40 text-xs">{review.role}</p>
+                  <div>
+                    <div className="font-bold text-[13px] text-[#F0F0EC]">{rev.name}</div>
+                    <div className="text-[11px] text-[#6A6A88]">{rev.role}</div>
                   </div>
                 </div>
-
-                <div aria-label={`Оценка ${review.rating} из 5`}>
-                  <StarRating rating={review.rating} />
-                </div>
-
-                <p className="text-white/70 text-sm leading-relaxed mt-3 mb-4">
-                  &quot;{review.text}&quot;
-                </p>
-
-                <p className="text-white/30 text-xs">{review.date}</p>
               </article>
             </motion.li>
           ))}
@@ -200,28 +165,30 @@ export function ReviewsSection() {
           transition={{ duration: 0.5 }}
           className="max-w-xl mx-auto"
         >
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-            <h3 className="text-xl font-bold text-white mb-6 text-center">Оставить отзыв</h3>
+          <div className="bg-[#141428] border border-white/[.06] rounded-3xl p-8">
+            <h3 className="font-unbounded text-[18px] font-bold text-[#F0F0EC] mb-6 text-center tracking-[-0.4px]">
+              Оставить отзыв
+            </h3>
 
             {!session ? (
-              <p className="text-white/50 text-sm text-center">
+              <p className="text-[#6A6A88] text-sm text-center">
                 Чтобы оставить отзыв, необходимо{' '}
-                <a href="/auth/login" className="text-[#6C3EF4] hover:underline">войти</a>
+                <a href="/auth/login" className="text-[#C5FF45] hover:underline">войти</a>
               </p>
             ) : submitted ? (
-              <p role="status" aria-live="polite" className="text-emerald-400 text-sm text-center">
+              <p role="status" aria-live="polite" className="text-[#C5FF45] text-sm text-center">
                 ✓ Отзыв отправлен на модерацию. Спасибо!
               </p>
             ) : (
               <div className="space-y-4">
                 <div>
-                  <p id="rating-label" className="text-white/70 text-sm block mb-2">Ваша оценка</p>
+                  <p id="rating-label" className="text-[#6A6A88] text-sm block mb-2">Ваша оценка</p>
                   <div role="group" aria-labelledby="rating-label">
                     <StarRating rating={reviewRating} onChange={setReviewRating} />
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="review-text" className="text-white/70 text-sm block mb-2">Текст отзыва</label>
+                  <label htmlFor="review-text" className="text-[#6A6A88] text-sm block mb-2">Текст отзыва</label>
                   <Textarea
                     id="review-text"
                     value={reviewText}
@@ -230,23 +197,21 @@ export function ReviewsSection() {
                     rows={4}
                   />
                 </div>
-                <Button
+                <button
                   onClick={handleSubmitReview}
                   disabled={submitting}
-                  className="w-full gap-2"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#C5FF45] text-[#07070E] font-bold font-unbounded text-[13px] hover:bg-[#D4FF60] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
+                  {submitting
+                    ? <Loader2 className="w-4 h-4 animate-spin" />
+                    : <Send className="w-4 h-4" />}
                   Отправить отзыв
-                </Button>
+                </button>
               </div>
             )}
           </div>
         </motion.div>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }

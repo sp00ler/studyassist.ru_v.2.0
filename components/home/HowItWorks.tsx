@@ -1,105 +1,75 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { FileText, Calculator, Download } from 'lucide-react'
 
 const steps = [
   {
     number: '01',
-    icon: FileText,
-    title: 'Расскажи, что случилось',
-    description: 'Напиши, какой предмет, что именно не идёт и когда нужно сдать. Чем точнее опишешь — тем быстрее поможем. Прикрепи файлы, если есть.',
-    color: '#6C3EF4',
+    title: 'Опиши задачу',
+    desc: 'Заполни форму: тип работы, дисциплина, дедлайн и требования. Прикрепи файлы, если есть. Чем подробнее — тем точнее цена.',
   },
   {
     number: '02',
-    icon: Calculator,
-    title: 'Получи план и цену за 30 минут',
-    description: 'Выходим на связь, разбираемся в ситуации и сразу называем стоимость. Без "нужно посчитать и перезвоним через неделю".',
-    color: '#3B82F6',
+    title: 'Получи план и цену',
+    desc: 'За 30 минут мы свяжемся, согласуем план и стоимость. Никаких скрытых доплат после.',
   },
   {
     number: '03',
-    icon: Download,
-    title: 'Получи то, что нужно',
-    description: 'Работаем, пока не станет понятно. Вопросы после — тоже можно. Результат остаётся у тебя навсегда.',
-    color: '#F59E0B',
+    title: 'Получи результат',
+    desc: 'Профильный специалист выполняет работу в срок. Правки до полного соответствия требованиям.',
   },
 ]
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-24 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0F0F1A] via-[#1A1A2E]/50 to-[#0F0F1A]" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div id="how-it-works" className="bg-[#0E0E1C] border-t border-b border-white/[.06]">
+      <section className="py-[120px] max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Три шага — и дедлайн{' '}
-            <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-              больше не страшен
-            </span>
+          <span className="section-tag">// Как это работает</span>
+          <h2 className="section-heading">
+            Три шага до<br />готовой работы
           </h2>
-          <p className="text-white/50 text-lg max-w-2xl mx-auto">
-            Никакой волокиты. Пишешь — получаешь ответ — решаешь вопрос.
-          </p>
         </motion.div>
 
-        <ol className="grid grid-cols-1 md:grid-cols-3 gap-8 relative list-none">
-          {/* Connecting line (desktop) */}
-          <div className="hidden md:block absolute top-16 left-[calc(16.67%+32px)] right-[calc(16.67%+32px)] h-px bg-gradient-to-r from-[#6C3EF4] via-[#3B82F6] to-[#F59E0B] opacity-30" aria-hidden="true" />
+        <ol className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-14 relative list-none">
+          {/* Connecting line */}
+          <div
+            className="hidden md:block absolute top-8 pointer-events-none h-px"
+            style={{
+              left: 'calc(16.6% + 16px)',
+              right: 'calc(16.6% + 16px)',
+              background: 'linear-gradient(90deg, transparent, rgba(197,255,69,.18), #C5FF45, rgba(197,255,69,.18), transparent)',
+            }}
+            aria-hidden="true"
+          />
 
-          {steps.map((step, index) => (
+          {steps.map((step, i) => (
             <motion.li
               key={step.number}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.15 }}
-              className="relative group"
+              transition={{ duration: 0.5, delay: i * 0.15 }}
+              className="text-center"
             >
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-all duration-300 hover:bg-white/8 group-hover:shadow-[0_0_40px_rgba(108,62,244,0.1)]">
-                {/* Number */}
-                <div className="absolute -top-4 left-8 text-6xl font-black opacity-10 select-none"
-                  style={{ color: step.color }}>
+              <div className="w-16 h-16 rounded-full bg-[#07070E] border-2 border-[#C5FF45]/[.18] flex items-center justify-center mx-auto mb-6 relative z-10">
+                <span className="font-unbounded text-[18px] font-black text-[#C5FF45]">
                   {step.number}
-                </div>
-
-                {/* Icon */}
-                <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative"
-                  style={{ backgroundColor: `${step.color}20`, border: `1px solid ${step.color}40` }}
-                >
-                  <step.icon className="w-7 h-7" style={{ color: step.color }} />
-                  <div
-                    className="absolute inset-0 rounded-xl blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300"
-                    style={{ backgroundColor: step.color }}
-                  />
-                </div>
-
-                {/* Step number badge */}
-                <div className="flex items-center gap-3 mb-4">
-                  <span
-                    className="text-xs font-bold px-2 py-1 rounded-md"
-                    style={{ backgroundColor: `${step.color}20`, color: step.color }}
-                  >
-                    Шаг {index + 1}
-                  </span>
-                </div>
-
-                <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
-                <p className="text-white/50 leading-relaxed text-sm">{step.description}</p>
+                </span>
               </div>
+              <h3 className="font-unbounded text-[16px] font-bold tracking-[-0.4px] mb-2.5 text-[#F0F0EC]">
+                {step.title}
+              </h3>
+              <p className="text-[13px] text-[#6A6A88] leading-[1.7]">{step.desc}</p>
             </motion.li>
           ))}
         </ol>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }

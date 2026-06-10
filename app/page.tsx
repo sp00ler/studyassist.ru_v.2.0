@@ -1,13 +1,15 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
+import { UrgencyBar } from '@/components/layout/UrgencyBar'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { HeroSection } from '@/components/home/HeroSection'
-import { HowItWorks } from '@/components/home/HowItWorks'
+import { StatsSection } from '@/components/home/StatsSection'
 import { ServicesSection } from '@/components/home/ServicesSection'
+import { HowItWorks } from '@/components/home/HowItWorks'
 import { PricingSection } from '@/components/home/PricingSection'
-import { OrderForm } from '@/components/home/OrderForm'
 import { ReviewsSection } from '@/components/home/ReviewsSection'
+import { OrderForm } from '@/components/home/OrderForm'
 import { FaqSection } from '@/components/home/FaqSection'
 
 export const metadata: Metadata = {
@@ -117,14 +119,16 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <UrgencyBar />
       <Navbar />
       <main id="main-content">
         <HeroSection />
-        <HowItWorks />
+        <StatsSection />
         <ServicesSection />
+        <HowItWorks />
         <PricingSection />
-        <OrderForm />
         <ReviewsSection />
+        <OrderForm />
         <FaqSection />
       </main>
       <Footer />

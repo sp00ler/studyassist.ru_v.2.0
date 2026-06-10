@@ -116,7 +116,7 @@ function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockPro
           <TrendingUp className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
           <span>Предв. стоимость</span>
         </div>
-        <span className={`font-bold text-base ${estimate.kind === 'manual' ? 'text-white/60' : 'text-[#A78BFA]'}`}>
+        <span className={`font-bold text-base ${estimate.kind === 'manual' ? 'text-white/60' : 'text-[#C5FF45]'}`}>
           {estimate.label}
         </span>
       </div>
@@ -124,10 +124,10 @@ function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockPro
   }
 
   return (
-    <div className="rounded-2xl border border-[#6C3EF4]/30 bg-gradient-to-br from-[#6C3EF4]/10 to-[#3B82F6]/5 p-5">
+    <div className="rounded-2xl border border-[#C5FF45]/[.18] bg-[#C5FF45]/[.04] p-5">
       <div className="flex items-start justify-between gap-3 mb-1">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-[#A78BFA] flex-shrink-0" aria-hidden="true" />
+          <TrendingUp className="w-4 h-4 text-[#C5FF45] flex-shrink-0" aria-hidden="true" />
           <span className="text-sm font-medium text-white/70">Предварительная стоимость</span>
         </div>
         {confidenceLabel && (
@@ -161,7 +161,7 @@ function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockPro
               >
                 {estimate.flags.map((flag, i) => (
                   <li key={i} className="flex items-center gap-1.5 text-xs text-white/50">
-                    <span className="w-1 h-1 rounded-full bg-[#6C3EF4] flex-shrink-0" />
+                    <span className="w-1 h-1 rounded-full bg-[#C5FF45] flex-shrink-0" />
                     {flag}
                   </li>
                 ))}
@@ -464,23 +464,23 @@ export function OrderForm() {
 
   if (success) {
     return (
-      <section id="order" className="py-24">
+      <section id="order" className="py-24 bg-[#07070E]">
         <div className="max-w-2xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             role="status"
             aria-live="polite"
-            className="bg-white/5 border border-white/10 rounded-3xl p-12 text-center"
+            className="bg-[#141428] border border-white/[.06] rounded-3xl p-12 text-center"
           >
             <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-emerald-400" />
             </div>
-            <h3 className="text-3xl font-bold text-white mb-3">Заявка принята!</h3>
+            <h3 className="font-unbounded text-3xl font-bold text-white mb-3">Заявка принята!</h3>
             <p className="text-white/50 mb-4">Ваша заявка успешно отправлена</p>
-            <div className="inline-block bg-[#6C3EF4]/20 border border-[#6C3EF4]/30 rounded-xl px-6 py-3 mb-6">
+            <div className="inline-block bg-[#C5FF45]/10 border border-[#C5FF45]/[.18] rounded-xl px-6 py-3 mb-6">
               <p className="text-white/70 text-sm">Номер заявки</p>
-              <p className="text-2xl font-bold text-[#A78BFA]">{formatOrderId(orderId)}</p>
+              <p className="text-2xl font-bold text-[#C5FF45]">{formatOrderId(orderId)}</p>
             </div>
             <p className="text-white/50 text-sm">
               Мы свяжемся с вами в течение 30 минут и согласуем детали консультации.
@@ -495,7 +495,7 @@ export function OrderForm() {
   // ─── Form render ─────────────────────────────────────────────────────────────
 
   return (
-    <section id="order" className="py-24">
+    <section id="order" className="py-24 bg-[#07070E] border-t border-white/[.06]">
       <div className="max-w-2xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -504,16 +504,16 @@ export function OrderForm() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="font-unbounded text-3xl md:text-4xl font-black tracking-[-1.5px] mb-4">
             Опиши ситуацию —{' '}
-            <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
+            <span className="text-[#C5FF45]">
               ответим за 30 минут
             </span>
           </h2>
-          <p className="text-white/50">Без регистрации. Без предоплаты. Просто напиши — и мы разберёмся.</p>
+          <p className="text-[#6A6A88]">Без регистрации. Без предоплаты. Просто напиши — и мы разберёмся.</p>
         </motion.div>
 
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
+        <div className="bg-[#141428] border border-white/[.06] rounded-3xl p-8">
           {/* Progress */}
           <div className="flex items-center justify-between mb-8">
             {stepTitles.map((title, i) => (
@@ -524,7 +524,7 @@ export function OrderForm() {
                       i + 1 < step
                         ? 'bg-emerald-500 text-white'
                         : i + 1 === step
-                        ? 'bg-gradient-to-br from-[#6C3EF4] to-[#3B82F6] text-white'
+                        ? 'bg-[#C5FF45] text-[#07070E]'
                         : 'bg-white/10 text-white/30'
                     }`}
                   >
@@ -642,7 +642,7 @@ export function OrderForm() {
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
                     onDragLeave={() => setDragOver(false)}
                     className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 cursor-pointer ${
-                      dragOver ? 'border-[#6C3EF4] bg-[#6C3EF4]/10' : 'border-white/10 hover:border-white/20 bg-white/3'
+                      dragOver ? 'border-[#C5FF45] bg-[#C5FF45]/10' : 'border-white/10 hover:border-white/20 bg-white/3'
                     }`}
                     onClick={() => document.getElementById('file-input')?.click()}
                     role="button"
@@ -652,7 +652,7 @@ export function OrderForm() {
                   >
                     <Upload className="w-8 h-8 text-white/30 mx-auto mb-2" aria-hidden="true" />
                     <p className="text-white/50 text-sm">
-                      Перетащите файлы сюда или <span className="text-[#6C3EF4]">выберите файлы</span>
+                      Перетащите файлы сюда или <span className="text-[#C5FF45]">выберите файлы</span>
                     </p>
                     <p className="text-white/30 text-xs mt-1">PDF, DOC, DOCX, TXT, ZIP, JPG, PNG — до 50МБ</p>
                     <input
@@ -670,7 +670,7 @@ export function OrderForm() {
                       {files.map((file, i) => (
                         <div key={i} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
                           <div className="flex items-center gap-2">
-                            <File className="w-4 h-4 text-[#6C3EF4]" />
+                            <File className="w-4 h-4 text-[#C5FF45]" />
                             <span className="text-white/70 text-sm truncate max-w-48">{file.name}</span>
                             <span className="text-white/30 text-xs">({(file.size / 1024 / 1024).toFixed(1)} МБ)</span>
                           </div>
@@ -762,16 +762,16 @@ export function OrderForm() {
                     type="checkbox"
                     id="consent"
                     {...register3('consent')}
-                    className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 text-[#6C3EF4] cursor-pointer accent-[#6C3EF4] flex-shrink-0"
+                    className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 text-[#C5FF45] cursor-pointer accent-[#C5FF45] flex-shrink-0"
                   />
                   <label htmlFor="consent" className="text-white/50 text-sm cursor-pointer">
                     Я даю согласие на обработку моих персональных данных (ФИО, email, телефон) в целях
                     обработки заявки и связи по её исполнению в соответствии с{' '}
-                    <a href="/privacy" className="text-[#6C3EF4] hover:underline">
+                    <a href="/privacy" className="text-[#C5FF45] hover:underline">
                       Политикой конфиденциальности
                     </a>.
                     {' '}Согласие можно отозвать, написав на{' '}
-                    <a href="mailto:support@studyassist.ru" className="text-[#6C3EF4] hover:underline">
+                    <a href="mailto:support@studyassist.ru" className="text-[#C5FF45] hover:underline">
                       support@studyassist.ru
                     </a>
                   </label>

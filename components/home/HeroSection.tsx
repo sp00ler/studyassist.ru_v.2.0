@@ -1,311 +1,183 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { CheckCircle, Zap, Lock } from 'lucide-react'
-
-const trustBadges = [
-  { icon: Zap, text: 'Ответ за 30 минут' },
-  { icon: CheckCircle, text: 'Оплата после согласования' },
-  { icon: Lock, text: 'Конфиденциально' },
-]
-
-// ─── Пул данных для карточек ─────────────────────────────────────────────────
-
-interface HeroCard {
-  name: string
-  subject: string
-  initial: string
-  avatarFrom: string
-  avatarTo: string
-  workType: string
-  workTitle: string
-  progress: number
-}
-
-const HERO_POOL: HeroCard[] = [
-  { name: 'Дмитрий',    subject: 'Юриспруденция',  initial: 'Д', avatarFrom: '#3B82F6', avatarTo: '#6C3EF4', workType: 'Курсовая работа',       workTitle: 'Гражданское право',          progress: 70 },
-  { name: 'Анастасия',  subject: 'Экономика',       initial: 'А', avatarFrom: '#EC4899', avatarTo: '#8B5CF6', workType: 'Дипломная работа (ВКР)', workTitle: 'Финансовый менеджмент',      progress: 85 },
-  { name: 'Михаил',     subject: 'Информатика',     initial: 'М', avatarFrom: '#10B981', avatarTo: '#3B82F6', workType: 'Лабораторная работа',    workTitle: 'Программирование на C++',    progress: 55 },
-  { name: 'Екатерина',  subject: 'Психология',      initial: 'Е', avatarFrom: '#F472B6', avatarTo: '#A855F7', workType: 'Курсовая работа',       workTitle: 'Психология личности',        progress: 90 },
-  { name: 'Артём',      subject: 'Физика',          initial: 'А', avatarFrom: '#F59E0B', avatarTo: '#EF4444', workType: 'Лабораторная работа',    workTitle: 'Механика и термодинамика',   progress: 65 },
-  { name: 'Мария',      subject: 'Маркетинг',       initial: 'М', avatarFrom: '#EC4899', avatarTo: '#F97316', workType: 'Курсовая работа',       workTitle: 'Маркетинговые исследования', progress: 75 },
-  { name: 'Александр',  subject: 'История',         initial: 'А', avatarFrom: '#6366F1', avatarTo: '#3B82F6', workType: 'Реферат / Эссе',        workTitle: 'История Средних веков',      progress: 45 },
-  { name: 'Виктория',   subject: 'Биология',        initial: 'В', avatarFrom: '#22C55E', avatarTo: '#16A34A', workType: 'Курсовая работа',       workTitle: 'Молекулярная биология',      progress: 80 },
-  { name: 'Иван',       subject: 'Математика',      initial: 'И', avatarFrom: '#0EA5E9', avatarTo: '#7C3AED', workType: 'Лабораторная работа',    workTitle: 'Теория вероятностей',        progress: 60 },
-  { name: 'Дарья',      subject: 'Менеджмент',      initial: 'Д', avatarFrom: '#A78BFA', avatarTo: '#EC4899', workType: 'Дипломная работа (ВКР)', workTitle: 'Управление персоналом',      progress: 35 },
-  { name: 'Кирилл',     subject: 'Финансы',         initial: 'К', avatarFrom: '#34D399', avatarTo: '#0EA5E9', workType: 'Курсовая работа',       workTitle: 'Инвестиционный анализ',      progress: 50 },
-  { name: 'Ольга',      subject: 'Социология',      initial: 'О', avatarFrom: '#FB923C', avatarTo: '#EF4444', workType: 'Реферат / Эссе',        workTitle: 'Социальные институты',       progress: 88 },
-  { name: 'Сергей',     subject: 'Архитектура',     initial: 'С', avatarFrom: '#818CF8', avatarTo: '#6C3EF4', workType: 'Дипломная работа (ВКР)', workTitle: 'Градостроительное проектирование', progress: 72 },
-  { name: 'Наталья',    subject: 'Педагогика',      initial: 'Н', avatarFrom: '#F472B6', avatarTo: '#EF4444', workType: 'Курсовая работа',       workTitle: 'Методика обучения',          progress: 93 },
-  { name: 'Алексей',    subject: 'Химия',           initial: 'А', avatarFrom: '#2DD4BF', avatarTo: '#3B82F6', workType: 'Лабораторная работа',    workTitle: 'Органическая химия',         progress: 42 },
-]
-
-function pickRandom<T>(arr: T[], seed: number): T {
-  return arr[seed % arr.length]
-}
-
-interface StampPos { right: number; top: number; rotate: number }
 
 export function HeroSection() {
-  // SSR-безопасная рандомизация: начальное значение детерминировано,
-  // после гидрации useEffect подставляет случайные данные
-  const [card, setCard] = useState<HeroCard>(HERO_POOL[0])
+  const [time, setTime] = useState('--:--:--')
   const [mounted, setMounted] = useState(false)
-  const [stampPos, setStampPos] = useState<StampPos>({ right: 12, top: 50, rotate: -10 })
 
   useEffect(() => {
-    const idx = Math.floor(Math.random() * HERO_POOL.length)
-    setCard(HERO_POOL[idx])
     setMounted(true)
-    // Случайное положение и угол печати при каждом обновлении страницы
-    setStampPos({
-      right:  Math.floor(Math.random() * 55) + 5,   // 5–60px от правого края
-      top:    Math.floor(Math.random() * 60) + 20,  // 20–80% по высоте
-      rotate: Math.floor(Math.random() * 60) - 30,  // −30…+30 градусов
-    })
+    const tick = () => {
+      const n = new Date()
+      const pad = (x: number) => String(x).padStart(2, '0')
+      setTime(`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`)
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
-      {/* Animated grid background */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-30" />
+    <section className="relative min-h-screen flex items-center overflow-hidden">
+      {/* Animated orbs */}
+      <div
+        className="absolute rounded-full pointer-events-none animate-orb"
+        style={{
+          width: 800, height: 800,
+          background: 'radial-gradient(circle, rgba(124,58,237,.14) 0%, transparent 70%)',
+          top: -260, right: -160,
+        }}
+      />
+      <div
+        className="absolute rounded-full pointer-events-none animate-orb-reverse"
+        style={{
+          width: 560, height: 560,
+          background: 'radial-gradient(circle, rgba(197,255,69,.07) 0%, transparent 70%)',
+          bottom: -80, left: 60,
+        }}
+      />
 
-      {/* Gradient orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#6C3EF4] rounded-full blur-[128px] opacity-20 animate-glow" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#3B82F6] rounded-full blur-[128px] opacity-15 animate-glow" style={{ animationDelay: '1.5s' }} />
+      {/* Dot grid */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,.08) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+          maskImage: 'radial-gradient(ellipse 70% 70% at 60% 50%, black 30%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 60% 50%, black 30%, transparent 100%)',
+        }}
+      />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left: Text content */}
+      <div className="relative z-10 max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-20 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-16 items-center">
+
+          {/* Left */}
           <div>
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              transition={{ duration: 0.5 }}
             >
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#6C3EF4]/20 border border-[#6C3EF4]/30 text-[#A78BFA] text-sm font-medium mb-6">
-                <span className="w-2 h-2 rounded-full bg-[#6C3EF4] animate-pulse" />
-                ✦ Более 1000 студентов уже сдали то, что откладывали
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#C5FF45]/10 border border-[#C5FF45]/[.18] text-[#C5FF45] text-[11px] font-bold uppercase tracking-[.8px] mb-7">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#C5FF45] animate-blink" />
+                Более 1000 студентов уже сдали
               </span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6"
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="font-unbounded font-black leading-[.93] tracking-[-3px] mb-7"
+              style={{ fontSize: 'clamp(52px, 8.5vw, 100px)' }}
             >
-              Дедлайн завтра,{' '}
-              <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-                а ты ещё
+              <span className="block text-[#F0F0EC]">ДЕДЛАЙН</span>
+              <span className="block text-[#C5FF45]">ЗАВТРА?</span>
+              <span
+                className="block text-[#6A6A88] font-normal tracking-[-1px]"
+                style={{ fontSize: 'clamp(20px, 3.2vw, 42px)' }}
+              >
+                Мы уже работаем.
               </span>
-              {' '}не начал?
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-lg text-white/60 leading-relaxed mb-8 max-w-xl"
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-[17px] text-[#6A6A88] max-w-[480px] leading-[1.75] mb-10"
             >
-              Разберём тему, подберём материалы, поможем структурировать всё по уму.
-              Пока другие часами ищут ответы — ты уже получаешь результат.
+              От реферата до диплома — профильный специалист,{' '}
+              ответ за 30 минут, работа любой сложности.
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-wrap gap-4 mb-10"
-            >
-              <Link href="#order">
-                <Button
-                  size="xl"
-                  className="shadow-[0_0_30px_rgba(108,62,244,0.4)] hover:shadow-[0_0_50px_rgba(108,62,244,0.6)]"
-                  onClick={() => {
-                    if (typeof window !== 'undefined' && (window as Window & { ym?: Function }).ym) {
-                      (window as Window & { ym?: Function }).ym?.(process.env.NEXT_PUBLIC_METRIKA_ID, 'reachGoal', 'hero_cta_click')
-                    }
-                  }}
-                >
-                  Получить помощь сейчас
-                </Button>
-              </Link>
-              <Link href="#pricing">
-                <Button variant="outline" size="xl">
-                  Узнать стоимость
-                </Button>
-              </Link>
-            </motion.div>
-
-            {/* Trust badges */}
-            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="flex flex-wrap gap-4"
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex flex-wrap gap-3"
             >
-              {trustBadges.map((badge) => (
-                <div
-                  key={badge.text}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10"
-                >
-                  <badge.icon className="w-4 h-4 text-[#6C3EF4]" />
-                  <span className="text-white/70 text-sm">{badge.text}</span>
-                </div>
-              ))}
+              <Link
+                href="#order"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#C5FF45] text-[#07070E] font-black font-unbounded text-[13px] tracking-[-0.2px] hover:bg-[#D4FF60] hover:shadow-[0_14px_36px_rgba(197,255,69,.28)] hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+                onClick={() => {
+                  if (typeof window !== 'undefined' && (window as Window & { ym?: Function }).ym) {
+                    (window as Window & { ym?: Function }).ym?.(
+                      process.env.NEXT_PUBLIC_METRIKA_ID,
+                      'reachGoal',
+                      'hero_cta_click'
+                    )
+                  }
+                }}
+              >
+                Оставить заявку
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Link>
+              <Link
+                href="#how-it-works"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-transparent text-[#F0F0EC] border border-white/10 font-bold font-unbounded text-[13px] hover:border-white/20 hover:bg-white/5 transition-all duration-200"
+              >
+                Как это работает
+              </Link>
             </motion.div>
           </div>
 
-          {/* Right: Dynamic cards */}
+          {/* Right: live panel */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="bg-[#0E0E1C] border border-white/[.06] rounded-3xl p-8 flex flex-col gap-6"
           >
-            <div className="relative w-full max-w-sm flex flex-col gap-4">
-
-              {/* Card 1: имя + статус "в процессе" */}
-              <motion.div
-                key={`card1-${card.name}`}
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="bg-[#1A1A2E] border border-white/10 rounded-2xl p-4 shadow-xl"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                    style={{ background: `linear-gradient(135deg, ${card.avatarFrom}, ${card.avatarTo})` }}
-                  >
-                    {card.initial}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-semibold">
-                      {card.name}, {card.subject}
-                    </p>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-emerald-400 text-xs">Работа в процессе</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Card 2: прогресс-бар */}
-              <motion.div
-                key={`card2-${card.workTitle}`}
-                animate={{ y: [0, 6, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                className="bg-[#1A1A2E] border border-white/10 rounded-2xl p-4 shadow-xl"
-              >
-                <p className="text-white/50 text-xs mb-1">Тип работы</p>
-                <p className="text-white text-sm font-semibold mb-3">
-                  {card.workType}. {card.workTitle}
-                </p>
-                <div className="w-full bg-white/10 rounded-full h-1.5">
-                  <motion.div
-                    key={`bar-${card.progress}`}
-                    initial={{ width: '0%' }}
-                    animate={{ width: `${card.progress}%` }}
-                    transition={{ duration: 1.5, delay: mounted ? 0.3 : 1, ease: 'easeOut' }}
-                    className="h-1.5 rounded-full bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6]"
-                  />
-                </div>
-                <p className="text-white/30 text-xs mt-1.5">{card.progress}% готово</p>
-              </motion.div>
-
-              {/* Card 3: сдано на отлично + штамп ЗАЧЁТ */}
-              <motion.div
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="relative bg-[#F5EACF] border border-[#001bb3]/20 rounded-2xl p-4 shadow-xl overflow-hidden"
-              >
-                {/* SVG-фильтр для эффекта чернильной печати с непрокрасом */}
-                <svg className="absolute w-0 h-0" aria-hidden="true">
-                  <defs>
-                    <filter id="stamp-ink" x="-20%" y="-20%" width="140%" height="140%">
-                      <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="4" seed="12" stitchTiles="stitch" result="noise"/>
-                      <feColorMatrix type="matrix"
-                        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3.5 4.4"
-                        in="noise" result="mask"/>
-                      <feComposite in="SourceGraphic" in2="mask" operator="in"/>
-                    </filter>
-                  </defs>
-                </svg>
-
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#001bb3]/12 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="w-5 h-5 text-[#001bb3]" />
-                  </div>
-                  <div>
-                    <p className="text-[#001238] text-sm font-semibold">Сдано на отлично</p>
-                    <p className="text-[#001bb3] text-xs mt-0.5 font-medium">{card.subject}</p>
-                  </div>
-                </div>
-
-                {/* Штамп ЗАЧЁТ — случайное положение при каждом обновлении */}
-                <motion.div
-                  initial={{ scale: 0, rotate: stampPos.rotate - 20, opacity: 0 }}
-                  animate={{ scale: 1, rotate: stampPos.rotate, opacity: 1 }}
-                  transition={{
-                    type: 'spring',
-                    stiffness: 500,
-                    damping: 12,
-                    delay: 1.8,
-                  }}
-                  style={{
-                    position: 'absolute',
-                    right: stampPos.right,
-                    top: `${stampPos.top}%`,
-                    translateY: '-50%',
-                  }}
-                >
-                  <svg
-                    width="90"
-                    height="90"
-                    viewBox="0 0 90 90"
-                    style={{ filter: 'url(#stamp-ink)' }}
-                  >
-                    {/* Внешнее толстое кольцо */}
-                    <circle cx="45" cy="45" r="42" stroke="#001bb3" strokeWidth="4.5" fill="none"/>
-                    {/* Внутреннее тонкое кольцо */}
-                    <circle cx="45" cy="45" r="33" stroke="#001bb3" strokeWidth="1.6" fill="none"/>
-                    {/* Горизонтальная линия выше текста */}
-                    <line x1="18" y1="38" x2="72" y2="38" stroke="#001bb3" strokeWidth="1.3"/>
-                    {/* Горизонтальная линия ниже текста */}
-                    <line x1="18" y1="53" x2="72" y2="53" stroke="#001bb3" strokeWidth="1.3"/>
-                    {/* ЗАЧЁТ */}
-                    <text
-                      x="45"
-                      y="46"
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fill="#001bb3"
-                      fontFamily='"Courier New", Courier, monospace'
-                      fontWeight="900"
-                      fontSize="12"
-                      letterSpacing="2.5"
-                    >
-                      ЗАЧЁТ
-                    </text>
-                    {/* Декоративные точки между кольцами */}
-                    <circle cx="45" cy="8"  r="2" fill="#001bb3"/>
-                    <circle cx="45" cy="82" r="2" fill="#001bb3"/>
-                  </svg>
-                </motion.div>
-              </motion.div>
-
+            <div className="font-mono text-[10px] font-bold uppercase tracking-[1.4px] text-[#6A6A88]">
+              // Сейчас на связи
             </div>
+
+            <div className="font-mono font-bold text-[#C5FF45] tracking-[-2px] leading-none"
+              style={{ fontSize: 52 }}>
+              {mounted ? time : '--:--:--'}
+            </div>
+
+            <div className="inline-flex items-center gap-1.5 self-start px-3 py-1.5 rounded-full bg-[#C5FF45]/10 border border-[#C5FF45]/[.18] text-[#C5FF45] text-[12px] font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C5FF45] animate-blink" />
+              Эксперты онлайн
+            </div>
+
+            <div className="h-px bg-white/[.06]" />
+
+            <div className="space-y-3.5">
+              {[
+                { label: 'Время ответа',       value: '≤ 30 мин' },
+                { label: 'Время работы',        value: '09:00–23:00' },
+                { label: 'Довольных клиентов',  value: '98%' },
+              ].map((stat) => (
+                <div key={stat.label} className="flex items-center justify-between">
+                  <span className="text-[13px] text-[#6A6A88]">{stat.label}</span>
+                  <span className="font-mono text-[15px] font-bold text-[#C5FF45]">{stat.value}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="h-px bg-white/[.06]" />
+
+            <Link
+              href="#order"
+              className="flex items-center justify-center px-6 py-3.5 rounded-full bg-[#C5FF45] text-[#07070E] font-black font-unbounded text-[12px] tracking-[-0.2px] hover:bg-[#D4FF60] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)] transition-all duration-200"
+            >
+              Написать прямо сейчас
+            </Link>
           </motion.div>
+
         </div>
       </div>
 
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0F0F1A] to-transparent" />
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#07070E] to-transparent pointer-events-none" />
     </section>
   )
 }

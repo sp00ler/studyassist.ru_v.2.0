@@ -58,14 +58,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans antialiased bg-[#0F0F1A] text-[#F1F5F9] min-h-screen">
+      <body className="font-sans antialiased bg-[#07070E] text-[#F0F0EC] min-h-screen">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#6C3EF4] focus:text-white focus:rounded-lg focus:text-sm focus:font-medium"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#C5FF45] focus:text-[#07070E] focus:rounded-full focus:text-sm focus:font-bold"
         >
           Перейти к основному содержанию
         </a>
