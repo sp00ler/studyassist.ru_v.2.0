@@ -47,13 +47,13 @@ export function FaqSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="font-unbounded text-3xl md:text-4xl font-black tracking-[-1.5px] mb-4">
             Частые{' '}
-            <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
+            <span className="text-[#C5FF45]">
               вопросы
             </span>
           </h2>
-          <p className="text-white/50 text-lg">
+          <p className="text-[#6A6A88] text-lg">
             Отвечаем честно и по делу
           </p>
         </motion.div>

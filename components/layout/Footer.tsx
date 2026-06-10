@@ -1,87 +1,91 @@
 import Link from 'next/link'
-import { GraduationCap, Mail } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="bg-[#0A0A14] border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+    <footer className="border-t border-white/[.06] bg-[#07070E]">
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 pt-[72px] pb-10">
+
+        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr] gap-12 mb-12">
+
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#6C3EF4] to-[#3B82F6] flex items-center justify-center">
-                <GraduationCap className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-                StudyAssist
-              </span>
-            </div>
-            <p className="text-white/50 text-sm leading-relaxed">
-              Профессиональная помощь студентам. Курсовые, дипломные, рефераты — быстро и качественно.
+            <Link href="/" className="font-unbounded text-[17px] font-black tracking-[-0.3px] text-[#F0F0EC] hover:text-white transition-colors">
+              Study<span className="text-[#C5FF45]">Assist</span>
+            </Link>
+            <p className="text-[13px] text-[#6A6A88] leading-[1.75] mt-4 max-w-[240px]">
+              Помогаем студентам справляться с любыми учебными задачами. Быстро, качественно, конфиденциально.
             </p>
           </div>
 
-          {/* Links */}
+          {/* Services */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Правовая информация</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/privacy" className="text-white/50 hover:text-white text-sm transition-colors">
-                  Политика конфиденциальности
-                </Link>
-              </li>
-              <li>
-                <Link href="/consent" className="text-white/50 hover:text-white text-sm transition-colors">
-                  Согласие на обработку данных
-                </Link>
-              </li>
-              <li>
-                <Link href="/consent-marketing" className="text-white/50 hover:text-white text-sm transition-colors">
-                  Согласие на рекламные рассылки
-                </Link>
-              </li>
-              <li>
-                <Link href="/refund" className="text-white/50 hover:text-white text-sm transition-colors">
-                  Правила возврата и оплаты
-                </Link>
-              </li>
-              <li>
-                <Link href="/offer" className="text-white/50 hover:text-white text-sm transition-colors">
-                  Публичная оферта
-                </Link>
-              </li>
-              <li>
-                <Link href="/cookies" className="text-white/50 hover:text-white text-sm transition-colors">
-                  Политика cookie
-                </Link>
-              </li>
-              <li>
-                <Link href="/contacts" className="text-white/50 hover:text-white text-sm transition-colors">
-                  Контакты
-                </Link>
-              </li>
+            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6A6A88] mb-4">
+              Услуги
+            </div>
+            <ul className="space-y-2.5">
+              {['Рефераты и эссе', 'Курсовые работы', 'Дипломы (ВКР)', 'Лабораторные', 'Презентации', 'Отчёты по практике'].map((item) => (
+                <li key={item}>
+                  <Link href="/#services" className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Navigation */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Контакты</h3>
-            <a
-              href="mailto:support@studyassist.ru"
-              className="flex items-center gap-2 text-white/50 hover:text-[#6C3EF4] text-sm transition-colors group"
-            >
-              <Mail className="w-4 h-4 group-hover:text-[#6C3EF4]" />
-              support@studyassist.ru
-            </a>
-            <p className="text-white/30 text-xs mt-4">Отвечаем ежедневно с 9:00 до 23:00 МСК</p>
+            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6A6A88] mb-4">
+              Навигация
+            </div>
+            <ul className="space-y-2.5">
+              {[
+                { href: '/#how-it-works', label: 'Как это работает' },
+                { href: '/#pricing', label: 'Цены' },
+                { href: '/#reviews', label: 'Отзывы' },
+                { href: '/#order', label: 'Оставить заявку' },
+              ].map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Legal & Contacts */}
+          <div>
+            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6A6A88] mb-4">
+              Контакты
+            </div>
+            <ul className="space-y-2.5">
+              <li>
+                <a href="mailto:support@studyassist.ru" className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                  support@studyassist.ru
+                </a>
+              </li>
+              {[
+                { href: '/privacy', label: 'Политика конфиденциальности' },
+                { href: '/consent', label: 'Обработка персональных данных' },
+                { href: '/refund', label: 'Правила возврата' },
+                { href: '/offer', label: 'Публичная оферта' },
+                { href: '/cookies', label: 'Политика cookie' },
+                { href: '/contacts', label: 'Контакты' },
+              ].map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/30 text-sm">© 2025 StudyAssist.ru — Все права защищены</p>
-          <p className="text-white/20 text-xs">
-            Сервис предназначен для помощи в обучении. 18+
-          </p>
+        <div className="pt-6 border-t border-white/[.06] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-[12px] text-[#6A6A88]">© 2025 StudyAssist. Образовательные консультации.</p>
+          <p className="text-[12px] text-[#6A6A88]">Режим работы: 9:00 – 23:00 МСК</p>
         </div>
       </div>
     </footer>

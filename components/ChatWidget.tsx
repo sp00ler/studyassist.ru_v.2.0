@@ -150,10 +150,10 @@ export function ChatWidget() {
     return (
       <button
         onClick={openChat}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#6C3EF4] shadow-lg shadow-[#6C3EF4]/40 flex items-center justify-center hover:bg-[#5a32d3] transition-all hover:scale-105 active:scale-95"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#C5FF45] shadow-lg shadow-[#C5FF45]/30 flex items-center justify-center hover:bg-[#D4FF60] hover:scale-105 active:scale-95 transition-all animate-pulse-ring"
         aria-label="Открыть чат поддержки"
       >
-        <MessageCircle className="w-6 h-6 text-white" />
+        <MessageCircle className="w-6 h-6 text-[#07070E]" />
         {unread > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold">
             {unread > 9 ? '9+' : unread}
@@ -170,22 +170,22 @@ export function ChatWidget() {
       style={{ width: 360, maxHeight: 520 }}
     >
       {/* Шапка */}
-      <div className="bg-[#6C3EF4] px-4 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="bg-[#0E0E1C] border-b border-white/[.06] px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="relative">
-            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-              <MessageCircle className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-full bg-[#C5FF45]/10 border border-[#C5FF45]/[.18] flex items-center justify-center">
+              <MessageCircle className="w-4 h-4 text-[#C5FF45]" />
             </div>
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-[#6C3EF4]" />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#C5FF45] rounded-full border-2 border-[#0E0E1C]" />
           </div>
           <div>
-            <p className="text-white font-semibold text-sm leading-tight">Онлайн-поддержка</p>
-            <p className="text-white/70 text-xs">Обычно отвечаем за 5–15 минут</p>
+            <p className="text-[#F0F0EC] font-semibold text-sm leading-tight">Онлайн-поддержка</p>
+            <p className="text-[#6A6A88] text-xs">Обычно отвечаем за 5–15 минут</p>
           </div>
         </div>
         <button
           onClick={() => setView('bubble')}
-          className="text-white/60 hover:text-white transition-colors p-1"
+          className="text-[#6A6A88] hover:text-[#F0F0EC] transition-colors p-1"
           aria-label="Свернуть"
         >
           <ChevronDown className="w-5 h-5" />
@@ -196,9 +196,9 @@ export function ChatWidget() {
       {view === 'form' && (
         <form
           onSubmit={handleStartChat}
-          className="bg-[#12122a] flex flex-col gap-3 p-4 overflow-y-auto flex-1"
+          className="bg-[#0E0E1C] flex flex-col gap-3 p-4 overflow-y-auto flex-1"
         >
-          <p className="text-white/50 text-xs leading-relaxed">
+          <p className="text-[#6A6A88] text-xs leading-relaxed">
             Заполните форму — мы ответим здесь и свяжемся с вами удобным способом.
           </p>
 
@@ -207,13 +207,13 @@ export function ChatWidget() {
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Ваше имя (необязательно)"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#6C3EF4]/70 transition-colors"
+              className="w-full bg-white/5 border border-white/[.08] rounded-xl px-3 py-2.5 text-[#F0F0EC] text-sm placeholder-[#6A6A88] focus:outline-none focus:border-[#C5FF45]/70 transition-colors"
             />
             <input
               value={contact}
               onChange={e => setContact(e.target.value)}
               placeholder="Email, телефон, Telegram, ВКонтакте..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#6C3EF4]/70 transition-colors"
+              className="w-full bg-white/5 border border-white/[.08] rounded-xl px-3 py-2.5 text-[#F0F0EC] text-sm placeholder-[#6A6A88] focus:outline-none focus:border-[#C5FF45]/70 transition-colors"
             />
             <textarea
               value={firstMsg}
@@ -221,7 +221,7 @@ export function ChatWidget() {
               placeholder="Ваш вопрос..."
               required
               rows={4}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#6C3EF4]/70 transition-colors resize-none"
+              className="w-full bg-white/5 border border-white/[.08] rounded-xl px-3 py-2.5 text-[#F0F0EC] text-sm placeholder-[#6A6A88] focus:outline-none focus:border-[#C5FF45]/70 transition-colors resize-none"
             />
           </div>
 
@@ -232,13 +232,13 @@ export function ChatWidget() {
           <button
             type="submit"
             disabled={submitting || !firstMsg.trim()}
-            className="bg-[#6C3EF4] hover:bg-[#5a32d3] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl py-2.5 text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+            className="bg-[#C5FF45] hover:bg-[#D4FF60] disabled:opacity-50 disabled:cursor-not-allowed text-[#07070E] font-bold rounded-xl py-2.5 text-sm flex items-center justify-center gap-2 transition-colors"
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             Начать чат
           </button>
 
-          <p className="text-white/25 text-xs text-center">
+          <p className="text-[#6A6A88]/60 text-xs text-center">
             Нажимая «Начать чат», вы соглашаетесь с политикой конфиденциальности
           </p>
         </form>
@@ -249,7 +249,7 @@ export function ChatWidget() {
         <>
           {/* Сообщения */}
           <div
-            className="bg-[#12122a] flex-1 overflow-y-auto p-4 space-y-2.5"
+            className="bg-[#0E0E1C] flex-1 overflow-y-auto p-4 space-y-2.5"
             style={{ minHeight: 0, maxHeight: 380 }}
           >
             {/* Приветственное сообщение */}
@@ -265,7 +265,7 @@ export function ChatWidget() {
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm break-words ${
                     msg.fromAdmin
                       ? 'bg-white/8 text-white/90 rounded-tl-sm border border-white/5'
-                      : 'bg-[#6C3EF4] text-white rounded-tr-sm'
+                      : 'bg-[#C5FF45] text-[#07070E] rounded-tr-sm font-medium'
                   }`}
                 >
                   {msg.text}
@@ -290,14 +290,14 @@ export function ChatWidget() {
           {/* Поле ввода */}
           <form
             onSubmit={handleSend}
-            className="bg-[#12122a] border-t border-white/8 flex gap-2 p-3 flex-shrink-0"
+            className="bg-[#0E0E1C] border-t border-white/[.06] flex gap-2 p-3 flex-shrink-0"
           >
             <input
               ref={inputRef}
               value={chatInput}
               onChange={e => setChatInput(e.target.value)}
               placeholder="Написать сообщение..."
-              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#6C3EF4]/70 transition-colors"
+              className="flex-1 bg-white/5 border border-white/[.08] rounded-xl px-3 py-2 text-[#F0F0EC] text-sm placeholder-[#6A6A88] focus:outline-none focus:border-[#C5FF45]/70 transition-colors"
               onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
@@ -308,7 +308,7 @@ export function ChatWidget() {
             <button
               type="submit"
               disabled={sending || !chatInput.trim()}
-              className="bg-[#6C3EF4] hover:bg-[#5a32d3] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl w-10 flex items-center justify-center flex-shrink-0 transition-colors"
+              className="bg-[#C5FF45] hover:bg-[#D4FF60] disabled:opacity-40 disabled:cursor-not-allowed text-[#07070E] rounded-xl w-10 flex items-center justify-center flex-shrink-0 transition-colors"
               aria-label="Отправить"
             >
               {sending

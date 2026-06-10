@@ -2,127 +2,123 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { CheckCircle, Lock, ChevronRight } from 'lucide-react'
 
-const priceRows = [
-  { label: 'Реферат / эссе', price: 'от 1 000 ₽', highlight: false },
-  { label: 'Курсовая работа', price: 'от 3 500 ₽', highlight: false },
-  { label: 'ВКР / Дипломная работа', price: 'от 15 000 ₽', highlight: true },
-  { label: 'Лабораторные / контрольные / практические', price: 'от 1 000 ₽ / задание', highlight: false },
-  { label: 'Презентация', price: 'от 1 200 ₽', highlight: false },
-  { label: 'Отчёт по практике', price: 'от 5 000 ₽', highlight: false },
-  { label: 'УИР', price: 'от 7 000 ₽', highlight: false },
-  { label: 'Другой тип работы', price: 'по договорённости', highlight: false },
+const plans = [
+  {
+    label: 'Реферат / Эссе',
+    price: '1 000₽',
+    features: ['До 15 страниц', 'Оформление по ГОСТ', 'Уникальность от 70%', 'Список литературы'],
+    hot: false,
+    cta: 'Заказать',
+    ghost: true,
+  },
+  {
+    label: 'Курсовая работа',
+    price: '3 500₽',
+    features: ['25–50 страниц', 'Расчёты и графики', 'Уникальность от 80%', 'Правки бесплатно'],
+    hot: true,
+    cta: 'Заказать',
+    ghost: false,
+  },
+  {
+    label: 'ВКР / Диплом',
+    price: '15 000₽',
+    features: ['60–100+ страниц', 'Полный пакет документов', 'Презентация для защиты', 'Сопровождение до сдачи'],
+    hot: false,
+    cta: 'Заказать',
+    ghost: true,
+  },
 ]
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Стоимость —{' '}
-            <span className="bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-              честно и заранее
-            </span>
-          </h2>
-          <p className="text-white/50 text-lg max-w-2xl mx-auto">
-            Называем цену до начала работы. Никаких сюрпризов после.
-          </p>
-        </motion.div>
+    <section id="pricing" className="py-[120px] max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <span className="section-tag">// Цены</span>
+        <h2 className="section-heading">
+          Прозрачные цены.<br />Никаких скрытых доплат.
+        </h2>
+        <p className="section-sub">
+          Точную стоимость называем после изучения задачи — до копейки.
+        </p>
+      </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          {/* Left: Price table */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {plans.map((plan, i) => (
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            key={plan.label}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-2 bg-white/5 border border-white/10 rounded-2xl overflow-hidden"
+            transition={{ duration: 0.4, delay: i * 0.1 }}
+            whileHover={{ y: -5 }}
+            className={`relative overflow-hidden rounded-3xl p-10 border transition-all duration-280 ${
+              plan.hot
+                ? 'bg-gradient-to-br from-[#C5FF45]/[.08] to-[#7C3AED]/[.1] border-[#C5FF45]/[.18]'
+                : 'bg-[#0E0E1C] border-white/[.06] hover:border-[#C5FF45]/[.18] hover:shadow-[0_24px_64px_rgba(0,0,0,.4)]'
+            }`}
           >
-            {priceRows.map((row, index) => (
+            {/* HOT ribbon */}
+            {plan.hot && (
               <div
-                key={row.label}
-                className={`group flex items-center justify-between px-6 py-4 transition-all duration-200 hover:bg-white/5 ${
-                  index !== priceRows.length - 1 ? 'border-b border-white/5' : ''
-                } ${row.highlight ? 'border-l-2 border-l-[#6C3EF4]' : ''}`}
+                className="absolute top-[18px] right-[-28px] bg-[#C5FF45] text-[#07070E] font-unbounded text-[9px] font-black tracking-[1px] py-1 px-10 rotate-45 pointer-events-none"
               >
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {row.highlight && (
-                    <span className="hidden sm:inline-block text-[#6C3EF4] text-xs font-bold px-2 py-0.5 rounded bg-[#6C3EF4]/10 border border-[#6C3EF4]/20 flex-shrink-0">
-                      Крупная работа
-                    </span>
-                  )}
-                  <span className="text-white/80 text-sm truncate">{row.label}</span>
-                </div>
-                <div className="flex items-center gap-4 flex-shrink-0 ml-4">
-                  <span className={`text-sm font-bold ${row.highlight ? 'text-[#6C3EF4]' : 'text-white'}`}>
-                    {row.price}
-                  </span>
-                  <Link href="#order">
-                    <span className="text-xs text-white/30 group-hover:text-[#6C3EF4] transition-colors flex items-center gap-1">
-                      Заказать <ChevronRight className="w-3 h-3" />
-                    </span>
-                  </Link>
-                </div>
+                ХИТ
               </div>
-            ))}
-          </motion.div>
+            )}
 
-          {/* Right: Accent blocks */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="flex flex-col gap-4"
-          >
-            {/* Block 1: Fast response */}
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-4">
-                <CheckCircle className="w-5 h-5 text-emerald-400" />
-              </div>
-              <p className="text-white font-semibold text-sm leading-relaxed">
-                Ответ и расчёт стоимости — в течение 30 минут после заявки
-              </p>
+            <div className="font-unbounded text-[11px] font-bold uppercase tracking-[1.2px] text-[#6A6A88] mb-3.5">
+              {plan.label}
             </div>
 
-            {/* Block 2: Payment after */}
-            <div className="bg-[#6C3EF4]/10 border border-[#6C3EF4]/20 rounded-2xl p-6">
-              <div className="w-10 h-10 rounded-xl bg-[#6C3EF4]/20 flex items-center justify-center mb-4">
-                <Lock className="w-5 h-5 text-[#A78BFA]" />
-              </div>
-              <p className="text-white font-semibold text-sm leading-relaxed">
-                Оплата только после того, как согласовали объём и цену. Никакой предоплаты вслепую.
-              </p>
+            <div className="font-unbounded font-black tracking-[-2px] leading-none mb-1 text-[#F0F0EC]"
+              style={{ fontSize: 52 }}>
+              {plan.price}
             </div>
+            <div className="text-[12px] text-[#6A6A88] mb-8">начальная цена</div>
 
-            {/* CTA */}
+            <ul className="space-y-0 mb-8">
+              {plan.features.map((f) => (
+                <li
+                  key={f}
+                  className="flex items-start gap-2.5 text-[13px] text-[#6A6A88] py-2.5 border-b border-white/[.06] last:border-0"
+                >
+                  <span className="text-[#C5FF45] font-bold flex-shrink-0 mt-px">→</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+
             <Link href="#order">
-              <Button className="w-full">
-                Оставить заявку
-              </Button>
+              <button
+                className={`w-full py-3.5 rounded-full font-unbounded text-[13px] font-bold tracking-[-0.2px] transition-all duration-200 ${
+                  plan.hot
+                    ? 'bg-[#C5FF45] text-[#07070E] hover:bg-[#D4FF60] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)]'
+                    : 'bg-transparent text-[#F0F0EC] border border-white/10 hover:border-white/20 hover:bg-white/5'
+                }`}
+              >
+                {plan.cta}
+              </button>
             </Link>
           </motion.div>
-        </div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="text-center text-white/30 text-sm mt-8"
-        >
-          Точная стоимость зависит от сложности, объёма и срочности. Напиши — и мы сразу назовём цену конкретно для твоей задачи.
-        </motion.p>
+        ))}
       </div>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.4 }}
+        className="text-center text-[13px] text-[#6A6A88] mt-8"
+      >
+        Также: лабораторные от 1 000₽, отчёты по практике от 5 000₽, УИР от 7 000₽, презентации от 1 200₽.{' '}
+        <Link href="#order" className="text-[#C5FF45] hover:underline">Узнать точную стоимость →</Link>
+      </motion.p>
     </section>
   )
 }
