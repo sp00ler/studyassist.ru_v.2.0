@@ -19,10 +19,8 @@ export async function GET(_req: NextRequest) {
   const webhookUrl = `${baseUrl}/api/telegram/webhook`
 
   const bot = new TelegramBot(token, { polling: false })
-
   await bot.setWebHook(webhookUrl)
 
-  // Устанавливаем список команд
   await bot.setMyCommands([
     { command: 'start', description: 'Главное меню / привязка аккаунта' },
     { command: 'orders', description: 'Мои заявки' },
@@ -30,7 +28,18 @@ export async function GET(_req: NextRequest) {
   ])
 
   const info = await bot.getWebHookInfo()
-  return NextResponse.json({ ok: true, webhook: info })
+
+  // Регистрируем webhook и для support-бота — чтобы реплаи операторов из
+  // группы поддержки доходили до handleSupportGroupReply.
+  const supportToken = process.env.SUPPORT_BOT_TOKEN
+  let supportWebhookInfo = null
+  if (supportToken && supportToken !== token) {
+    const supportBot = new TelegramBot(supportToken, { polling: false })
+    await supportBot.setWebHook(webhookUrl)
+    supportWebhookInfo = await supportBot.getWebHookInfo()
+  }
+
+  return NextResponse.json({ ok: true, webhook: info, supportWebhook: supportWebhookInfo })
 }
 
 // DELETE /api/telegram/setup — удаляет webhook (переключение в polling для отладки)
@@ -45,6 +54,12 @@ export async function DELETE(_req: NextRequest) {
 
   const bot = new TelegramBot(token, { polling: false })
   await bot.deleteWebHook()
+
+  const supportToken = process.env.SUPPORT_BOT_TOKEN
+  if (supportToken && supportToken !== token) {
+    const supportBot = new TelegramBot(supportToken, { polling: false })
+    await supportBot.deleteWebHook()
+  }
 
   return NextResponse.json({ ok: true })
 }
