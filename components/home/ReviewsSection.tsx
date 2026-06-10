@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { Star, Send, Loader2 } from 'lucide-react'
@@ -10,47 +11,52 @@ import { useToast } from '@/components/ui/use-toast'
 const STATIC_REVIEWS = [
   {
     id: '1',
-    name: 'Алина К.',
+    name: 'Анна К.',
     role: 'Экономика, 3 курс · Курсовая работа',
     rating: 5,
     text: 'Дедлайн был через 2 дня, курсовая — 40 страниц. Думала, всё пропало. Написали за ночь, преподаватель поставила «отлично». Единственные, кто не кинул и сделал реально хорошо.',
     initial: 'А',
+    avatar: '/avatars/anna.png',
     wide: true,
   },
   {
     id: '2',
-    name: 'Максим Р.',
+    name: 'Дмитрий Р.',
     role: 'IT, 4 курс · ВКР',
     rating: 5,
     text: 'Диплом по IT — тема сложная, специфика серьёзная. Всё сделали на уровне, защитился на пять.',
-    initial: 'М',
+    initial: 'Д',
+    avatar: '/avatars/dmitriy.png',
     wide: false,
   },
   {
     id: '3',
-    name: 'Дарья С.',
+    name: 'Елена С.',
     role: 'Юриспруденция · Реферат',
     rating: 5,
     text: 'Ответили за 20 минут, цену назвали честно, без накруток. Реферат по праву — чисто, по теме.',
-    initial: 'Д',
+    initial: 'Е',
+    avatar: '/avatars/elena.png',
     wide: false,
   },
   {
     id: '4',
-    name: 'Светлана В.',
+    name: 'Михаил В.',
     role: 'Психология · Отчёт по практике',
     rating: 5,
-    text: 'Отчёт по практике — сложная тема, не знала с чего начать. Оформили грамотно, правки сделали быстро.',
-    initial: 'С',
+    text: 'Отчёт по практике — сложная тема, не знал с чего начать. Оформили грамотно, правки сделали быстро.',
+    initial: 'М',
+    avatar: '/avatars/mikhail.png',
     wide: false,
   },
   {
     id: '5',
-    name: 'Игорь Т.',
+    name: 'Ольга Т.',
     role: 'Медицина, 5 курс · Курсовая',
     rating: 5,
     text: 'Медицина — специфика серьёзная. Справились. Поставили пять.',
-    initial: 'И',
+    initial: 'О',
+    avatar: '/avatars/olga.png',
     wide: false,
   },
 ]
@@ -144,8 +150,20 @@ export function ReviewsSection() {
                 <div className="text-[#C5FF45] text-[16px] tracking-[3px] mb-3.5">★★★★★</div>
                 <p className="text-[14px] leading-[1.75] text-[#F0F0EC] italic mb-5">&quot;{rev.text}&quot;</p>
                 <div className="flex items-center gap-3 mt-auto">
-                  <div className="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-[#7C3AED] to-[#C5FF45] flex items-center justify-center font-bold text-[15px] text-[#07070E] flex-shrink-0">
-                    {rev.initial}
+                  <div className="w-[38px] h-[38px] rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-[#7C3AED] to-[#C5FF45]">
+                    {rev.avatar ? (
+                      <Image
+                        src={rev.avatar}
+                        alt={rev.name}
+                        width={38}
+                        height={38}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="w-full h-full flex items-center justify-center font-bold text-[15px] text-[#07070E]">
+                        {rev.initial}
+                      </span>
+                    )}
                   </div>
                   <div>
                     <div className="font-bold text-[13px] text-[#F0F0EC]">{rev.name}</div>

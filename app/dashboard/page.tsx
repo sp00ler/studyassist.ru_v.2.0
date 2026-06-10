@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { GraduationCap, LogOut, User, Package, CreditCard, Loader2, Plus, Send, CheckCircle, X } from 'lucide-react'
+import { GraduationCap, LogOut, User, Package, CreditCard, Loader2, Plus, Send, CheckCircle, X, Camera } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
 import { OrdersTable } from '@/components/dashboard/OrdersTable'
 import { Button } from '@/components/ui/button'
@@ -58,6 +58,8 @@ export default function DashboardPage() {
   const [tgLinking, setTgLinking] = useState(false)
   const [tgDeepLink, setTgDeepLink] = useState<string | null>(null)
   const [tgUnlinking, setTgUnlinking] = useState(false)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
   const autoLinkedRef = useRef(false)
 
   useEffect(() => {
@@ -137,6 +139,26 @@ export default function DashboardPage() {
       }
     } finally {
       setTgLinking(false)
+    }
+  }
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setAvatarUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await fetch('/api/profile/avatar', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (res.ok) {
+        setProfile(prev => prev ? { ...prev, avatar: data.avatar } : null)
+      } else {
+        alert(data.error || 'Ошибка загрузки аватара')
+      }
+    } finally {
+      setAvatarUploading(false)
+      if (avatarInputRef.current) avatarInputRef.current.value = ''
     }
   }
 
@@ -274,19 +296,59 @@ export default function DashboardPage() {
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-5">
                 {/* Avatar */}
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6C3EF4] to-[#3B82F6] flex items-center justify-center overflow-hidden">
-                    {profile?.avatar ? (
-                      <Image src={profile.avatar} alt={`Аватар пользователя ${profile.name || ''}`} width={64} height={64} className="object-cover" />
-                    ) : (
-                      <User className="w-8 h-8 text-white" />
-                    )}
+                  <div className="relative flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      disabled={avatarUploading}
+                      className="group w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C5FF45]/20 to-[#7C3AED]/20 border border-white/10 flex items-center justify-center overflow-hidden hover:border-[#C5FF45]/40 transition-all"
+                      title="Сменить аватар"
+                      aria-label="Сменить аватар"
+                    >
+                      {avatarUploading ? (
+                        <Loader2 className="w-6 h-6 text-[#C5FF45] animate-spin" />
+                      ) : profile?.avatar ? (
+                        <>
+                          <Image
+                            src={profile.avatar}
+                            alt={`Аватар ${profile.name || ''}`}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-cover"
+                            unoptimized
+                          />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
+                            <Camera className="w-5 h-5 text-white" />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <User className="w-8 h-8 text-white/40 group-hover:opacity-0 transition-opacity" />
+                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
+                            <Camera className="w-5 h-5 text-white" />
+                          </div>
+                        </>
+                      )}
+                    </button>
+                    <input
+                      ref={avatarInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={handleAvatarUpload}
+                      className="sr-only"
+                      aria-label="Загрузить аватар"
+                    />
                   </div>
                   <div>
                     <p className="text-white font-semibold">{profile?.name || 'Без имени'}</p>
                     <p className="text-white/50 text-sm">{profile?.email}</p>
-                    {profile?.provider && (
-                      <span className="text-xs text-white/30 capitalize">Вход через: {profile.provider}</span>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="text-xs text-[#C5FF45]/70 hover:text-[#C5FF45] transition-colors mt-0.5"
+                    >
+                      Сменить фото
+                    </button>
                   </div>
                 </div>
 
