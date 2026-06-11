@@ -29,17 +29,9 @@ export async function GET(_req: NextRequest) {
 
   const info = await bot.getWebHookInfo()
 
-  // Регистрируем webhook и для support-бота — чтобы реплаи операторов из
-  // группы поддержки доходили до handleSupportGroupReply.
-  const supportToken = process.env.SUPPORT_BOT_TOKEN
-  let supportWebhookInfo = null
-  if (supportToken && supportToken !== token) {
-    const supportBot = new TelegramBot(supportToken, { polling: false })
-    await supportBot.setWebHook(webhookUrl)
-    supportWebhookInfo = await supportBot.getWebHookInfo()
-  }
+  // Support bot uses getUpdates polling (scripts/support-poll.js) — webhook not set.
 
-  return NextResponse.json({ ok: true, webhook: info, supportWebhook: supportWebhookInfo })
+  return NextResponse.json({ ok: true, webhook: info })
 }
 
 // DELETE /api/telegram/setup — удаляет webhook (переключение в polling для отладки)
