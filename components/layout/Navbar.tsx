@@ -13,6 +13,13 @@ const navLinks = [
   { href: '/#reviews', label: 'Отзывы' },
 ]
 
+// Service pages for internal linking (used in footer/SEO — not in main nav to keep it clean)
+export const serviceLinks = [
+  { href: '/kursovaya', label: 'Курсовая работа' },
+  { href: '/diplom', label: 'Дипломная работа' },
+  { href: '/referat', label: 'Реферат' },
+]
+
 export function Navbar() {
   const { data: session } = useSession()
   const [scrolled, setScrolled] = useState(false)

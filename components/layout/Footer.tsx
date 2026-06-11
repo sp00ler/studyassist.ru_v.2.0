@@ -23,10 +23,17 @@ export function Footer() {
               Услуги
             </div>
             <ul className="space-y-2.5">
-              {['Рефераты и эссе', 'Курсовые работы', 'Дипломы (ВКР)', 'Лабораторные', 'Презентации', 'Отчёты по практике'].map((item) => (
-                <li key={item}>
-                  <Link href="/#services" className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
-                    {item}
+              {[
+                { href: '/kursovaya', label: 'Курсовые работы' },
+                { href: '/diplom',    label: 'Дипломы (ВКР)' },
+                { href: '/referat',  label: 'Рефераты и эссе' },
+                { href: '/#services', label: 'Лабораторные' },
+                { href: '/#services', label: 'Презентации' },
+                { href: '/#services', label: 'Отчёты по практике' },
+              ].map((item) => (
+                <li key={item.label}>
+                  <Link href={item.href} className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                    {item.label}
                   </Link>
                 </li>
               ))}
