@@ -513,7 +513,7 @@ export function OrderForm() {
           <p className="text-[#6A6A88]">Без регистрации. Без предоплаты. Просто напиши — и мы разберёмся.</p>
         </motion.div>
 
-        <div className="bg-[#141428] border border-white/[.06] rounded-3xl p-8">
+        <div className="bg-[#141428] border border-white/[.06] rounded-3xl p-4 sm:p-8">
           {/* Progress */}
           <div className="flex items-center justify-between mb-8">
             {stepTitles.map((title, i) => (

@@ -59,19 +59,27 @@ export function StatsSection() {
     <div className="bg-[#0E0E1C] border-t border-b border-white/[.06]">
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-14">
         <div className="grid grid-cols-2 md:grid-cols-4">
-          {stats.map((stat, i) => (
+          {stats.map((stat, i) => {
+            // mobile 2-col: right border only on left column (even indices), bottom border on top row
+            // desktop 4-col: right border on all except last
+            const borderCls = [
+              'border-r border-b md:border-b-0 border-white/[.06]',
+              'border-b md:border-b-0 md:border-r border-white/[.06]',
+              'border-r border-white/[.06]',
+              '',
+            ][i] ?? ''
+            return (
             <div
               key={i}
-              className={`text-center py-4 px-4 md:px-8 ${
-                i < stats.length - 1 ? 'border-r border-white/[.06]' : ''
-              }`}
+              className={`text-center py-4 px-4 md:px-8 ${borderCls}`}
             >
               <div className="font-unbounded text-[clamp(36px,4.5vw,52px)] font-black text-[#C5FF45] tracking-[-2px] leading-none mb-2">
                 {stat.value}
               </div>
               <div className="text-[13px] text-[#6A6A88] mt-2 leading-snug">{stat.label}</div>
             </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>

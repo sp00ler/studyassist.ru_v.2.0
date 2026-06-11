@@ -52,7 +52,7 @@ export function HeroSection() {
       />
 
       <div className="relative z-10 max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-20 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8 lg:gap-16 items-center">
 
           {/* Left */}
           <div>
@@ -132,14 +132,14 @@ export function HeroSection() {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="bg-[#0E0E1C] border border-white/[.06] rounded-3xl p-8 flex flex-col gap-6"
+            className="bg-[#0E0E1C] border border-white/[.06] rounded-3xl p-5 sm:p-8 flex flex-col gap-6"
           >
             <div className="font-mono text-[10px] font-bold uppercase tracking-[1.4px] text-[#6A6A88]">
               // Сейчас на связи
             </div>
 
             <div className="font-mono font-bold text-[#C5FF45] tracking-[-2px] leading-none"
-              style={{ fontSize: 52 }}>
+              style={{ fontSize: 'clamp(36px, 9vw, 52px)' }}>
               {mounted ? time : '--:--:--'}
             </div>
 

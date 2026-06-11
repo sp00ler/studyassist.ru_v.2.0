@@ -166,8 +166,8 @@ export function ChatWidget() {
   // ── Окно чата ─────────────────────────────────────────────────────────────────
   return (
     <div
-      className="fixed bottom-6 right-6 z-50 flex flex-col rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/60"
-      style={{ width: 360, maxHeight: 520 }}
+      className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/60"
+      style={{ width: 'min(360px, calc(100vw - 1.5rem))', maxHeight: '85dvh' }}
     >
       {/* Шапка */}
       <div className="bg-[#0E0E1C] border-b border-white/[.06] px-4 py-3 flex items-center justify-between flex-shrink-0">

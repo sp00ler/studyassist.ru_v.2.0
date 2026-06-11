@@ -221,7 +221,7 @@ function ReviewGraph({ reviews, onNodeClick }: { reviews: Review[]; onNodeClick:
   return (
     <div className="w-full overflow-x-auto">
       <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} width="100%"
-        style={{ minWidth: 380, maxHeight: 520 }}
+        style={{ minWidth: 0, maxHeight: 520 }}
         className="select-none"
         onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
 
