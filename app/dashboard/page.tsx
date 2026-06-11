@@ -205,13 +205,14 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2">
-                {session.user.image && (
+                {(profile?.avatar || session.user.image) && (
                   <Image
-                    src={session.user.image}
+                    src={profile?.avatar || session.user.image!}
                     alt={session.user.name || ''}
                     width={32}
                     height={32}
-                    className="rounded-full"
+                    className="rounded-full object-cover"
+                    unoptimized
                   />
                 )}
                 <span className="text-white/70 text-sm">{session.user.name || session.user.email}</span>
