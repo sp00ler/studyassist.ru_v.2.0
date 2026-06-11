@@ -8,6 +8,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'vk.com' },
       { protocol: 'https', hostname: '**.userapi.com' },
       { protocol: 'https', hostname: 'avatars.yandex.net' },
+      { protocol: 'https', hostname: 'randomuser.me' },
     ],
   },
   experimental: {

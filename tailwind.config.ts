@@ -123,6 +123,14 @@ const config: Config = {
           '0%':   { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
         },
+        'marquee-left': {
+          '0%':   { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        'marquee-right': {
+          '0%':   { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -136,6 +144,8 @@ const config: Config = {
         'slide-up':       'slide-up 0.6s ease-out forwards',
         'fade-in':        'fade-in 0.5s ease-out forwards',
         'shimmer':        'shimmer 2s linear infinite',
+        'marquee-left':   'marquee-left 45s linear infinite',
+        'marquee-right':  'marquee-right 50s linear infinite',
       },
       boxShadow: {
         'glow-lime':   '0 0 30px rgba(197,255,69,.35)',
