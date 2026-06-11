@@ -53,16 +53,6 @@ const jsonLd = {
       },
     },
     {
-      '@type': 'AggregateRating',
-      '@id': 'https://studyassist.ru/#rating',
-      itemReviewed: { '@id': 'https://studyassist.ru/#organization' },
-      ratingValue: '5',
-      bestRating: '5',
-      worstRating: '1',
-      ratingCount: '1000',
-      reviewCount: '1000',
-    },
-    {
       '@type': 'FAQPage',
       '@id': 'https://studyassist.ru/#faq',
       mainEntity: [
