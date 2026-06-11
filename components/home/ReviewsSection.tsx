@@ -145,6 +145,17 @@ function ReviewGraph({ reviews, onNodeClick }: { reviews: Review[]; onNodeClick:
             <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="b" />
             <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
+          {/* Avatar clip paths */}
+          {reviews.map((rev, i) => {
+            const pos = positions[i]
+            if (!pos || !rev.avatar) return null
+            const r = nodeR(i)
+            return (
+              <clipPath key={`clip-${rev.id}`} id={`clip-rv-${rev.id}`}>
+                <circle cx={pos.x} cy={pos.y} r={r - 1.5} />
+              </clipPath>
+            )
+          })}
           <radialGradient id="ng-center-bg" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#C5FF45" stopOpacity="0.09" />
             <stop offset="100%" stopColor="#C5FF45" stopOpacity="0" />
@@ -276,12 +287,23 @@ function ReviewGraph({ reviews, onNodeClick }: { reviews: Review[]; onNodeClick:
                 filter={isHov ? 'url(#ng-glow)' : undefined}
               />
 
-              {/* Initial */}
-              <text x={pos.x} y={pos.y + 5} textAnchor="middle"
-                fill={isHov ? '#0E0E1C' : '#C5FF45'}
-                fontSize={r > 27 ? '14' : '12'} fontWeight="700">
-                {initial}
-              </text>
+              {/* Avatar or initial */}
+              {rev.avatar ? (
+                <image
+                  href={rev.avatar}
+                  x={pos.x - r + 1.5} y={pos.y - r + 1.5}
+                  width={(r - 1.5) * 2} height={(r - 1.5) * 2}
+                  clipPath={`url(#clip-rv-${rev.id})`}
+                  preserveAspectRatio="xMidYMid slice"
+                  style={{ opacity: isDim ? 0.4 : 1 }}
+                />
+              ) : (
+                <text x={pos.x} y={pos.y + 5} textAnchor="middle"
+                  fill={isHov ? '#0E0E1C' : '#C5FF45'}
+                  fontSize={r > 27 ? '14' : '12'} fontWeight="700">
+                  {initial}
+                </text>
+              )}
 
               {/* Label */}
               <text x={pos.x} y={pos.y + r + 14} textAnchor="middle"
