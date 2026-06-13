@@ -1,8 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Check, X, Star, Trash2 } from 'lucide-react'
+import { Loader2, Check, Star, Trash2, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { formatDate } from '@/lib/utils'
 
 interface Review {
@@ -17,10 +20,15 @@ interface Review {
   user?: { email: string } | null
 }
 
+const EMPTY_FORM = { name: '', city: '', university: '', rating: 5, text: '' }
+
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved'>('pending')
+  const [showForm, setShowForm] = useState(false)
+  const [form, setForm] = useState(EMPTY_FORM)
+  const [saving, setSaving] = useState(false)
 
   const fetchReviews = async () => {
     setLoading(true)
@@ -58,12 +66,75 @@ export default function AdminReviewsPage() {
     if (res.ok) setReviews((prev) => prev.filter((r) => r.id !== id))
   }
 
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true)
+    try {
+      const res = await fetch('/api/admin/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) throw new Error('Ошибка')
+      setForm(EMPTY_FORM)
+      setShowForm(false)
+      fetchReviews()
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Отзывы</h1>
-        <p className="text-white/50 text-sm">Модерация отзывов пользователей</p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Отзывы</h1>
+          <p className="text-white/50 text-sm">Модерация и добавление отзывов</p>
+        </div>
+        <Button onClick={() => setShowForm((v) => !v)} className="gap-2">
+          {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+          {showForm ? 'Отмена' : 'Добавить отзыв'}
+        </Button>
       </div>
+
+      {showForm && (
+        <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="mb-2 block">Имя *</Label>
+              <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Александр К." required />
+            </div>
+            <div>
+              <Label className="mb-2 block">Город</Label>
+              <Input value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))} placeholder="г. Москва" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="mb-2 block">Университет</Label>
+              <Input value={form.university} onChange={(e) => setForm((f) => ({ ...f, university: e.target.value }))} placeholder="МГУ" />
+            </div>
+            <div>
+              <Label className="mb-2 block">Рейтинг</Label>
+              <div className="flex items-center gap-2 pt-2">
+                {[1,2,3,4,5].map((n) => (
+                  <button key={n} type="button" onClick={() => setForm((f) => ({ ...f, rating: n }))}>
+                    <Star className="w-6 h-6" fill={n <= form.rating ? '#F59E0B' : 'none'} stroke={n <= form.rating ? '#F59E0B' : '#ffffff30'} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div>
+            <Label className="mb-2 block">Текст отзыва *</Label>
+            <Textarea value={form.text} onChange={(e) => setForm((f) => ({ ...f, text: e.target.value }))} rows={3} required />
+          </div>
+          <Button type="submit" disabled={saving} className="gap-2">
+            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+            Добавить
+          </Button>
+        </form>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 bg-white/5 rounded-xl p-1 w-fit">

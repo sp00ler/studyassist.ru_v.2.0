@@ -30,6 +30,29 @@ export async function GET(req: NextRequest) {
   }
 }
 
+export async function POST(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.isAdmin) {
+      return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
+    }
+
+    const { name, city, university, rating, text } = await req.json()
+    if (!name || !text || !rating) {
+      return NextResponse.json({ error: 'Имя, текст и рейтинг обязательны' }, { status: 400 })
+    }
+
+    const review = await prisma.review.create({
+      data: { name, city: city || null, university: university || null, rating: Number(rating), text, approved: true },
+    })
+
+    return NextResponse.json({ review }, { status: 201 })
+  } catch (error) {
+    console.error('Create review error:', error)
+    return NextResponse.json({ error: 'Ошибка создания отзыва' }, { status: 500 })
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
