@@ -3,10 +3,14 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { MagneticButton } from '@/components/MagneticButton'
+import { useTextScramble } from '@/hooks/useTextScramble'
 
 export function HeroSection() {
   const [time, setTime] = useState('--:--:--')
   const [mounted, setMounted] = useState(false)
+  const line1 = useTextScramble('ДЕДЛАЙН', 600)
+  const line2 = useTextScramble('ЗАВТРА?', 800)
 
   useEffect(() => {
     setMounted(true)
@@ -74,8 +78,8 @@ export function HeroSection() {
               className="font-unbounded font-black leading-[.93] tracking-[-3px] mb-7"
               style={{ fontSize: 'clamp(52px, 8.5vw, 100px)' }}
             >
-              <span className="block text-[#F0F0EC]">ДЕДЛАЙН</span>
-              <span className="block text-[#C5FF45]">ЗАВТРА?</span>
+              <span className="block text-[#F0F0EC]">{line1}</span>
+              <span className="block text-[#C5FF45]">{line2}</span>
               <span
                 className="block text-[#6A6A88] font-normal tracking-[-1px]"
                 style={{ fontSize: 'clamp(20px, 3.2vw, 42px)' }}
@@ -100,24 +104,26 @@ export function HeroSection() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-wrap gap-3"
             >
-              <Link
-                href="#order"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#C5FF45] text-[#07070E] font-black font-unbounded text-[13px] tracking-[-0.2px] hover:bg-[#D4FF60] hover:shadow-[0_14px_36px_rgba(197,255,69,.28)] hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
-                onClick={() => {
-                  if (typeof window !== 'undefined' && (window as Window & { ym?: Function }).ym) {
-                    (window as Window & { ym?: Function }).ym?.(
-                      process.env.NEXT_PUBLIC_METRIKA_ID,
-                      'reachGoal',
-                      'hero_cta_click'
-                    )
-                  }
-                }}
-              >
-                Оставить заявку
-                <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </Link>
+              <MagneticButton>
+                <Link
+                  href="#order"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#C5FF45] text-[#07070E] font-black font-unbounded text-[13px] tracking-[-0.2px] hover:bg-[#D4FF60] hover:shadow-[0_14px_36px_rgba(197,255,69,.28)] hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+                  onClick={() => {
+                    if (typeof window !== 'undefined' && (window as Window & { ym?: Function }).ym) {
+                      (window as Window & { ym?: Function }).ym?.(
+                        process.env.NEXT_PUBLIC_METRIKA_ID,
+                        'reachGoal',
+                        'hero_cta_click'
+                      )
+                    }
+                  }}
+                >
+                  Оставить заявку
+                  <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </Link>
+              </MagneticButton>
               <Link
                 href="#how-it-works"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-transparent text-[#F0F0EC] border border-white/10 font-bold font-unbounded text-[13px] hover:border-white/20 hover:bg-white/5 transition-all duration-200"

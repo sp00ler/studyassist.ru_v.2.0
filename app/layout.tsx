@@ -7,6 +7,7 @@ import { MetrikaScript } from '@/components/MetrikaScript'
 import { ChatWidget } from '@/components/ChatWidget'
 import { ContactsFloat } from '@/components/ContactsFloat'
 import { YandexBrowserBanner } from '@/components/YandexBrowserBanner'
+import { MagicCursor } from '@/components/MagicCursor'
 
 export const metadata: Metadata = {
   title: 'StudyAssist — Помощь студентам с учёбой | Курсовые, дипломные, рефераты',
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-sans antialiased bg-[#07070E] text-[#F0F0EC] min-h-screen">
+        <MagicCursor />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#C5FF45] focus:text-[#07070E] focus:rounded-full focus:text-sm focus:font-bold"
