@@ -56,7 +56,7 @@ export default function OgImage() {
             border: '1px solid rgba(197,255,69,0.25)',
             borderRadius: 100,
             padding: '10px 22px',
-            width: 'fit-content',
+            alignSelf: 'flex-start',
           }}
         >
           <div
