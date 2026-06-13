@@ -25,20 +25,11 @@ export const metadata: Metadata = {
     title: 'StudyAssist — Помощь студентам с учёбой',
     description:
       'Профессиональная помощь студентам: курсовые, дипломные, рефераты. Гарантия уникальности. Оплата после проверки.',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'StudyAssist — Помощь студентам',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'StudyAssist — Помощь студентам',
     description: 'Курсовые, дипломные, рефераты. Гарантия уникальности.',
-    images: ['/og-image.png'],
   },
   icons: {
     icon: '/favicon.svg',
