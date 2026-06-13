@@ -68,7 +68,7 @@ const contacts = [
   },
   {
     label: 'ВКонтакте',
-    value: 'vk.com/supp0rt_studyassist',
+    value: 'vk.ru/supp0rt_studyassist',
     href: 'https://vk.ru/supp0rt_studyassist',
     bg: 'bg-[#0077FF]/20',
     iconColor: 'text-[#0077FF]',

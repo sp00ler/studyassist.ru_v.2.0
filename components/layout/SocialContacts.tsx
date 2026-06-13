@@ -74,7 +74,7 @@ const CONTACTS: Contact[] = [
   },
   {
     name: 'ВКонтакте',
-    href: 'https://vk.me/+79539246817',
+    href: 'https://vk.ru/supp0rt_studyassist',
     brandColor: '#0077FF',
     brandGlow: 'rgba(0,119,255,0.35)',
     icon: VKIcon,
