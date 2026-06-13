@@ -5,7 +5,7 @@ module.exports = {
       script: 'node_modules/.bin/next',
       args: 'start',
       cwd: '/var/www/studyassist',
-      instances: 1,
+      instances: 'max',
       autorestart: true,
       watch: false,
       max_memory_restart: '900M',

@@ -1,5 +1,20 @@
 import Link from 'next/link'
+import { unstable_cache } from 'next/cache'
 import { prisma } from '@/lib/prisma'
+
+const getLatestPosts = unstable_cache(
+  async () => prisma.post.findMany({
+    where: { published: true },
+    orderBy: { publishedAt: 'desc' },
+    take: 3,
+    select: {
+      id: true, type: true, title: true, slug: true,
+      excerpt: true, coverImage: true, publishedAt: true, createdAt: true,
+    },
+  }),
+  ['blog-preview'],
+  { revalidate: 3600 },
+)
 
 function formatDate(d: Date | null) {
   if (!d) return ''
@@ -9,15 +24,7 @@ function formatDate(d: Date | null) {
 const TYPE_LABELS: Record<string, string> = { blog: 'Блог', news: 'Новости' }
 
 export async function BlogPreviewSection() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    orderBy: { publishedAt: 'desc' },
-    take: 3,
-    select: {
-      id: true, type: true, title: true, slug: true,
-      excerpt: true, coverImage: true, publishedAt: true, createdAt: true,
-    },
-  })
+  const posts = await getLatestPosts()
 
   if (posts.length === 0) return null
 

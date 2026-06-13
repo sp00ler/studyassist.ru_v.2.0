@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
 import os from 'os'
 import { writeFile, mkdir, access, constants, readFile, rm } from 'fs/promises'
+import { getIP, rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+
+// orderId must be cuid (starts with c, ~25 chars) or UUID format
+const VALID_ORDER_ID = /^[a-zA-Z0-9_-]{10,60}$/
 
 export const maxDuration = 60
 export const dynamic = 'force-dynamic'
@@ -118,11 +122,16 @@ async function handleChunkUpload(formData: FormData, orderId: string) {
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 20 uploads per 10 minutes per IP
+    const ip = getIP(req)
+    const rl = rateLimit(`upload:${ip}`, 20, 10 * 60 * 1000)
+    if (!rl.allowed) return rateLimitResponse(rl.resetAt)
+
     const formData = await req.formData()
     const orderId = formData.get('orderId') as string
     const files = formData.getAll('files') as File[]
 
-    if (!orderId) {
+    if (!orderId || !VALID_ORDER_ID.test(orderId)) {
       return NextResponse.json({ error: 'orderId обязателен' }, { status: 400 })
     }
 
@@ -191,8 +200,8 @@ export async function POST(req: NextRequest) {
     const lower = msg.toLowerCase()
     if (lower.includes('body') && (lower.includes('too large') || lower.includes('size'))) {
       return NextResponse.json(
-
-        { status: 413 }
+        { error: 'Файл слишком большой' },
+        { status: 413 },
       )
     }
 

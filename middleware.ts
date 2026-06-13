@@ -12,16 +12,6 @@ export default withAuth(
         return NextResponse.redirect(new URL('/auth/login', req.url))
       }
       if (!token.isAdmin) {
-        // Проверяем ADMIN_SECRET из Basic Auth заголовка (fallback)
-        const authHeader = req.headers.get('authorization')
-        if (authHeader) {
-          const base64Credentials = authHeader.split(' ')[1]
-          const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8')
-          const [, password] = credentials.split(':')
-          if (password === process.env.ADMIN_SECRET) {
-            return NextResponse.next()
-          }
-        }
         return NextResponse.redirect(new URL('/', req.url))
       }
     }

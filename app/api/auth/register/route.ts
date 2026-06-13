@@ -4,6 +4,7 @@ import crypto from 'crypto'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { sendVerificationEmail } from '@/lib/email'
+import { getIP, rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
@@ -14,6 +15,11 @@ const registerSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 registrations per hour per IP
+    const ip = getIP(req)
+    const rl = rateLimit(`register:${ip}`, 5, 60 * 60 * 1000)
+    if (!rl.allowed) return rateLimitResponse(rl.resetAt)
+
     const body = await req.json()
     const parsed = registerSchema.safeParse(body)
 

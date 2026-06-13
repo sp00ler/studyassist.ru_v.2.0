@@ -55,7 +55,6 @@ const MailRuProvider = {
       const url = `https://oauth.mail.ru/userinfo?access_token=${tokens.access_token}`
       const res = await fetch(url)
       const profile = await res.json()
-      console.log('[MailRu] userinfo response:', JSON.stringify(profile))
       const email = profile.email || profile.mail || null
       const name =
         profile.name ||

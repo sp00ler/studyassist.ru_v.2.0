@@ -7,6 +7,7 @@ import { sendNewOrderEmail, sendOrderReceivedEmail } from '@/lib/email'
 import { sendNewOrderNotification } from '@/lib/telegram'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
+import { getIP, rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 const estimatedPriceSchema = z.object({
   label: z.string(),
@@ -40,6 +41,11 @@ const orderSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit: 5 orders per hour per IP
+    const ip = getIP(req)
+    const rl = rateLimit(`orders:${ip}`, 5, 60 * 60 * 1000)
+    if (!rl.allowed) return rateLimitResponse(rl.resetAt)
+
     const session = await getServerSession(authOptions)
     const body = await req.json()
 

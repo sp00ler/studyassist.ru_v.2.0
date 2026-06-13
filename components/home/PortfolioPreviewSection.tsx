@@ -1,6 +1,21 @@
 import Link from 'next/link'
 import { FileText } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import { prisma } from '@/lib/prisma'
+
+const getPortfolioPreview = unstable_cache(
+  async () => prisma.portfolioItem.findMany({
+    where: { published: true },
+    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+    take: 6,
+    select: {
+      id: true, title: true, workType: true, subject: true,
+      previewText: true, description: true,
+    },
+  }),
+  ['portfolio-preview'],
+  { revalidate: 3600 },
+)
 
 const WORK_TYPE_LABELS: Record<string, string> = {
   essay:        'Реферат',
@@ -12,15 +27,7 @@ const WORK_TYPE_LABELS: Record<string, string> = {
 }
 
 export async function PortfolioPreviewSection() {
-  const items = await prisma.portfolioItem.findMany({
-    where: { published: true },
-    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-    take: 6,
-    select: {
-      id: true, title: true, workType: true, subject: true,
-      previewText: true, description: true,
-    },
-  })
+  const items = await getPortfolioPreview()
 
   if (items.length === 0) return null
 
