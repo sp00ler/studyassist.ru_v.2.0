@@ -78,8 +78,14 @@ export function HeroSection() {
               className="font-unbounded font-black leading-[.93] tracking-[-3px] mb-7"
               style={{ fontSize: 'clamp(52px, 8.5vw, 100px)' }}
             >
-              <span className="block text-[#F0F0EC]">{line1}</span>
-              <span className="block text-[#C5FF45]">{line2}</span>
+              <span className="block text-[#F0F0EC] relative">
+                <span className="invisible select-none">ДЕДЛАЙН</span>
+                <span className="absolute inset-0">{line1}</span>
+              </span>
+              <span className="block text-[#C5FF45] relative">
+                <span className="invisible select-none">ЗАВТРА?</span>
+                <span className="absolute inset-0">{line2}</span>
+              </span>
               <span
                 className="block text-[#6A6A88] font-normal tracking-[-1px]"
                 style={{ fontSize: 'clamp(20px, 3.2vw, 42px)' }}
