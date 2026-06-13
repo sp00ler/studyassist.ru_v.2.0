@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast'
 import Link from 'next/link'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 
 export default function EditPostPage() {
   const router = useRouter()
@@ -17,7 +18,7 @@ export default function EditPostPage() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [preview, setPreview] = useState(false)
+  const [previewMode, setPreviewMode] = useState(false)
 
   const [form, setForm] = useState({
     type: 'blog' as 'blog' | 'news',
@@ -33,17 +34,15 @@ export default function EditPostPage() {
     fetch(`/api/admin/posts/${params.id}`)
       .then((r) => r.json())
       .then(({ post }) => {
-        if (post) {
-          setForm({
-            type: post.type,
-            title: post.title,
-            slug: post.slug,
-            excerpt: post.excerpt || '',
-            content: post.content,
-            coverImage: post.coverImage || '',
-            published: post.published,
-          })
-        }
+        if (post) setForm({
+          type: post.type,
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt || '',
+          content: post.content,
+          coverImage: post.coverImage || '',
+          published: post.published,
+        })
       })
       .finally(() => setLoading(false))
   }, [params.id])
@@ -73,7 +72,7 @@ export default function EditPostPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
-      <Loader2 className="w-6 h-6 text-[#6C3EF4] animate-spin" />
+      <Loader2 className="w-6 h-6 text-[#C5FF45] animate-spin" />
     </div>
   )
 
@@ -138,21 +137,30 @@ export default function EditPostPage() {
           </div>
         </div>
 
+        {/* WYSIWYG Content editor */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-3">
-            <Label>Содержимое (Markdown) *</Label>
-            <button type="button" onClick={() => setPreview((v) => !v)}
-              className="text-xs text-white/40 hover:text-white/70 flex items-center gap-1 transition-colors">
-              {preview ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-              {preview ? 'Редактор' : 'Превью'}
+            <Label>Содержимое *</Label>
+            <button
+              type="button"
+              onClick={() => setPreviewMode((v) => !v)}
+              className="text-xs text-white/40 hover:text-white/70 flex items-center gap-1 transition-colors"
+            >
+              {previewMode ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+              {previewMode ? 'Редактор' : 'Превью'}
             </button>
           </div>
-          {preview ? (
-            <div className="prose prose-invert prose-sm max-w-none min-h-[320px] text-white/80 text-sm leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(form.content) }} />
+
+          {previewMode ? (
+            <div
+              className="prose-sa min-h-[320px] bg-[#07070E] border border-white/10 rounded-xl px-4 py-3"
+              dangerouslySetInnerHTML={{ __html: form.content }}
+            />
           ) : (
-            <Textarea value={form.content} onChange={(e) => set('content', e.target.value)}
-              rows={16} className="font-mono text-sm" required />
+            <RichTextEditor
+              value={form.content}
+              onChange={(html) => set('content', html)}
+            />
           )}
         </div>
 
@@ -168,17 +176,4 @@ export default function EditPostPage() {
       </form>
     </div>
   )
-}
-
-function renderMarkdown(text: string): string {
-  return text
-    .replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-white mt-4 mb-2">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 class="text-lg font-bold text-white mt-6 mb-3">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 class="text-xl font-bold text-white mt-6 mb-4">$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^- (.+)$/gm, '<li class="ml-4 list-disc">$1</li>')
-    .replace(/\n\n/g, '</p><p class="mb-3">')
-    .replace(/^(?!<)(.+)$/gm, '<p class="mb-3">$1</p>')
-    .replace(/`(.+?)`/g, '<code class="bg-white/10 px-1 rounded text-[#C5FF45] text-xs">$1</code>')
 }

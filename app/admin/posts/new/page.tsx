@@ -10,12 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast'
 import Link from 'next/link'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 
 export default function NewPostPage() {
   const router = useRouter()
   const { toast } = useToast()
   const [saving, setSaving] = useState(false)
-  const [preview, setPreview] = useState(false)
+  const [previewMode, setPreviewMode] = useState(false)
 
   const [form, setForm] = useState({
     type: 'blog' as 'blog' | 'news',
@@ -63,21 +64,17 @@ export default function NewPostPage() {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-5">
-
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="mb-2 block">Тип</Label>
               <Select value={form.type} onValueChange={(v) => set('type', v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="blog">Блог</SelectItem>
                   <SelectItem value="news">Новость</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
             <div className="flex items-end">
               <button
                 type="button"
@@ -99,12 +96,7 @@ export default function NewPostPage() {
             <Input
               id="title"
               value={form.title}
-              onChange={(e) => {
-                set('title', e.target.value)
-                if (!form.slug) {
-                  // auto-slug will be generated server-side
-                }
-              }}
+              onChange={(e) => set('title', e.target.value)}
               placeholder="Как написать курсовую работу за 3 дня"
               required
             />
@@ -144,41 +136,36 @@ export default function NewPostPage() {
           </div>
         </div>
 
-        {/* Content editor */}
+        {/* WYSIWYG Content editor */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-3">
-            <Label htmlFor="content">Содержимое (Markdown) *</Label>
+            <Label>Содержимое *</Label>
             <button
               type="button"
-              onClick={() => setPreview((v) => !v)}
+              onClick={() => setPreviewMode((v) => !v)}
               className="text-xs text-white/40 hover:text-white/70 flex items-center gap-1 transition-colors"
             >
-              {preview ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-              {preview ? 'Редактор' : 'Превью'}
+              {previewMode ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+              {previewMode ? 'Редактор' : 'Превью'}
             </button>
           </div>
 
-          {preview ? (
+          {previewMode ? (
             <div
-              className="prose prose-invert prose-sm max-w-none min-h-[320px] text-white/80 text-sm leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(form.content) }}
+              className="prose-sa min-h-[320px] bg-[#07070E] border border-white/10 rounded-xl px-4 py-3"
+              dangerouslySetInnerHTML={{ __html: form.content }}
             />
           ) : (
-            <Textarea
-              id="content"
+            <RichTextEditor
               value={form.content}
-              onChange={(e) => set('content', e.target.value)}
-              placeholder={`# Заголовок\n\nТекст статьи...\n\n## Подзаголовок\n\nПродолжение...`}
-              rows={16}
-              className="font-mono text-sm"
-              required
+              onChange={(html) => set('content', html)}
+              placeholder="Начните писать содержимое статьи..."
             />
           )}
-          <p className="text-xs text-white/30 mt-2">Поддерживается Markdown: **жирный**, *курсив*, ## заголовки, - списки</p>
         </div>
 
         <div className="flex gap-3">
-          <Button type="submit" disabled={saving} className="gap-2">
+          <Button type="submit" disabled={saving || !form.title || !form.content} className="gap-2">
             {saving && <Loader2 className="w-4 h-4 animate-spin" />}
             {form.published ? 'Опубликовать' : 'Сохранить черновик'}
           </Button>
@@ -189,18 +176,4 @@ export default function NewPostPage() {
       </form>
     </div>
   )
-}
-
-// Simple markdown renderer (no deps needed for basic use)
-function renderMarkdown(text: string): string {
-  return text
-    .replace(/^### (.+)$/gm, '<h3 class="text-base font-bold text-white mt-4 mb-2">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 class="text-lg font-bold text-white mt-6 mb-3">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 class="text-xl font-bold text-white mt-6 mb-4">$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^- (.+)$/gm, '<li class="ml-4 list-disc">$1</li>')
-    .replace(/\n\n/g, '</p><p class="mb-3">')
-    .replace(/^(?!<)(.+)$/gm, '<p class="mb-3">$1</p>')
-    .replace(/`(.+?)`/g, '<code class="bg-white/10 px-1 rounded text-[#C5FF45] text-xs">$1</code>')
 }
