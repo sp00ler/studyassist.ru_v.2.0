@@ -8,8 +8,9 @@ import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react'
 
 const navLinks = [
   { href: '/#services', label: 'Услуги' },
-  { href: '/#how-it-works', label: 'Как это работает' },
   { href: '/#pricing', label: 'Цены' },
+  { href: '/portfolio', label: 'Примеры работ' },
+  { href: '/blog', label: 'Блог' },
   { href: '/#reviews', label: 'Отзывы' },
 ]
 

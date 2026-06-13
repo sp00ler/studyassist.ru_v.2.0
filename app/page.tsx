@@ -11,6 +11,8 @@ import { PricingSection } from '@/components/home/PricingSection'
 import { ReviewsSection } from '@/components/home/ReviewsSection'
 import { OrderForm } from '@/components/home/OrderForm'
 import { FaqSection } from '@/components/home/FaqSection'
+import { PortfolioPreviewSection } from '@/components/home/PortfolioPreviewSection'
+import { BlogPreviewSection } from '@/components/home/BlogPreviewSection'
 
 export const metadata: Metadata = {
   title: 'StudyAssist — Образовательные консультации для студентов | Помощь в учёбе онлайн',
@@ -118,6 +120,8 @@ export default function HomePage() {
         <HowItWorks />
         <PricingSection />
         <ReviewsSection />
+        <PortfolioPreviewSection />
+        <BlogPreviewSection />
         <OrderForm />
         <FaqSection />
       </main>
