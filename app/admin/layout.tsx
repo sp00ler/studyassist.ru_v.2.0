@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { GraduationCap, LayoutDashboard, Package, Star, Users, LogOut } from 'lucide-react'
+import { GraduationCap, LayoutDashboard, Package, Star, Users, LogOut, BookOpen, Newspaper, FolderOpen } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
 import { signOut } from 'next-auth/react'
 
@@ -13,6 +13,8 @@ const adminNav = [
   { href: '/admin/orders', label: 'Заявки', icon: Package },
   { href: '/admin/reviews', label: 'Отзывы', icon: Star },
   { href: '/admin/users', label: 'Пользователи', icon: Users },
+  { href: '/admin/posts', label: 'Блог и новости', icon: BookOpen },
+  { href: '/admin/portfolio', label: 'Портфолио', icon: FolderOpen },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

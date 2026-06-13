@@ -177,3 +177,39 @@ model ChatMessage {
   @@index([sessionId])
   @@index([createdAt])
 }
+
+model Post {
+  id          String    @id @default(cuid())
+  type        String    // 'blog' | 'news'
+  title       String
+  slug        String    @unique
+  excerpt     String?   @db.Text
+  content     String    @db.Text
+  coverImage  String?
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([type, published])
+  @@index([slug])
+  @@index([publishedAt])
+}
+
+model PortfolioItem {
+  id          String   @id @default(cuid())
+  title       String
+  workType    String   // essay | coursework | diploma | lab | presentation | other
+  subject     String?
+  description String?  @db.Text
+  previewText String?  @db.Text  // краткий фрагмент работы (обезличенный)
+  fileUrl     String?            // ссылка на PDF (необязательно)
+  published   Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+  @@index([workType])
+  @@index([sortOrder])
+}

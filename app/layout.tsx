@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { CookieBanner } from '@/components/CookieBanner'
 import { MetrikaScript } from '@/components/MetrikaScript'
 import { ChatWidget } from '@/components/ChatWidget'
+import { ContactsFloat } from '@/components/ContactsFloat'
 import { YandexBrowserBanner } from '@/components/YandexBrowserBanner'
 
 export const metadata: Metadata = {
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Toaster />
           <CookieBanner />
           <ChatWidget />
+          <ContactsFloat />
           {metrikaId && <MetrikaScript metrikaId={metrikaId} />}
         </SessionProvider>
       </body>

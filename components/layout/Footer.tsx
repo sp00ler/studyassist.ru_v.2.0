@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { SocialContacts } from '@/components/layout/SocialContacts'
 
 export function Footer() {
   return (
@@ -66,6 +67,12 @@ export function Footer() {
             <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6A6A88] mb-4">
               Контакты
             </div>
+
+            {/* Social messenger icons */}
+            <div className="mb-4">
+              <SocialContacts size="sm" />
+            </div>
+
             <ul className="space-y-2.5">
               <li>
                 <a href="mailto:support@studyassist.ru" className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
