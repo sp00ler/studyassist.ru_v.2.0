@@ -7,6 +7,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { BrowserChrome } from '@/components/layout/BrowserChrome'
 import { RetroGate } from '@/components/home/RetroGate'
+import { HeroSection } from '@/components/home/HeroSection'
 import { StatsSection } from '@/components/home/StatsSection'
 import { ServicesSection } from '@/components/home/ServicesSection'
 import { HowItWorks } from '@/components/home/HowItWorks'
@@ -67,6 +68,7 @@ export function HomeExperience({ portfolioSection, blogSection }: HomeExperience
             <UrgencyBar />
             <Navbar />
             <main id="main-content">
+              <HeroSection />
               <StatsSection />
               <ServicesSection />
               <HowItWorks />

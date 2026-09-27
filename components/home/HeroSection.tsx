@@ -1,195 +1,87 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { MagneticButton } from '@/components/MagneticButton'
-import { useTextScramble } from '@/hooks/useTextScramble'
+
+const STATUS_ROWS = [
+  { label: 'Время ответа', value: '≤ 30 мин' },
+  { label: 'Часы работы', value: '09:00–23:00' },
+  { label: 'Довольных клиентов', value: '98%' },
+]
 
 export function HeroSection() {
-  const [time, setTime] = useState('--:--:--')
-  const [mounted, setMounted] = useState(false)
-  const line1 = useTextScramble('ДЕДЛАЙН', 600)
-  const line2 = useTextScramble('ЗАВТРА?', 800)
-
-  useEffect(() => {
-    setMounted(true)
-    const tick = () => {
-      const n = new Date()
-      const pad = (x: number) => String(x).padStart(2, '0')
-      setTime(`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`)
-    }
-    tick()
-    const id = setInterval(tick, 1000)
-    return () => clearInterval(id)
-  }, [])
-
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Animated orbs */}
-      <div
-        className="absolute rounded-full pointer-events-none animate-orb"
-        style={{
-          width: 800, height: 800,
-          background: 'radial-gradient(circle, rgba(124,58,237,.14) 0%, transparent 70%)',
-          top: -260, right: -160,
-        }}
-      />
-      <div
-        className="absolute rounded-full pointer-events-none animate-orb-reverse"
-        style={{
-          width: 560, height: 560,
-          background: 'radial-gradient(circle, rgba(197,255,69,.07) 0%, transparent 70%)',
-          bottom: -80, left: 60,
-        }}
-      />
-
-      {/* Dot grid */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,.08) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-          maskImage: 'radial-gradient(ellipse 70% 70% at 60% 50%, black 30%, transparent 100%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 60% 50%, black 30%, transparent 100%)',
-        }}
-      />
-
-      <div className="relative z-10 max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-20 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8 lg:gap-16 items-center">
-
-          {/* Left */}
+    <section className="relative bg-desk dither border-b-2 border-chrome-shadow overflow-hidden">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 pt-16 md:pt-20 pb-16 md:pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 lg:gap-16 items-start">
+          {/* Left: headline */}
           <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2FAE5B]/10 border border-[#2FAE5B]/[.18] text-[#2FAE5B] text-[11px] font-bold uppercase tracking-[.8px] mb-7">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2FAE5B] animate-blink" />
-                Более 1000 студентов уже сдали
-              </span>
-            </motion.div>
+            <span className="inline-flex items-center gap-2 btn-95 px-3 py-1.5 text-[12px] font-mono font-semibold mb-7">
+              <span className="w-1.5 h-1.5 bg-success" aria-hidden="true" />
+              Более 1000 студентов уже сдали
+            </span>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-unbounded font-black leading-[.93] tracking-[-3px] mb-7"
-              style={{ fontSize: 'clamp(52px, 8.5vw, 100px)' }}
+            <h1
+              className="font-display font-bold text-paper leading-[1.05] mb-6"
+              style={{ fontSize: 'clamp(40px, 7vw, 88px)' }}
             >
-              <span className="block text-[#F5F0E3] relative">
-                <span className="invisible select-none">ДЕДЛАЙН</span>
-                <span className="absolute inset-0">{line1}</span>
-              </span>
-              <span className="block text-[#2FAE5B] relative">
-                <span className="invisible select-none">ЗАВТРА?</span>
-                <span className="absolute inset-0">{line2}</span>
-              </span>
+              <span className="block">Дедлайн завтра?</span>
+              <span className="block">Мы уже за компьютером.</span>
               <span
-                className="block text-[#6B6255] font-normal tracking-[-1px]"
-                style={{ fontSize: 'clamp(20px, 3.2vw, 42px)' }}
+                className="block font-sans font-normal mt-3"
+                style={{ fontSize: 'clamp(16px, 2.2vw, 26px)', lineHeight: 1.4 }}
               >
-                Мы уже работаем.
+                Курсовая, диплом, реферат — разберёмся и подготовим работу вместе.
               </span>
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-[17px] text-[#6B6255] max-w-[480px] leading-[1.75] mb-10"
-            >
-              От реферата до диплома — профильный специалист,{' '}
-              ответ за 30 минут, работа любой сложности.
-            </motion.p>
+            <p className="text-[17px] sm:text-[18px] text-paper leading-[1.55] max-w-[52ch] mb-9">
+              Профильный специалист, ответ за 30 минут, консультация по задаче любой сложности.
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-wrap gap-3"
-            >
-              <MagneticButton>
-                <Link
-                  href="#order"
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#2FAE5B] text-[#17130F] font-black font-unbounded text-[13px] tracking-[-0.2px] hover:bg-[#3FC96B] hover:shadow-[0_14px_36px_rgba(197,255,69,.28)] hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
-                  onClick={() => {
-                    if (typeof window !== 'undefined' && (window as Window & { ym?: Function }).ym) {
-                      (window as Window & { ym?: Function }).ym?.(
-                        process.env.NEXT_PUBLIC_METRIKA_ID,
-                        'reachGoal',
-                        'hero_cta_click'
-                      )
-                    }
-                  }}
-                >
-                  Оставить заявку
-                  <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </Link>
-              </MagneticButton>
+            <div className="flex flex-wrap gap-3">
               <Link
-                href="#how-it-works"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-transparent text-[#F5F0E3] border border-white/10 font-bold font-unbounded text-[13px] hover:border-white/20 hover:bg-white/5 transition-all duration-200"
+                href="#order"
+                className="btn-95-primary min-h-[44px] px-8 text-[14px] font-bold inline-flex items-center"
               >
+                Оставить заявку
+              </Link>
+              <Link href="#how-it-works" className="btn-95 min-h-[44px] px-8 text-[14px] font-semibold inline-flex items-center">
                 Как это работает
               </Link>
-            </motion.div>
+            </div>
           </div>
 
-          {/* Right: live panel */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="bg-[#211C15] border border-white/[.06] rounded-3xl p-5 sm:p-8 flex flex-col gap-6"
-          >
-            <div className="font-mono text-[10px] font-bold uppercase tracking-[1.4px] text-[#6B6255]">
-              // Сейчас на связи
+          {/* Right: СТАТУС.EXE window card */}
+          <div className="window w-full lg:sticky lg:top-24">
+            <div className="titlebar">
+              <span className="truncate">СТАТУС.EXE</span>
+              <div className="flex gap-1 shrink-0">
+                <span className="titlebar-btn" aria-hidden="true">
+                  _
+                </span>
+                <span className="titlebar-btn" aria-hidden="true">
+                  □
+                </span>
+                <span className="titlebar-btn" aria-hidden="true">
+                  ×
+                </span>
+              </div>
             </div>
-
-            <div className="font-mono font-bold text-[#2FAE5B] tracking-[-2px] leading-none"
-              style={{ fontSize: 'clamp(36px, 9vw, 52px)' }}>
-              {mounted ? time : '--:--:--'}
-            </div>
-
-            <div className="inline-flex items-center gap-1.5 self-start px-3 py-1.5 rounded-full bg-[#2FAE5B]/10 border border-[#2FAE5B]/[.18] text-[#2FAE5B] text-[12px] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#2FAE5B] animate-blink" />
-              Эксперты онлайн
-            </div>
-
-            <div className="h-px bg-white/[.06]" />
-
-            <div className="space-y-3.5">
-              {[
-                { label: 'Время ответа',       value: '≤ 30 мин' },
-                { label: 'Время работы',        value: '09:00–23:00' },
-                { label: 'Довольных клиентов',  value: '98%' },
-              ].map((stat) => (
-                <div key={stat.label} className="flex items-center justify-between">
-                  <span className="text-[13px] text-[#6B6255]">{stat.label}</span>
-                  <span className="font-mono text-[15px] font-bold text-[#2FAE5B]">{stat.value}</span>
+            <div className="p-5 sm:p-6 flex flex-col gap-3">
+              {STATUS_ROWS.map((row) => (
+                <div key={row.label} className="flex items-center justify-between bevel-in bg-paper px-3 py-2.5">
+                  <span className="text-[12px] text-ink-soft">{row.label}</span>
+                  <span className="font-mono text-[15px] font-bold text-title">{row.value}</span>
                 </div>
               ))}
+              <Link
+                href="#order"
+                className="btn-95-primary min-h-[44px] px-4 text-[13px] font-bold inline-flex items-center justify-center mt-1"
+              >
+                Написать сейчас →
+              </Link>
             </div>
-
-            <div className="h-px bg-white/[.06]" />
-
-            <Link
-              href="#order"
-              className="flex items-center justify-center px-6 py-3.5 rounded-full bg-[#2FAE5B] text-[#17130F] font-black font-unbounded text-[12px] tracking-[-0.2px] hover:bg-[#3FC96B] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)] transition-all duration-200"
-            >
-              Написать прямо сейчас
-            </Link>
-          </motion.div>
-
+          </div>
         </div>
       </div>
-
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#17130F] to-transparent pointer-events-none" />
     </section>
   )
 }

@@ -1,16 +1,21 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { useInView } from 'framer-motion'
+import { useInView, useReducedMotion } from 'framer-motion'
 
 function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref as React.RefObject<Element>, { once: true, margin: '-60px' })
+  const reduceMotion = useReducedMotion()
 
   useEffect(() => {
     if (!isInView) return
-    const duration = 1800
+    if (reduceMotion) {
+      setCount(target)
+      return
+    }
+    const duration = 1200
     const steps = duration / 16
     const increment = target / steps
     let cur = 0
@@ -26,62 +31,43 @@ function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
 }
 
 const stats = [
-  {
-    value: <Counter target={1000} suffix="+" />,
-    label: 'студентов сдали работы',
-  },
-  {
-    value: (
-      <span>
-        30
-        <span className="text-[28px] font-sans font-normal tracking-normal leading-none">мин</span>
-      </span>
-    ),
-    label: 'среднее время ответа',
-  },
-  {
-    value: <Counter target={98} suffix="%" />,
-    label: 'довольных клиентов',
-  },
-  {
-    value: (
-      <span>
-        24
-        <span className="text-[28px] font-sans font-normal tracking-normal leading-none">/7</span>
-      </span>
-    ),
-    label: 'онлайн поддержка',
-  },
+  { value: <Counter target={1000} suffix="+" />, label: 'студентов сдали работы' },
+  { value: '30 мин', label: 'среднее время ответа' },
+  { value: <Counter target={98} suffix="%" />, label: 'довольных клиентов' },
+  { value: '09:00–23:00', label: 'на связи ежедневно' },
 ]
 
 export function StatsSection() {
   return (
-    <div className="bg-[#211C15] border-t border-b border-white/[.06]">
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-14">
-        <div className="grid grid-cols-2 md:grid-cols-4">
-          {stats.map((stat, i) => {
-            // mobile 2-col: right border only on left column (even indices), bottom border on top row
-            // desktop 4-col: right border on all except last
-            const borderCls = [
-              'border-r border-b md:border-b-0 border-white/[.06]',
-              'border-b md:border-b-0 md:border-r border-white/[.06]',
-              'border-r border-white/[.06]',
-              '',
-            ][i] ?? ''
-            return (
-            <div
-              key={i}
-              className={`text-center py-4 px-4 md:px-8 ${borderCls}`}
-            >
-              <div className="font-unbounded text-[clamp(36px,4.5vw,52px)] font-black text-[#2FAE5B] tracking-[-2px] leading-none mb-2">
-                {stat.value}
-              </div>
-              <div className="text-[13px] text-[#6B6255] mt-2 leading-snug">{stat.label}</div>
+    <section className="bg-paper">
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-10 md:py-14">
+        <div className="window max-w-[680px] mx-auto">
+          <div className="titlebar">
+            <span className="truncate">Свойства: StudyAssist.exe</span>
+            <div className="flex gap-1 shrink-0">
+              <span className="titlebar-btn" aria-hidden="true">
+                _
+              </span>
+              <span className="titlebar-btn" aria-hidden="true">
+                □
+              </span>
+              <span className="titlebar-btn" aria-hidden="true">
+                ×
+              </span>
             </div>
-            )
-          })}
+          </div>
+          <div className="px-5 sm:px-7 py-2 flex flex-col divide-y divide-chrome-shadow/20">
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex items-center justify-between gap-4 py-3 sm:py-3.5">
+                <span className="text-[13px] sm:text-[14px] text-ink-soft">{stat.label}</span>
+                <span className="font-mono text-[18px] sm:text-[22px] font-bold text-title tabular-nums whitespace-nowrap">
+                  {stat.value}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

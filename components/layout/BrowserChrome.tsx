@@ -8,8 +8,10 @@ interface BrowserChromeProps {
   children: React.ReactNode
 }
 
-const CHROME_BTN =
-  'w-8 h-8 flex items-center justify-center bg-[#EDE7D8] text-[#1A1714] chrome-bevel-out hover:bg-white active:translate-y-px transition-colors disabled:opacity-30 disabled:pointer-events-none'
+const MENU_ITEMS = ['Файл', 'Правка', 'Вид', 'Избранное', 'Справка']
+
+const TOOLBAR_BTN =
+  'btn-95 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:w-8 sm:h-8 flex items-center justify-center active:translate-y-px transition-colors disabled:opacity-30 disabled:pointer-events-none'
 
 export function BrowserChrome({ onHome, children }: BrowserChromeProps) {
   const contentRef = useRef<HTMLDivElement>(null)
@@ -22,46 +24,62 @@ export function BrowserChrome({ onHome, children }: BrowserChromeProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-10 flex flex-col bg-[#8f8877] sm:p-3">
-      <div className="mx-auto w-full sm:max-w-[1440px] flex-1 flex flex-col bg-[#EDE7D8] chrome-bevel-out overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.55)]">
+    <div className="fixed inset-0 z-10 flex flex-col bg-desk dither sm:p-3">
+      <div className="mx-auto w-full sm:max-w-[1440px] flex-1 flex flex-col window overflow-hidden pixel-shadow">
         {/* Title bar */}
-        <div className="flex items-center justify-between px-3 py-1.5 bg-[#1A1714] text-[#F5F0E3] shrink-0">
-          <span className="font-pixel text-[9px] sm:text-[10px] tracking-wide truncate">
-            StudyAssist — Netscape Navigator
-          </span>
-          <div className="flex gap-1.5 shrink-0">
-            <span className="w-3 h-3 bg-[#E8A33D] chrome-bevel-out" aria-hidden />
-            <span className="w-3 h-3 bg-[#2FAE5B] chrome-bevel-out" aria-hidden />
+        <div className="titlebar shrink-0">
+          <span className="truncate">StudyAssist — Netscape-style</span>
+          <div className="flex gap-1 shrink-0">
+            <span className="titlebar-btn" aria-hidden="true">
+              _
+            </span>
+            <span className="titlebar-btn" aria-hidden="true">
+              □
+            </span>
             <button
               onClick={onHome}
               aria-label="Закрыть окно и вернуться в комнату"
-              className="w-3 h-3 bg-[#C0392B] chrome-bevel-out hover:brightness-110"
-            />
+              className="titlebar-btn hover:bg-danger hover:text-white"
+            >
+              ×
+            </button>
           </div>
         </div>
 
+        {/* Menu bar — decorative Win95 top menu, not wired to functionality */}
+        <div
+          className="hidden sm:flex items-center gap-1 px-2 py-1 bg-chrome text-ink text-[12px] font-sans border-b border-chrome-shadow shrink-0"
+          aria-hidden="true"
+        >
+          {MENU_ITEMS.map((item) => (
+            <span key={item} className="px-2 py-0.5 hover:bg-title hover:text-white cursor-default">
+              {item}
+            </span>
+          ))}
+        </div>
+
         {/* Toolbar */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-[#DCD5C2] border-b-2 border-[#1A1714]/70 shrink-0">
-          <button onClick={() => scrollByViewport(-1)} aria-label="Назад" className={CHROME_BTN}>
+        <div className="flex items-center gap-2 px-2 sm:px-3 py-2 bg-chrome border-b border-chrome-shadow shrink-0">
+          <button onClick={() => scrollByViewport(-1)} aria-label="Назад" className={TOOLBAR_BTN}>
             <ArrowLeft className="w-4 h-4" strokeWidth={2} />
           </button>
-          <button onClick={() => scrollByViewport(1)} aria-label="Вперёд" className={CHROME_BTN}>
+          <button onClick={() => scrollByViewport(1)} aria-label="Вперёд" className={TOOLBAR_BTN}>
             <ArrowRight className="w-4 h-4" strokeWidth={2} />
           </button>
-          <button onClick={() => window.location.reload()} aria-label="Обновить" className={CHROME_BTN}>
+          <button onClick={() => window.location.reload()} aria-label="Обновить" className={TOOLBAR_BTN}>
             <RotateCw className="w-4 h-4" strokeWidth={2} />
           </button>
-          <button onClick={onHome} aria-label="Домой" className={CHROME_BTN}>
+          <button onClick={onHome} aria-label="Домой" className={TOOLBAR_BTN}>
             <Home className="w-4 h-4" strokeWidth={2} />
           </button>
-          <div className="flex-1 ml-1 flex items-center gap-2 bg-white chrome-bevel-in rounded-[2px] px-3 py-1.5 text-[11px] sm:text-[12px] text-[#1A1714]/75 font-mono overflow-hidden">
-            <Globe className="w-3.5 h-3.5 text-[#2FAE5B] shrink-0" strokeWidth={2} />
+          <div className="flex-1 ml-1 flex items-center gap-2 field-95 px-3 py-2 sm:py-1.5 text-[12px] sm:text-[13px] text-ink-soft font-mono overflow-hidden">
+            <Globe className="w-3.5 h-3.5 text-title shrink-0" strokeWidth={2} />
             <span className="truncate">https://studyassist.ru</span>
           </div>
         </div>
 
         {/* Scrollable content — the real site lives here */}
-        <div ref={contentRef} className="flex-1 overflow-y-auto overflow-x-hidden bg-[#17130F]">
+        <div ref={contentRef} className="flex-1 overflow-y-auto overflow-x-hidden bg-paper">
           {children}
         </div>
       </div>

@@ -95,8 +95,8 @@ interface SocialContactsProps {
 
 export function SocialContacts({ size = 'md', label = false }: SocialContactsProps) {
   const [hovered, setHovered] = useState<string | null>(null)
-  const iconSize = size === 'sm' ? 16 : 20
-  const btnSize = size === 'sm' ? 'w-8 h-8' : 'w-10 h-10'
+  const iconSize = size === 'sm' ? 15 : 18
+  const btnSize = size === 'sm' ? 'w-9 h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:w-9 sm:h-9' : 'w-11 h-11'
 
   return (
     <div className="flex items-center gap-2" role="list" aria-label="Контакты">
@@ -113,18 +113,7 @@ export function SocialContacts({ size = 'md', label = false }: SocialContactsPro
               onMouseLeave={() => setHovered(null)}
               onFocus={() => setHovered(c.name)}
               onBlur={() => setHovered(null)}
-              className={`
-                flex items-center justify-center rounded-xl border transition-all duration-200
-                ${btnSize}
-                ${isHovered
-                  ? 'border-current bg-current/10 scale-110'
-                  : 'border-white/10 bg-white/5 hover:border-white/20'
-                }
-              `}
-              style={{
-                color: isHovered ? c.brandColor : '#2FAE5B',
-                boxShadow: isHovered ? `0 0 16px ${c.brandGlow}` : 'none',
-              }}
+              className={`btn-95 flex items-center justify-center text-ink ${btnSize} ${isHovered ? 'bg-title text-white' : ''}`}
             >
               <c.icon size={iconSize} />
             </a>
@@ -133,8 +122,8 @@ export function SocialContacts({ size = 'md', label = false }: SocialContactsPro
             <div
               className={`
                 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1
-                rounded-md text-[10px] font-semibold whitespace-nowrap pointer-events-none
-                transition-all duration-150 bg-[#1A1A2E] border border-white/10 text-white/80
+                text-[10px] font-mono font-semibold whitespace-nowrap pointer-events-none
+                transition-all duration-150 bevel-out bg-chrome text-ink
                 ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}
               `}
             >
@@ -145,7 +134,7 @@ export function SocialContacts({ size = 'md', label = false }: SocialContactsPro
       })}
 
       {label && (
-        <span className="text-[12px] text-[#6B6255] ml-1">Написать нам</span>
+        <span className="text-[12px] text-ink-soft ml-1">Написать нам</span>
       )}
     </div>
   )
