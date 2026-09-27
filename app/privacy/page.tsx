@@ -13,25 +13,30 @@ export default function PrivacyPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-24 pb-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm mb-8">
+      <main id="main-content" className="min-h-screen bg-desk dither pt-24 pb-16 px-4 sm:px-6">
+        <div className="max-w-3xl mx-auto">
+          <Link href="/" className="inline-flex items-center gap-2 text-white hover:text-accent transition-colors text-sm mb-6">
             <ArrowLeft className="w-4 h-4" />
             На главную
           </Link>
-          <h1 className="text-3xl font-bold text-white mb-2">Политика конфиденциальности</h1>
-          <p className="text-white/40 text-sm mb-10">сервиса StudyAssist.ru · Редакция от 30.03.2026</p>
+          <div className="window">
+            <div className="titlebar">
+              <span className="truncate">PRIVACY.TXT — Политика конфиденциальности</span>
+            </div>
+            <div className="bg-paper p-6 sm:p-10">
+          <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink mb-2">Политика конфиденциальности</h1>
+          <p className="font-mono text-ink-soft text-sm mb-10">сервиса StudyAssist.ru · Редакция от 30.03.2026</p>
 
-          <div className="space-y-6 text-white/70 leading-relaxed">
+          <div className="space-y-6 text-ink-soft leading-relaxed">
             <p>
               Настоящая Политика конфиденциальности (далее — Политика) разработана в соответствии с требованиями
               Федерального закона от 27.07.2006 № 152-ФЗ «О персональных данных» и определяет порядок обработки
               и защиты персональных данных пользователей сайта{' '}
-              <a href="https://studyassist.ru" className="text-[#6C3EF4] hover:underline">https://studyassist.ru</a>{' '}
+              <a href="https://studyassist.ru" className="text-title hover:underline">https://studyassist.ru</a>{' '}
               (далее — Сайт).
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">1. Оператор персональных данных</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">1. Оператор персональных данных</h2>
             <p>
               Оператором персональных данных является Приходько Денис Сергеевич (ИНН: 701740486305),
               осуществляющий деятельность в качестве плательщика налога на профессиональный доход (самозанятый)
@@ -39,11 +44,11 @@ export default function PrivacyPage() {
             </p>
             <p>Контактные данные Оператора:</p>
             <ul className="list-none space-y-1 pl-0">
-              <li>E-mail: <a href="mailto:support@studyassist.ru" className="text-[#6C3EF4] hover:underline">support@studyassist.ru</a></li>
-              <li>Телефон: <a href="tel:+79539246817" className="text-[#6C3EF4] hover:underline">+7-953-924-68-17</a></li>
+              <li>E-mail: <a href="mailto:support@studyassist.ru" className="text-title hover:underline">support@studyassist.ru</a></li>
+              <li>Телефон: <a href="tel:+79539246817" className="text-title hover:underline">+7-953-924-68-17</a></li>
             </ul>
 
-            <h2 className="text-xl font-semibold text-white pt-2">2. Категории субъектов и состав персональных данных</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">2. Категории субъектов и состав персональных данных</h2>
             <p>
               2.1. Оператор обрабатывает персональные данные следующих категорий субъектов: физических лиц,
               использующих Сайт, регистрирующихся в личном кабинете, оформляющих заказы, направляющих заявки
@@ -59,7 +64,7 @@ export default function PrivacyPage() {
                 'информация, содержащаяся в обращениях и заказах пользователя;',
                 'платёжные реквизиты (в объёме, необходимом для проведения расчётов, через платёжного партнёра).',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
             <p>
@@ -67,7 +72,7 @@ export default function PrivacyPage() {
               принадлежность, политические взгляды, религиозные убеждения, состояние здоровья, биометрические данные).
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">3. Цели обработки персональных данных</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">3. Цели обработки персональных данных</h2>
             <p>Персональные данные обрабатываются в следующих целях:</p>
             <ul className="space-y-1 pl-4 list-none">
               {[
@@ -81,11 +86,11 @@ export default function PrivacyPage() {
                 'исполнение требований законодательства Российской Федерации;',
                 'защита прав и законных интересов Оператора.',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
 
-            <h2 className="text-xl font-semibold text-white pt-2">4. Правовые основания обработки</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">4. Правовые основания обработки</h2>
             <p>4.1. Обработка персональных данных осуществляется на следующих правовых основаниях:</p>
             <ul className="space-y-1 pl-4 list-none">
               {[
@@ -94,11 +99,11 @@ export default function PrivacyPage() {
                 'исполнение обязанностей, возложенных на Оператора законодательством Российской Федерации (ст. 6, ч. 1, п. 2 Закона № 152-ФЗ);',
                 'осуществление прав и законных интересов Оператора (ст. 6, ч. 1, п. 7 Закона № 152-ФЗ).',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
 
-            <h2 className="text-xl font-semibold text-white pt-2">5. Порядок, условия обработки и сроки хранения</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">5. Порядок, условия обработки и сроки хранения</h2>
             <p>5.1. Обработка персональных данных осуществляется с использованием средств автоматизации.</p>
             <p>
               5.2. Оператор принимает необходимые правовые, организационные и технические меры для защиты
@@ -114,7 +119,7 @@ export default function PrivacyPage() {
                 'cookie аналитики — не более 1 года с момента установки;',
                 'данные согласий — весь срок хранения аккаунта + 3 года (для подтверждения факта согласия).',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
             <p>
@@ -126,7 +131,7 @@ export default function PrivacyPage() {
               Санкт-Петербург) в соответствии с ч. 5 ст. 18 Закона № 152-ФЗ о локализации.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">6. Передача персональных данных третьим лицам</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">6. Передача персональных данных третьим лицам</h2>
             <p>
               6.1. Для исполнения договора с пользователем Оператор привлекает следующих подрядчиков (поручителей обработки):
             </p>
@@ -137,7 +142,7 @@ export default function PrivacyPage() {
                 'ООО «Яндекс» (Россия) — веб-аналитика (Яндекс.Метрика). Передаются: обезличенные данные о поведении на сайте — только с согласия пользователя.',
                 'Провайдер OAuth ВКонтакте / Mail.ru / Яндекс (Россия) — при входе через социальную сеть передаются данные профиля (email, имя) от соответствующего провайдера.',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
             <p>
@@ -150,7 +155,7 @@ export default function PrivacyPage() {
               идентификатор заказа, без персональных данных клиентов.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">7. Файлы cookie и аналитика</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">7. Файлы cookie и аналитика</h2>
             <p>
               7.1. Сайт использует файлы cookie — небольшие текстовые файлы, сохраняемые в браузере пользователя.
             </p>
@@ -160,19 +165,19 @@ export default function PrivacyPage() {
                 'Необходимые (технические) — обеспечивают авторизацию и безопасность. Устанавливаются без согласия.',
                 'Аналитические (Яндекс.Метрика, включая Вебвизор) — сбор обезличенных данных о поведении пользователей. Устанавливаются только с явного согласия пользователя через баннер.',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
             <p>
               7.3. Подробная информация о типах cookie, сроках и управлении ими доступна в{' '}
-              <Link href="/cookies" className="text-[#6C3EF4] hover:underline">Политике использования cookie</Link>.
+              <Link href="/cookies" className="text-title hover:underline">Политике использования cookie</Link>.
             </p>
             <p>
               7.4. Пользователь вправе в любой момент изменить настройки согласия или отключить cookie
               в настройках браузера.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">8. Права субъекта персональных данных</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">8. Права субъекта персональных данных</h2>
             <p>8.1. Субъект персональных данных вправе:</p>
             <ul className="space-y-1 pl-4 list-none">
               {[
@@ -181,17 +186,17 @@ export default function PrivacyPage() {
                 'отозвать согласие на обработку персональных данных, направив соответствующее заявление Оператору;',
                 'обжаловать действия (бездействие) Оператора в уполномоченный орган по защите прав субъектов персональных данных — Роскомнадзор (rkn.gov.ru).',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
             <p>
               8.2. Для реализации своих прав субъект вправе обратиться к Оператору по электронной почте:{' '}
-              <a href="mailto:support@studyassist.ru" className="text-[#6C3EF4] hover:underline">support@studyassist.ru</a>.
+              <a href="mailto:support@studyassist.ru" className="text-title hover:underline">support@studyassist.ru</a>.
               Оператор рассматривает обращение в течение 30 (тридцати) дней с даты его получения, если иной срок
               не установлен законом.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">9. Изменение Политики конфиденциальности</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">9. Изменение Политики конфиденциальности</h2>
             <p>
               9.1. Оператор вправе вносить изменения в настоящую Политику в одностороннем порядке. Новая редакция
               вступает в силу с момента её размещения на Сайте, если иной срок не указан дополнительно.
@@ -201,20 +206,22 @@ export default function PrivacyPage() {
               субъекта с внесёнными изменениями.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">10. Реквизиты Оператора</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">10. Реквизиты Оператора</h2>
             <ul className="list-none space-y-1 pl-0">
-              <li><span className="text-white/50">Оператор:</span> Приходько Денис Сергеевич</li>
-              <li><span className="text-white/50">ИНН:</span> 701740486305</li>
-              <li><span className="text-white/50">E-mail:</span>{' '}
-                <a href="mailto:support@studyassist.ru" className="text-[#6C3EF4] hover:underline">support@studyassist.ru</a>
+              <li><span className="text-ink-soft">Оператор:</span> Приходько Денис Сергеевич</li>
+              <li><span className="text-ink-soft">ИНН:</span> 701740486305</li>
+              <li><span className="text-ink-soft">E-mail:</span>{' '}
+                <a href="mailto:support@studyassist.ru" className="text-title hover:underline">support@studyassist.ru</a>
               </li>
-              <li><span className="text-white/50">Телефон:</span>{' '}
-                <a href="tel:+79539246817" className="text-[#6C3EF4] hover:underline">+7-953-924-68-17</a>
+              <li><span className="text-ink-soft">Телефон:</span>{' '}
+                <a href="tel:+79539246817" className="text-title hover:underline">+7-953-924-68-17</a>
               </li>
-              <li><span className="text-white/50">Сайт:</span>{' '}
-                <a href="https://studyassist.ru" className="text-[#6C3EF4] hover:underline">https://studyassist.ru</a>
+              <li><span className="text-ink-soft">Сайт:</span>{' '}
+                <a href="https://studyassist.ru" className="text-title hover:underline">https://studyassist.ru</a>
               </li>
             </ul>
+          </div>
+            </div>
           </div>
         </div>
       </main>

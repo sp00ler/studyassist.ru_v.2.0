@@ -2,11 +2,36 @@ import type { Metadata } from 'next'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import Link from 'next/link'
-import { Mail, Clock, Phone, ArrowLeft } from 'lucide-react'
+import { Mail, Clock, Phone, ArrowLeft, ChevronRight } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Контакты — StudyAssist',
   description: 'Свяжитесь с командой StudyAssist: email, Telegram и время работы поддержки. Ответим в течение 30 минут.',
+  alternates: { canonical: '/contacts' },
+  openGraph: {
+    title: 'Контакты — StudyAssist',
+    description: 'Свяжитесь с командой StudyAssist: email, Telegram и время работы поддержки. Ответим в течение 30 минут.',
+    url: 'https://studyassist.ru/contacts',
+  },
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'ContactPage',
+      '@id': 'https://studyassist.ru/contacts/#contact',
+      name: 'Контакты StudyAssist',
+      url: 'https://studyassist.ru/contacts',
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://studyassist.ru' },
+        { '@type': 'ListItem', position: 2, name: 'Контакты', item: 'https://studyassist.ru/contacts' },
+      ],
+    },
+  ],
 }
 
 function TelegramIcon() {
@@ -46,7 +71,7 @@ const contacts = [
     label: 'Email',
     value: 'support@studyassist.ru',
     href: 'mailto:support@studyassist.ru',
-    bg: 'bg-[#6C3EF4]/20',
+    bg: 'bg-[#6C3EF4]/15',
     iconColor: 'text-[#6C3EF4]',
     icon: <Mail className="w-6 h-6" />,
   },
@@ -54,7 +79,7 @@ const contacts = [
     label: 'Telegram',
     value: '@studyAssist_support',
     href: 'https://t.me/studyAssist_support',
-    bg: 'bg-[#29A8EB]/20',
+    bg: 'bg-[#29A8EB]/15',
     iconColor: 'text-[#29A8EB]',
     icon: <TelegramIcon />,
   },
@@ -62,7 +87,7 @@ const contacts = [
     label: 'WhatsApp',
     value: '+7 953 924-68-17',
     href: 'https://wa.me/79539246817',
-    bg: 'bg-[#25D366]/20',
+    bg: 'bg-[#25D366]/15',
     iconColor: 'text-[#25D366]',
     icon: <WhatsAppIcon />,
   },
@@ -70,7 +95,7 @@ const contacts = [
     label: 'ВКонтакте',
     value: 'vk.ru/supp0rt_studyassist',
     href: 'https://vk.ru/supp0rt_studyassist',
-    bg: 'bg-[#0077FF]/20',
+    bg: 'bg-[#0077FF]/15',
     iconColor: 'text-[#0077FF]',
     icon: <VKIcon />,
   },
@@ -78,7 +103,7 @@ const contacts = [
     label: 'Мессенджер Макс',
     value: 'Написать в Макс',
     href: 'https://max.ru/u/f9LHodD0cOKKqte1G0iOkuvcpOxTcT_Ij63H_NRW1G01Mzd5cDnBJdmEom8',
-    bg: 'bg-[#FF6600]/20',
+    bg: 'bg-[#FF6600]/15',
     iconColor: 'text-[#FF6600]',
     icon: <MaxIcon />,
   },
@@ -86,8 +111,8 @@ const contacts = [
     label: 'Телефон',
     value: '+7 953 924-68-17',
     href: 'tel:+79539246817',
-    bg: 'bg-emerald-500/20',
-    iconColor: 'text-emerald-400',
+    bg: 'bg-success/15',
+    iconColor: 'text-success',
     icon: <Phone className="w-6 h-6" />,
   },
 ]
@@ -95,47 +120,81 @@ const contacts = [
 export default function ContactsPage() {
   return (
     <>
-      <Navbar />
-      <main className="min-h-screen pt-24 pb-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm mb-8">
-            <ArrowLeft className="w-4 h-4" />
-            На главную
-          </Link>
-          <h1 className="text-3xl font-bold text-white mb-2">Контакты</h1>
-          <p className="text-white/50 mb-8">Свяжитесь с нами любым удобным способом — ответим в течение 30 минут.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {contacts.map((c) => (
-              <a
-                key={c.label}
-                href={c.href}
-                target={c.href.startsWith('http') ? '_blank' : undefined}
-                rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-white/20 hover:bg-white/8 transition-all duration-200 group flex items-start gap-4"
-              >
-                <div className={`w-12 h-12 ${c.bg} rounded-xl flex items-center justify-center flex-shrink-0 ${c.iconColor} group-hover:scale-110 transition-transform duration-200`}>
-                  {c.icon}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <div className="min-h-screen bg-desk dither">
+        <Navbar />
+        <main id="main-content" className="pt-6 pb-16 px-4 sm:px-6 lg:px-12">
+          <div className="max-w-[800px] mx-auto">
+
+            {/* Breadcrumb */}
+            <nav aria-label="Breadcrumb" className="mb-4">
+              <ol className="flex items-center gap-1.5 text-xs font-mono text-white">
+                <li><Link href="/" className="hover:text-accent transition-colors">Главная</Link></li>
+                <li aria-hidden="true"><ChevronRight className="w-3 h-3" /></li>
+                <li className="text-white/90" aria-current="page">Контакты</li>
+              </ol>
+            </nav>
+
+            {/* Contact-card window */}
+            <div className="window">
+              <div className="titlebar">
+                <span className="truncate">КОНТАКТЫ.EXE</span>
+                <div className="flex items-center gap-1 flex-shrink-0" aria-hidden="true">
+                  <span className="titlebar-btn">_</span>
+                  <span className="titlebar-btn">□</span>
+                  <span className="titlebar-btn">×</span>
                 </div>
-                <div>
-                  <p className="text-white/50 text-sm mb-1">{c.label}</p>
-                  <p className={`font-semibold ${c.iconColor} group-hover:underline`}>{c.value}</p>
-                </div>
-              </a>
-            ))}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex items-start gap-4 md:col-span-2">
-              <div className="w-12 h-12 bg-[#3B82F6]/20 rounded-xl flex items-center justify-center flex-shrink-0 text-[#3B82F6]">
-                <Clock className="w-6 h-6" />
               </div>
-              <div>
-                <p className="text-white/50 text-sm mb-1">Режим работы</p>
-                <p className="text-white font-semibold">Ежедневно с 9:00 до 23:00 МСК</p>
-                <p className="text-white/40 text-sm mt-1">Ответ в течение 30 минут</p>
+
+              <div className="bg-paper p-5 sm:p-10">
+                <Link href="/" className="inline-flex items-center gap-2 text-ink-soft hover:text-title transition-colors text-sm mb-6">
+                  <ArrowLeft className="w-4 h-4" />
+                  На главную
+                </Link>
+                <h1 className="font-display font-bold text-[clamp(26px,4vw,40px)] leading-[1.15] text-ink mb-3">
+                  Контакты
+                </h1>
+                <p className="text-ink-soft mb-8">Свяжитесь с нами любым удобным способом — ответим в течение 30 минут.</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {contacts.map((c) => (
+                    <a
+                      key={c.label}
+                      href={c.href}
+                      target={c.href.startsWith('http') ? '_blank' : undefined}
+                      rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      className="window group"
+                    >
+                      <div className="bg-paper p-5 flex items-start gap-4 hover:bg-chrome/15 transition-colors">
+                        <div className={`w-12 h-12 ${c.bg} border border-chrome-shadow/30 flex items-center justify-center flex-shrink-0 ${c.iconColor}`}>
+                          {c.icon}
+                        </div>
+                        <div>
+                          <p className="text-ink-soft text-sm mb-1">{c.label}</p>
+                          <p className={`font-semibold ${c.iconColor} group-hover:underline`}>{c.value}</p>
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                  <div className="window md:col-span-2">
+                    <div className="bg-paper p-5 flex items-start gap-4">
+                      <div className="w-12 h-12 bg-title/10 border border-chrome-shadow/30 flex items-center justify-center flex-shrink-0 text-title">
+                        <Clock className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="text-ink-soft text-sm mb-1">Режим работы</p>
+                        <p className="text-ink font-semibold">Ежедневно с 9:00 до 23:00 МСК</p>
+                        <p className="text-ink-soft text-sm mt-1">Ответ в течение 30 минут</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
-      <Footer />
+        </main>
+        <Footer />
+      </div>
     </>
   )
 }

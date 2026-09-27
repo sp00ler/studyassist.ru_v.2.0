@@ -11,23 +11,44 @@ import {
   Building2,
   Compass,
   Sparkles,
+  FolderOpen,
   type LucideIcon,
 } from 'lucide-react'
 
-const services: {
+interface Service {
   icon: LucideIcon
   title: string
   desc: string
   price: string
   unit: string
+  href: string
+  cta: string
   ghost?: boolean
-}[] = [
+}
+
+// Featured item: highest-value service, rendered as the big "open folder"
+// tile in the explorer layout below.
+const FEATURED: Service = {
+  icon: GraduationCap,
+  title: 'ВКР и дипломы',
+  desc: 'Полный цикл: план → текст → презентация',
+  price: 'от 15 000₽',
+  unit: 'за работу',
+  href: '/diplom',
+  cta: 'Заявка',
+}
+
+// Remaining services, rendered as Explorer "Details view" rows. Items with
+// a dedicated route keep that href; the rest fall back to the order form.
+const services: Service[] = [
   {
     icon: FileText,
     title: 'Рефераты и эссе',
     desc: 'Грамотно, по требованиям вашего вуза, без воды',
     price: 'от 1 000₽',
     unit: 'за работу',
+    href: '/referat',
+    cta: 'Заявка',
   },
   {
     icon: BookOpen,
@@ -35,13 +56,8 @@ const services: {
     desc: 'Структура, расчёты, оформление по ГОСТ',
     price: 'от 3 500₽',
     unit: 'за работу',
-  },
-  {
-    icon: GraduationCap,
-    title: 'ВКР и дипломы',
-    desc: 'Полный цикл: план → текст → презентация',
-    price: 'от 15 000₽',
-    unit: 'за работу',
+    href: '/kursovaya',
+    cta: 'Заявка',
   },
   {
     icon: FlaskConical,
@@ -49,6 +65,8 @@ const services: {
     desc: 'Расчёты, графики, оформление отчёта',
     price: 'от 1 000₽',
     unit: 'за задание',
+    href: '#order',
+    cta: 'Заявка',
   },
   {
     icon: BarChart3,
@@ -56,6 +74,8 @@ const services: {
     desc: 'Содержание + дизайн под тему и аудиторию',
     price: 'от 1 200₽',
     unit: 'за работу',
+    href: '#order',
+    cta: 'Заявка',
   },
   {
     icon: Building2,
@@ -63,6 +83,8 @@ const services: {
     desc: 'Производственная и учебная практика',
     price: 'от 5 000₽',
     unit: 'за работу',
+    href: '#order',
+    cta: 'Заявка',
   },
   {
     icon: Compass,
@@ -70,6 +92,8 @@ const services: {
     desc: 'Учебно-исследовательские работы по кафедральным требованиям',
     price: 'от 7 000₽',
     unit: 'за работу',
+    href: '#order',
+    cta: 'Заявка',
   },
   {
     icon: Sparkles,
@@ -77,71 +101,115 @@ const services: {
     desc: 'Не нашёл своё? Напишите — уточним детали и стоимость',
     price: 'по запросу',
     unit: '',
+    href: '#order',
+    cta: 'Написать',
     ghost: true,
   },
 ]
 
 export function ServicesSection() {
   return (
-    <section id="services" className="py-[120px] max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 className="section-heading">
-          Любая учебная<br />работа — наша
-        </h2>
-        <p className="section-sub">
-          Каждую работу выполняет профильный специалист. Без шаблонов.
-        </p>
-      </motion.div>
+    <section id="services" className="bg-desk dither py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 sm:mb-10"
+        >
+          <h2 className="font-display text-[28px] sm:text-[32px] lg:text-[48px] font-bold leading-[1.1] tracking-[-0.01em] text-paper mb-3">
+            Любая учебная работа — наш профиль
+          </h2>
+          <p className="text-paper text-base leading-[1.55] max-w-xl">
+            Один специалист — одна тема. Без шаблонов и конвейера.
+          </p>
+        </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {services.map((svc, i) => (
-          <motion.div
-            key={svc.title}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: i * 0.06 }}
-            whileHover={{ y: -5 }}
-            className={`group relative overflow-hidden rounded-[2px] p-8 border-2 transition-all duration-200 cursor-default ${
-              svc.ghost
-                ? 'bg-[#211C15]/60 border-white/[.12] border-dashed hover:border-[#E8A33D]/50'
-                : 'bg-[#211C15] border-white/15 hover:border-[#2FAE5B] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(0,0,0,.4)]'
-            }`}
-          >
-            {!svc.ghost && (
-              <div className="absolute top-0 left-0 right-0 h-1 bg-[#2FAE5B] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-200" />
-            )}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="window pixel-shadow"
+        >
+          <div className="titlebar">
+            <span className="flex items-center gap-2 min-w-0">
+              <FolderOpen className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+              <span className="truncate">МОИ_РАБОТЫ.EXE — Проводник</span>
+            </span>
+          </div>
 
-            <div className="relative">
-              <svc.icon className="w-7 h-7 mb-3.5 text-[#2FAE5B]" strokeWidth={1.75} />
-              <h3 className="font-unbounded text-[15px] font-bold tracking-[-0.4px] mb-2 text-[#F5F0E3]">
-                {svc.title}
-              </h3>
-              <p className="text-[13px] text-[#6B6255] leading-[1.6] mb-5">{svc.desc}</p>
-              <div className="flex items-center justify-between">
-                <div className="font-mono text-[20px] font-bold text-[#2FAE5B]">
-                  {svc.price}
-                  {svc.unit && (
-                    <span className="text-[12px] text-[#6B6255] font-sans font-normal ml-1">
-                      {svc.unit}
-                    </span>
-                  )}
+          <div className="bg-paper p-3 sm:p-5 lg:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] gap-4 lg:gap-6">
+              {/* Featured folder tile */}
+              <Link
+                href={FEATURED.href}
+                className="group relative flex flex-col bevel-out bg-chrome p-6 transition-colors hover:bg-chrome-light/40"
+              >
+                <FEATURED.icon
+                  className="w-10 h-10 text-title mb-4"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                />
+                <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft mb-1">
+                  Рекомендуем
+                </span>
+                <h3 className="font-display text-xl font-bold text-ink mb-2 leading-[1.15]">
+                  {FEATURED.title}
+                </h3>
+                <p className="text-sm text-ink-soft leading-relaxed mb-6 flex-1">
+                  {FEATURED.desc}
+                </p>
+                <div className="flex items-end justify-between gap-3 flex-wrap">
+                  <div>
+                    <div className="font-mono text-2xl font-bold text-title leading-none">
+                      {FEATURED.price}
+                    </div>
+                    <div className="text-xs text-ink-soft mt-1">{FEATURED.unit}</div>
+                  </div>
+                  <span className="btn-95-primary px-5 py-2 text-sm">{FEATURED.cta}</span>
                 </div>
-                <Link
-                  href="#order"
-                  className="text-[12px] font-semibold px-3 py-1.5 rounded-[2px] border-2 border-[#2FAE5B]/60 text-[#2FAE5B] hover:bg-[#2FAE5B] hover:text-[#17130F] transition-all"
-                >
-                  {svc.ghost ? 'Написать' : 'Заявка'}
-                </Link>
-              </div>
+              </Link>
+
+              {/* Explorer "Details" list of remaining services */}
+              <ul className="bevel-in bg-white divide-y divide-chrome-dark/40">
+                {services.map(svc => (
+                  <li key={svc.title}>
+                    <Link
+                      href={svc.href}
+                      className={`group flex items-center gap-3 px-3 sm:px-4 py-3 min-h-[44px] hover:bg-chrome/50 focus-visible:bg-chrome/50 transition-colors ${
+                        svc.ghost ? 'border-l-2 border-dashed border-chrome-dark' : ''
+                      }`}
+                    >
+                      <svc.icon
+                        className="w-5 h-5 text-title flex-shrink-0"
+                        strokeWidth={1.75}
+                        aria-hidden="true"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-baseline justify-between gap-3">
+                          <span className="font-bold text-[14px] text-ink truncate">
+                            {svc.title}
+                          </span>
+                          <span className="font-mono text-[13px] text-ink-soft flex-shrink-0">
+                            {svc.price}
+                          </span>
+                        </span>
+                        <span className="block text-[12.5px] text-ink-soft truncate">
+                          {svc.desc}
+                        </span>
+                      </span>
+                      <span className="btn-95 hidden sm:inline-flex text-[11px] px-2.5 py-1.5 flex-shrink-0">
+                        {svc.cta}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </motion.div>
-        ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   )

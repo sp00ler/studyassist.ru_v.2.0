@@ -13,23 +13,28 @@ export default function RefundPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-24 pb-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm mb-8">
+      <main id="main-content" className="min-h-screen bg-desk dither pt-24 pb-16 px-4 sm:px-6">
+        <div className="max-w-3xl mx-auto">
+          <Link href="/" className="inline-flex items-center gap-2 text-white hover:text-accent transition-colors text-sm mb-6">
             <ArrowLeft className="w-4 h-4" />
             На главную
           </Link>
-          <h1 className="text-3xl font-bold text-white mb-2">Правила возврата и оплаты</h1>
-          <p className="text-white/40 text-sm mb-10">сервиса StudyAssist.ru · Редакция от 01.03.2026</p>
+          <div className="window">
+            <div className="titlebar">
+              <span className="truncate">ВОЗВРАТ.TXT — Правила возврата и оплаты</span>
+            </div>
+            <div className="bg-paper p-6 sm:p-10">
+          <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink mb-2">Правила возврата и оплаты</h1>
+          <p className="font-mono text-ink-soft text-sm mb-10">сервиса StudyAssist.ru · Редакция от 01.03.2026</p>
 
-          <div className="space-y-6 text-white/70 leading-relaxed">
+          <div className="space-y-6 text-ink-soft leading-relaxed">
             <p>
               Настоящие Правила возврата и оплаты (далее — Правила) являются неотъемлемой частью
               Пользовательского соглашения сервиса StudyAssist.ru и регулируют порядок оплаты услуг,
               а также основания и процедуру возврата денежных средств.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">1. Общие положения</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">1. Общие положения</h2>
             <p>
               1.1. Услуги сервиса StudyAssist.ru оказываются на возмездной основе. Стоимость услуг
               определяется индивидуально либо указывается в соответствующих разделах Сайта.
@@ -44,7 +49,7 @@ export default function RefundPage() {
               их в полном объёме.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">2. Способы оплаты</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">2. Способы оплаты</h2>
             <p>2.1. Оплата услуг производится в российских рублях одним из следующих способов:</p>
             <ul className="space-y-1 pl-4 list-none">
               {[
@@ -52,7 +57,7 @@ export default function RefundPage() {
                 'переводом по реквизитам самозанятого на основании выставленного счёта;',
                 'иными способами, согласованными сторонами при оформлении заказа.',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
             <p>
@@ -64,7 +69,7 @@ export default function RefundPage() {
               установленном соответствующим оператором.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">3. Момент оплаты и подтверждение</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">3. Момент оплаты и подтверждение</h2>
             <p>
               3.1. Обязанность Клиента по оплате считается исполненной с момента зачисления денежных
               средств на счёт Исполнителя или платёжного партнёра.
@@ -78,7 +83,7 @@ export default function RefundPage() {
               законодательства о применении контрольно-кассовой техники и о налоге на профессиональный доход.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">4. Предоплата</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">4. Предоплата</h2>
             <p>
               4.1. Исполнитель вправе устанавливать полную предоплату (100%) либо частичную предоплату
               в зависимости от характера и объёма заказа.
@@ -92,7 +97,7 @@ export default function RefundPage() {
               его последующего восстановления.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">5. Основания для возврата денежных средств</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">5. Основания для возврата денежных средств</h2>
             <p>5.1. Возврат денежных средств производится в следующих случаях:</p>
             <ul className="space-y-1 pl-4 list-none">
               {[
@@ -100,7 +105,7 @@ export default function RefundPage() {
                 'Исполнитель в одностороннем порядке отказался от исполнения заказа после получения оплаты по причинам, не связанным с нарушением обязательств Клиентом;',
                 'оказанная услуга имеет существенные недостатки, подтверждённые Исполнителем или установленные в порядке досудебного урегулирования, и такие недостатки не устранены в разумный срок.',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
             <p>
@@ -108,7 +113,7 @@ export default function RefundPage() {
               не оказанную часть услуг.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">6. Случаи, когда возврат не производится</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">6. Случаи, когда возврат не производится</h2>
             <p>6.1. Денежные средства не подлежат возврату в следующих случаях:</p>
             <ul className="space-y-1 pl-4 list-none">
               {[
@@ -119,15 +124,15 @@ export default function RefundPage() {
                 'невозможность использования результата вызвана внутренними правилами учебного заведения, работодателя, системы проверки или иного третьего лица, о которых Исполнитель не был заблаговременно уведомлён;',
                 'Клиент нарушил условия Пользовательского соглашения, что повлекло отказ Исполнителя от обслуживания.',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
 
-            <h2 className="text-xl font-semibold text-white pt-2">7. Порядок обращения за возвратом</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">7. Порядок обращения за возвратом</h2>
             <p>
               7.1. Для инициирования возврата Клиент направляет обращение на адрес электронной почты
               Исполнителя:{' '}
-              <a href="mailto:support@studyassist.ru" className="text-[#6C3EF4] hover:underline">support@studyassist.ru</a>.
+              <a href="mailto:support@studyassist.ru" className="text-title hover:underline">support@studyassist.ru</a>.
             </p>
             <p>7.2. Обращение должно содержать:</p>
             <ul className="space-y-1 pl-4 list-none">
@@ -137,7 +142,7 @@ export default function RefundPage() {
                 'описание оснований для возврата с приложением подтверждающих материалов;',
                 'реквизиты для возврата (номер карты, счёт) или указание на способ возврата.',
               ].map((item) => (
-                <li key={item} className="flex gap-2"><span className="text-[#6C3EF4] flex-shrink-0">—</span>{item}</li>
+                <li key={item} className="flex gap-2"><span className="text-title flex-shrink-0">—</span>{item}</li>
               ))}
             </ul>
             <p>
@@ -145,7 +150,7 @@ export default function RefundPage() {
               получения. По результатам рассмотрения Исполнитель уведомляет Клиента о принятом решении.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">8. Сроки и способы возврата</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">8. Сроки и способы возврата</h2>
             <p>
               8.1. При принятии решения о возврате денежные средства перечисляются Клиенту в течение
               10 (десяти) рабочих дней с момента принятия такого решения.
@@ -163,7 +168,7 @@ export default function RefundPage() {
               не компенсируются.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">9. Частичный возврат</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">9. Частичный возврат</h2>
             <p>
               9.1. При частичном возврате стоимость фактически выполненной части услуги удерживается
               Исполнителем. Размер удержания определяется пропорционально объёму выполненной работы или
@@ -174,11 +179,11 @@ export default function RefundPage() {
               при необходимости.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">10. Разрешение споров</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">10. Разрешение споров</h2>
             <p>
               10.1. Разногласия по вопросам оплаты и возврата решаются путём переговоров. Претензия
               направляется в письменной форме на адрес:{' '}
-              <a href="mailto:support@studyassist.ru" className="text-[#6C3EF4] hover:underline">support@studyassist.ru</a>.
+              <a href="mailto:support@studyassist.ru" className="text-title hover:underline">support@studyassist.ru</a>.
             </p>
             <p>
               10.2. Срок рассмотрения претензии — 10 (десять) календарных дней с даты её получения.
@@ -188,20 +193,22 @@ export default function RefundPage() {
               Российской Федерации.
             </p>
 
-            <h2 className="text-xl font-semibold text-white pt-2">11. Реквизиты Исполнителя</h2>
+            <h2 className="text-xl font-semibold text-ink pt-2">11. Реквизиты Исполнителя</h2>
             <ul className="list-none space-y-1 pl-0">
-              <li><span className="text-white/50">Исполнитель:</span> Приходько Денис Сергеевич</li>
-              <li><span className="text-white/50">ИНН:</span> 701740486305</li>
-              <li><span className="text-white/50">E-mail:</span>{' '}
-                <a href="mailto:support@studyassist.ru" className="text-[#6C3EF4] hover:underline">support@studyassist.ru</a>
+              <li><span className="text-ink-soft">Исполнитель:</span> Приходько Денис Сергеевич</li>
+              <li><span className="text-ink-soft">ИНН:</span> 701740486305</li>
+              <li><span className="text-ink-soft">E-mail:</span>{' '}
+                <a href="mailto:support@studyassist.ru" className="text-title hover:underline">support@studyassist.ru</a>
               </li>
-              <li><span className="text-white/50">Телефон:</span>{' '}
-                <a href="tel:+79539246817" className="text-[#6C3EF4] hover:underline">+7-953-924-68-17</a>
+              <li><span className="text-ink-soft">Телефон:</span>{' '}
+                <a href="tel:+79539246817" className="text-title hover:underline">+7-953-924-68-17</a>
               </li>
-              <li><span className="text-white/50">Сайт:</span>{' '}
-                <a href="https://studyassist.ru" className="text-[#6C3EF4] hover:underline">https://studyassist.ru</a>
+              <li><span className="text-ink-soft">Сайт:</span>{' '}
+                <a href="https://studyassist.ru" className="text-title hover:underline">https://studyassist.ru</a>
               </li>
             </ul>
+          </div>
+            </div>
           </div>
         </div>
       </main>

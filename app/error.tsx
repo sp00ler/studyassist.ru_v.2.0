@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect } from 'react'
 
 export default function GlobalError({
@@ -14,32 +13,81 @@ export default function GlobalError({
     console.error('[GlobalError]', error)
   }, [error])
 
+  // Inline styles only (no Tailwind/component imports): this boundary must
+  // render even if globals.css or app providers failed to load.
   return (
     <html lang="ru">
-      <body style={{ background: '#17130F', color: '#F5F0E3', fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", margin: 0 }}>
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center' }}>
-          <div style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 900, fontSize: 'clamp(80px,20vw,160px)', lineHeight: 1, color: 'rgba(197,255,69,0.1)', userSelect: 'none', marginBottom: '1.5rem' }}>
-            500
-          </div>
-          <h1 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 900, fontSize: 'clamp(20px,4vw,32px)', letterSpacing: '-1px', marginBottom: '1rem' }}>
-            Что-то пошло не так
-          </h1>
-          <p style={{ color: '#6B6255', fontSize: '16px', marginBottom: '2.5rem', maxWidth: '400px' }}>
-            Произошла непредвиденная ошибка. Попробуйте обновить страницу или вернуться на главную.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button
-              onClick={reset}
-              style={{ padding: '14px 28px', borderRadius: '9999px', background: '#2FAE5B', color: '#17130F', fontWeight: 900, fontSize: '13px', fontFamily: 'Unbounded, sans-serif', border: 'none', cursor: 'pointer' }}
+      <body style={{ background: '#008080', color: '#000', fontFamily: "'Golos Text', system-ui, sans-serif", margin: 0 }}>
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+          <div
+            style={{
+              width: '100%',
+              maxWidth: 520,
+              border: '1px solid #000',
+              boxShadow: 'inset 1px 1px 0 0 #fff, inset -1px -1px 0 0 #808080',
+              background: '#C0C0C0',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                height: 28,
+                padding: '0 8px',
+                background: 'linear-gradient(90deg, #000080, #1084D0)',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: 13,
+              }}
             >
-              Попробовать снова
-            </button>
-            <a
-              href="/"
-              style={{ padding: '14px 28px', borderRadius: '9999px', border: '1px solid rgba(255,255,255,0.1)', color: '#F5F0E3', fontWeight: 700, fontSize: '13px', textDecoration: 'none' }}
-            >
-              На главную
-            </a>
+              ОШИБКА.EXE
+            </div>
+            <div style={{ background: '#FFFBEA', padding: '48px 32px', textAlign: 'center' }}>
+              <div style={{ fontFamily: "'JetBrains Mono', Consolas, monospace", fontWeight: 700, fontSize: 'clamp(56px,14vw,96px)', lineHeight: 1, color: 'rgba(0,0,128,0.15)', userSelect: 'none', marginBottom: '1.25rem' }}>
+                500
+              </div>
+              <h1 style={{ fontFamily: "'Pixelify Sans', 'Unbounded', sans-serif", fontWeight: 700, fontSize: 'clamp(20px,4vw,28px)', margin: '0 0 1rem', color: '#000' }}>
+                Что-то пошло не так
+              </h1>
+              <p style={{ color: '#3A3A3A', fontSize: 16, lineHeight: 1.6, margin: '0 0 2rem', maxWidth: 380, marginLeft: 'auto', marginRight: 'auto' }}>
+                Произошла непредвиденная ошибка. Попробуйте обновить страницу или вернуться на главную.
+              </p>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+                <button
+                  onClick={reset}
+                  style={{
+                    padding: '12px 28px',
+                    background: '#000080',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    fontFamily: "'Golos Text', system-ui, sans-serif",
+                    border: '1px solid #000',
+                    boxShadow: 'inset 1px 1px 0 0 rgba(255,255,255,.45), inset -1px -1px 0 0 rgba(0,0,0,.4)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Попробовать снова
+                </button>
+                <a
+                  href="/"
+                  style={{
+                    padding: '12px 28px',
+                    background: '#C0C0C0',
+                    color: '#000',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    fontFamily: "'Golos Text', system-ui, sans-serif",
+                    border: '1px solid #000',
+                    boxShadow: 'inset 1px 1px 0 0 #fff, inset -1px -1px 0 0 #808080',
+                    textDecoration: 'none',
+                    display: 'inline-block',
+                  }}
+                >
+                  На главную
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </body>

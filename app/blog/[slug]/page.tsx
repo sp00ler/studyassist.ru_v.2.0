@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ChevronRight, Calendar, ArrowLeft } from 'lucide-react'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { Button } from '@/components/ui/button'
 import { prisma } from '@/lib/prisma'
 
 interface Props {
@@ -16,11 +17,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { title: true, excerpt: true, coverImage: true, published: true },
   })
   if (!post || !post.published) return {}
+  const title = `${post.title} — StudyAssist`
   return {
-    title: `${post.title} — StudyAssist`,
+    title,
     description: post.excerpt ?? undefined,
-    openGraph: post.coverImage ? { images: [post.coverImage] } : undefined,
     alternates: { canonical: `/blog/${params.slug}` },
+    openGraph: {
+      title,
+      description: post.excerpt ?? undefined,
+      url: `https://studyassist.ru/blog/${params.slug}`,
+      type: 'article',
+      images: post.coverImage ? [post.coverImage] : undefined,
+    },
   }
 }
 
@@ -41,91 +49,126 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post || !post.published) notFound()
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt ?? undefined,
+        image: post.coverImage ?? undefined,
+        datePublished: (post.publishedAt ?? post.createdAt)?.toISOString(),
+        author: { '@type': 'Organization', name: 'StudyAssist' },
+        publisher: { '@type': 'Organization', name: 'StudyAssist', url: 'https://studyassist.ru' },
+        mainEntityOfPage: `https://studyassist.ru/blog/${params.slug}`,
+        url: `https://studyassist.ru/blog/${params.slug}`,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://studyassist.ru' },
+          { '@type': 'ListItem', position: 2, name: 'Блог', item: 'https://studyassist.ru/blog' },
+          { '@type': 'ListItem', position: 3, name: post.title, item: `https://studyassist.ru/blog/${params.slug}` },
+        ],
+      },
+    ],
+  }
+
   return (
-    <div className="min-h-screen bg-[#17130F] text-[#F5F0E3]">
-      <Navbar />
-      <main id="main-content">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <div className="min-h-screen bg-desk dither">
+        <Navbar />
+        <main id="main-content" className="pt-6 pb-16 px-4 sm:px-6 lg:px-12">
+          <div className="max-w-[840px] mx-auto">
 
-        {/* Breadcrumb */}
-        <div className="max-w-[820px] mx-auto px-4 sm:px-6 lg:px-12 pt-6">
-          <nav aria-label="Breadcrumb">
-            <ol className="flex items-center gap-1.5 text-[12px] text-[#6B6255]">
-              <li><Link href="/" className="hover:text-[#2FAE5B] transition-colors">Главная</Link></li>
-              <li><ChevronRight className="w-3 h-3" /></li>
-              <li><Link href="/blog" className="hover:text-[#2FAE5B] transition-colors">Блог</Link></li>
-              <li><ChevronRight className="w-3 h-3" /></li>
-              <li className="text-[#F5F0E3] truncate max-w-[200px]" aria-current="page">{post.title}</li>
-            </ol>
-          </nav>
-        </div>
+            {/* Breadcrumb */}
+            <nav aria-label="Breadcrumb" className="mb-4">
+              <ol className="flex items-center gap-1.5 text-xs font-mono text-white flex-wrap">
+                <li><Link href="/" className="hover:text-accent transition-colors">Главная</Link></li>
+                <li aria-hidden="true"><ChevronRight className="w-3 h-3" /></li>
+                <li><Link href="/blog" className="hover:text-accent transition-colors">Блог</Link></li>
+                <li aria-hidden="true"><ChevronRight className="w-3 h-3" /></li>
+                <li className="text-white/90 truncate max-w-[220px]" aria-current="page">{post.title}</li>
+              </ol>
+            </nav>
 
-        {/* Article */}
-        <article className="max-w-[820px] mx-auto px-4 sm:px-6 lg:px-12 py-12 pb-24">
+            {/* Notepad window */}
+            <div className="window">
+              <div className="titlebar">
+                <span className="truncate">БЛОКНОТ — {post.title}</span>
+                <div className="flex items-center gap-1 flex-shrink-0" aria-hidden="true">
+                  <span className="titlebar-btn">_</span>
+                  <span className="titlebar-btn">□</span>
+                  <span className="titlebar-btn">×</span>
+                </div>
+              </div>
 
-          {/* Meta */}
-          <div className="flex items-center gap-3 mb-6">
-            <span className="px-2.5 py-1 rounded-full bg-[#2FAE5B]/10 text-[#2FAE5B] text-[11px] font-bold uppercase tracking-[.6px]">
-              {TYPE_LABELS[post.type] ?? post.type}
-            </span>
-            <span className="flex items-center gap-1.5 text-[13px] text-[#6B6255]">
-              <Calendar className="w-3.5 h-3.5" />
-              {formatDate(post.publishedAt ?? post.createdAt)}
-            </span>
-          </div>
+              <div className="bg-paper">
+                <article className="px-5 sm:px-10 py-10">
 
-          <h1 className="font-unbounded font-black text-[clamp(24px,4vw,42px)] tracking-[-1.5px] leading-[1.15] mb-6">
-            {post.title}
-          </h1>
+                  {/* Meta */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="px-2.5 py-1 bg-title/10 text-title text-[11px] font-bold uppercase tracking-[.6px]">
+                      {TYPE_LABELS[post.type] ?? post.type}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-xs text-ink-soft font-mono">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {formatDate(post.publishedAt ?? post.createdAt)}
+                    </span>
+                  </div>
 
-          {post.excerpt && (
-            <p className="text-[17px] text-[#6B6255] leading-[1.75] mb-10 pb-10 border-b border-white/[.06]">
-              {post.excerpt}
-            </p>
-          )}
+                  <h1 className="font-display font-bold text-[clamp(24px,4vw,40px)] leading-[1.2] text-ink mb-6 max-w-[70ch]">
+                    {post.title}
+                  </h1>
 
-          {post.coverImage && (
-            <div className="rounded-2xl overflow-hidden mb-10">
-              <img src={post.coverImage} alt={post.title} className="w-full object-cover" />
+                  {post.excerpt && (
+                    <p className="text-lg text-ink-soft leading-[1.7] mb-8 pb-8 border-b border-chrome-shadow/30 max-w-[70ch]">
+                      {post.excerpt}
+                    </p>
+                  )}
+
+                  {post.coverImage && (
+                    <div className="mb-10 border border-chrome-shadow/30">
+                      <img src={post.coverImage} alt={post.title} className="w-full object-cover" />
+                    </div>
+                  )}
+
+                  {/* Content — 18px Golos body, ~70ch measure for readability */}
+                  <div
+                    className="prose-sa max-w-[70ch]"
+                    style={{ color: 'rgb(var(--ink))', fontSize: '18px', lineHeight: 1.7 }}
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                  />
+
+                  {/* Back */}
+                  <div className="mt-16 pt-8 border-t border-chrome-shadow/30">
+                    <Link
+                      href="/blog"
+                      className="inline-flex items-center gap-2 text-xs text-ink-soft hover:text-title transition-colors font-bold"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      Все статьи
+                    </Link>
+                  </div>
+                </article>
+
+                {/* CTA */}
+                <div className="px-5 sm:px-10 py-12 bg-title text-center">
+                  <h2 className="font-display font-bold text-xl text-white mb-3">
+                    Нужна помощь с учёбой?
+                  </h2>
+                  <p className="text-sm text-white/80 mb-7">Оставьте заявку — ответим за 30 минут</p>
+                  <Button asChild variant="amber" size="lg">
+                    <Link href="/#order">Оставить заявку →</Link>
+                  </Button>
+                </div>
+              </div>
             </div>
-          )}
-
-          {/* Content */}
-          <div
-            className="prose-sa"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-
-          {/* Back */}
-          <div className="mt-16 pt-8 border-t border-white/[.06]">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-2 text-[13px] text-[#6B6255] hover:text-[#2FAE5B] transition-colors font-bold"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Все статьи
-            </Link>
           </div>
-
-        </article>
-
-        {/* CTA */}
-        <div className="bg-[#211C15] border-t border-white/[.06]">
-          <div className="max-w-[820px] mx-auto px-4 sm:px-6 lg:px-12 py-14 text-center">
-            <h2 className="font-unbounded font-black text-[20px] tracking-[-0.5px] mb-3">
-              Нужна помощь с учёбой?
-            </h2>
-            <p className="text-[14px] text-[#6B6255] mb-6">Оставь заявку — ответим за 30 минут</p>
-            <Link
-              href="/#order"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#2FAE5B] text-[#17130F] font-black font-unbounded text-[13px] hover:bg-[#3FC96B] hover:shadow-[0_14px_36px_rgba(197,255,69,.28)] hover:-translate-y-0.5 transition-all"
-            >
-              Оставить заявку →
-            </Link>
-          </div>
-        </div>
-
-      </main>
-      <Footer />
-    </div>
+        </main>
+        <Footer />
+      </div>
+    </>
   )
 }

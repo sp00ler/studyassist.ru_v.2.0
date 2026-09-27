@@ -2,6 +2,8 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { Check } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const plans = [
   {
@@ -10,7 +12,6 @@ const plans = [
     features: ['До 15 страниц', 'Оформление по ГОСТ', 'Уникальность от 70%', 'Список литературы'],
     hot: false,
     cta: 'Заказать',
-    ghost: true,
   },
   {
     label: 'Курсовая работа',
@@ -18,7 +19,6 @@ const plans = [
     features: ['25–50 страниц', 'Расчёты и графики', 'Уникальность от 80%', 'Правки бесплатно'],
     hot: true,
     cta: 'Заказать',
-    ghost: false,
   },
   {
     label: 'ВКР / Диплом',
@@ -26,98 +26,95 @@ const plans = [
     features: ['60–100+ страниц', 'Полный пакет документов', 'Презентация для защиты', 'Сопровождение до сдачи'],
     hot: false,
     cta: 'Заказать',
-    ghost: true,
   },
 ]
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="py-[120px] max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 className="section-heading">
-          Прозрачные цены.<br />Никаких скрытых доплат.
-        </h2>
-        <p className="section-sub">
-          Точную стоимость называем после изучения задачи — до копейки.
-        </p>
-      </motion.div>
+    <section id="pricing" className="bg-desk dither py-16 sm:py-20 lg:py-24">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 sm:mb-10"
+        >
+          <h2 className="font-display text-[28px] sm:text-[32px] lg:text-[48px] font-bold leading-[1.1] tracking-[-0.01em] text-paper mb-3">
+            Прозрачные цены. Никаких скрытых доплат.
+          </h2>
+          <p className="text-paper text-base leading-[1.55] max-w-xl">
+            Точную стоимость называем после изучения задачи — до копейки.
+          </p>
+        </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans.map((plan, i) => (
-          <motion.div
-            key={plan.label}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: i * 0.1 }}
-            whileHover={{ y: -5 }}
-            className={`relative overflow-hidden rounded-3xl p-10 border transition-all duration-280 ${
-              plan.hot
-                ? 'bg-[#2FAE5B] border-[#2FAE5B]/[.18]'
-                : 'bg-[#211C15] border-white/[.06] hover:border-[#2FAE5B]/[.18] hover:shadow-[0_24px_64px_rgba(0,0,0,.4)]'
-            }`}
-          >
-            {/* HOT ribbon */}
-            {plan.hot && (
-              <div
-                className="absolute top-[18px] right-[-28px] bg-[#2FAE5B] text-[#17130F] font-unbounded text-[9px] font-black tracking-[1px] py-1 px-10 rotate-45 pointer-events-none"
-              >
-                ХИТ
-              </div>
-            )}
-
-            <div className="font-unbounded text-[11px] font-bold uppercase tracking-[1.2px] text-[#6B6255] mb-3.5">
-              {plan.label}
-            </div>
-
-            <div className="font-unbounded font-black tracking-[-2px] leading-none mb-1 text-[#F5F0E3]"
-              style={{ fontSize: 52 }}>
-              {plan.price}
-            </div>
-            <div className="text-[12px] text-[#6B6255] mb-8">начальная цена</div>
-
-            <ul className="space-y-0 mb-8">
-              {plan.features.map((f) => (
-                <li
-                  key={f}
-                  className="flex items-start gap-2.5 text-[13px] text-[#6B6255] py-2.5 border-b border-white/[.06] last:border-0"
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
+          {plans.map((plan, i) => (
+            <motion.div
+              key={plan.label}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+              className={`relative window pixel-shadow flex flex-col ${
+                plan.hot ? 'md:-translate-y-2' : ''
+              }`}
+            >
+              {/* Accent price-tag sticker — the ONE highlighted plan */}
+              {plan.hot && (
+                <span
+                  className="absolute -top-3 -right-3 z-10 bg-accent text-ink font-display text-xs font-bold px-3 py-1.5 border border-chrome-shadow rotate-[6deg] shadow-[2px_2px_0_0_rgb(var(--chrome-shadow))]"
+                  aria-hidden="true"
                 >
-                  <span className="text-[#2FAE5B] font-bold flex-shrink-0 mt-px">→</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
+                  ХИТ
+                </span>
+              )}
 
-            <Link href="#order">
-              <button
-                className={`w-full py-3.5 rounded-full font-unbounded text-[13px] font-bold tracking-[-0.2px] transition-all duration-200 ${
-                  plan.hot
-                    ? 'bg-[#2FAE5B] text-[#17130F] hover:bg-[#3FC96B] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)]'
-                    : 'bg-transparent text-[#F5F0E3] border border-white/10 hover:border-white/20 hover:bg-white/5'
-                }`}
-              >
-                {plan.cta}
-              </button>
-            </Link>
-          </motion.div>
-        ))}
+              <div className="titlebar">
+                <span className="truncate">{plan.label}.PRC</span>
+              </div>
+
+              <div className="bg-paper p-5 sm:p-6 flex flex-col flex-1">
+                <div className="font-mono text-[32px] sm:text-[40px] lg:text-[48px] font-bold leading-none text-ink">
+                  {plan.price}
+                </div>
+                <div className="text-xs text-ink-soft mt-2 mb-5">начальная цена</div>
+
+                <ul className="space-y-2.5 mb-6 flex-1">
+                  {plan.features.map(f => (
+                    <li key={f} className="flex items-start gap-2 text-sm text-ink leading-[1.4]">
+                      <Check className="w-4 h-4 text-success flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  asChild
+                  variant={plan.hot ? 'default' : 'outline'}
+                  size="lg"
+                  className="w-full"
+                >
+                  <Link href="#order">{plan.cta}</Link>
+                </Button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+          className="text-center text-sm text-paper mt-10"
+        >
+          Также: лабораторные от 1 000₽, отчёты по практике от 5 000₽, УИР от 7 000₽, презентации от 1 200₽.{' '}
+          <Link href="#order" className="underline underline-offset-2 hover:no-underline">
+            Узнать точную стоимость →
+          </Link>
+        </motion.p>
       </div>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.4 }}
-        className="text-center text-[13px] text-[#6B6255] mt-8"
-      >
-        Также: лабораторные от 1 000₽, отчёты по практике от 5 000₽, УИР от 7 000₽, презентации от 1 200₽.{' '}
-        <Link href="#order" className="text-[#2FAE5B] hover:underline">Узнать точную стоимость →</Link>
-      </motion.p>
     </section>
   )
 }

@@ -22,52 +22,73 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <div id="how-it-works" className="bg-[#211C15] border-t border-b border-white/[.06]">
-      <section className="py-[120px] max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12">
+    <div id="how-it-works" className="bg-desk dither py-16 sm:py-20 lg:py-24">
+      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
+          className="mb-8 sm:mb-10"
         >
-          <h2 className="section-heading">
-            Три шага до<br />готовой работы
+          <h2 className="font-display text-[28px] sm:text-[32px] lg:text-[48px] font-bold leading-[1.1] tracking-[-0.01em] text-paper mb-3">
+            Три шага — и работа готова
           </h2>
         </motion.div>
 
-        <ol className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-14 relative list-none">
-          {/* Connecting line */}
-          <div
-            className="hidden md:block absolute top-8 pointer-events-none h-px"
-            style={{
-              left: 'calc(16.6% + 16px)',
-              right: 'calc(16.6% + 16px)',
-              background: 'linear-gradient(90deg, transparent, rgba(197,255,69,.18), #2FAE5B, rgba(197,255,69,.18), transparent)',
-            }}
-            aria-hidden="true"
-          />
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="window pixel-shadow"
+        >
+          <div className="titlebar">
+            <span className="truncate">УСТАНОВКА.EXE — Мастер настройки</span>
+          </div>
 
-          {steps.map((step, i) => (
-            <motion.li
-              key={step.number}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.15 }}
-              className="text-center"
+          <div className="bg-paper p-4 sm:p-6 lg:p-8">
+            {/* Chrome progress track — decorative, all three stages read as
+                complete since the visible steps below carry the real state */}
+            <div
+              className="hidden md:flex h-3 bevel-in bg-chrome mb-10 overflow-hidden"
+              aria-hidden="true"
             >
-              <div className="w-16 h-16 rounded-full bg-[#17130F] border-2 border-[#2FAE5B]/[.18] flex items-center justify-center mx-auto mb-6 relative z-10">
-                <span className="font-unbounded text-[18px] font-black text-[#2FAE5B]">
-                  {step.number}
-                </span>
-              </div>
-              <h3 className="font-unbounded text-[16px] font-bold tracking-[-0.4px] mb-2.5 text-[#F5F0E3]">
-                {step.title}
-              </h3>
-              <p className="text-[13px] text-[#6B6255] leading-[1.7]">{step.desc}</p>
-            </motion.li>
-          ))}
-        </ol>
+              {steps.map((step, i) => (
+                <div
+                  key={step.number}
+                  className={`flex-1 h-full bg-title ${i > 0 ? 'border-l-2 border-chrome' : ''}`}
+                />
+              ))}
+            </div>
+
+            <ol className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-chrome-dark/40 bevel-in bg-white list-none">
+              {steps.map((step, i) => (
+                <motion.li
+                  key={step.number}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.12 }}
+                  className="p-5 sm:p-6"
+                >
+                  <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">
+                    Шаг {i + 1} из {steps.length}
+                  </span>
+                  <div className="w-11 h-11 flex items-center justify-center bevel-out bg-chrome mt-3 mb-4">
+                    <span className="font-display text-lg font-bold text-title">
+                      {step.number}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-base sm:text-[18px] font-bold text-ink mb-2 leading-[1.15]">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm text-ink-soft leading-[1.6]">{step.desc}</p>
+                </motion.li>
+              ))}
+            </ol>
+          </div>
+        </motion.div>
       </section>
     </div>
   )
