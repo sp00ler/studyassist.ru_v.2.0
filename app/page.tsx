@@ -3,15 +3,22 @@ import Script from 'next/script'
 import { HomeExperience } from '@/components/home/HomeExperience'
 import { PortfolioPreviewSection } from '@/components/home/PortfolioPreviewSection'
 import { BlogPreviewSection } from '@/components/home/BlogPreviewSection'
+import { faqs } from '@/components/home/faq-data'
+
+const HOME_TITLE = 'StudyAssist — курсовые, дипломы, рефераты | Консультации'
+const HOME_DESCRIPTION =
+  'Помощь и консультации по курсовым, дипломным и рефератам. Профильный специалист, ответ за 30 минут, оплата после согласования. Конфиденциально.'
 
 export const metadata: Metadata = {
-  title: 'StudyAssist — Образовательные консультации для студентов | Помощь в учёбе онлайн',
-  description:
-    'Профессиональные консультации для студентов: объяснение тем, подбор материалов и литературы, помощь в подготовке к экзаменам. Быстро, качественно, конфиденциально.',
-  keywords:
-    'консультации для студентов, подбор учебных материалов, помощь в учёбе, подготовка к экзаменам, образовательные консультации, StudyAssist',
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
   alternates: {
     canonical: '/',
+  },
+  openGraph: {
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    url: '/',
   },
 }
 
@@ -38,57 +45,44 @@ const jsonLd = {
       url: 'https://studyassist.ru',
       name: 'StudyAssist',
       publisher: { '@id': 'https://studyassist.ru/#organization' },
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: 'https://studyassist.ru/?q={search_term_string}',
-        'query-input': 'required name=search_term_string',
+      // ponytail SEO-6: no SearchAction — the site has no ?q= search feature,
+      // so a sitelinks-search-box markup here would be fake structured data.
+    },
+    {
+      '@type': 'Service',
+      '@id': 'https://studyassist.ru/#service',
+      name: 'Консультации и помощь в подготовке учебных работ',
+      provider: { '@id': 'https://studyassist.ru/#organization' },
+      areaServed: 'RU',
+      // Prices mirror components/home/PricingSection.tsx exactly — do not
+      // invent figures here; update both together if pricing changes.
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Услуги StudyAssist',
+        itemListElement: [
+          { '@type': 'Offer', name: 'Реферат / Эссе', price: '1000', priceCurrency: 'RUB', url: 'https://studyassist.ru/referat' },
+          { '@type': 'Offer', name: 'Курсовая работа', price: '3500', priceCurrency: 'RUB', url: 'https://studyassist.ru/kursovaya' },
+          { '@type': 'Offer', name: 'ВКР / Диплом', price: '15000', priceCurrency: 'RUB', url: 'https://studyassist.ru/diplom' },
+          { '@type': 'Offer', name: 'Лабораторная работа', price: '1000', priceCurrency: 'RUB' },
+          { '@type': 'Offer', name: 'Отчёт по практике', price: '5000', priceCurrency: 'RUB' },
+          { '@type': 'Offer', name: 'УИР', price: '7000', priceCurrency: 'RUB' },
+          { '@type': 'Offer', name: 'Презентация', price: '1200', priceCurrency: 'RUB' },
+        ],
       },
     },
     {
       '@type': 'FAQPage',
       '@id': 'https://studyassist.ru/#faq',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'Как быстро можно получить консультацию?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Консультация по большинству предметов доступна в течение 30–60 минут после согласования деталей запроса.',
-          },
+      // ponytail SEO-3: mirrors components/home/FaqSection.tsx's exported
+      // `faqs` array word-for-word — never hand-edit this separately.
+      mainEntity: faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
         },
-        {
-          '@type': 'Question',
-          name: 'Какие предметы вы охватываете?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Мы консультируем по широкому кругу дисциплин: математика, экономика, право, IT, гуманитарные науки и другие.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Когда нужно платить?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Стоимость согласовывается до начала работы. Оплата производится после согласования всех условий.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Можно ли задать уточняющие вопросы?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Да, наши специалисты готовы ответить на дополнительные вопросы в рамках темы консультации.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Конфиденциально ли это?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Да, все данные защищены и не передаются третьим лицам.',
-          },
-        },
-      ],
+      })),
     },
   ],
 }
