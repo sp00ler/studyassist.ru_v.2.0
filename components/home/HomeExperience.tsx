@@ -14,8 +14,7 @@ import { PricingSection } from '@/components/home/PricingSection'
 import { ReviewsSection } from '@/components/home/ReviewsSection'
 import { OrderForm } from '@/components/home/OrderForm'
 import { FaqSection } from '@/components/home/FaqSection'
-import { PortfolioPreviewSection } from '@/components/home/PortfolioPreviewSection'
-import { BlogPreviewSection } from '@/components/home/BlogPreviewSection'
+import type { ReactNode } from 'react'
 
 // The monitor screen's center in room-scene.png, as % of the image — the zoom
 // transition scales up from this point so it reads as "the screen fills the view".
@@ -23,7 +22,12 @@ const MONITOR_ORIGIN = '31.4% 35%'
 
 type Phase = 'gate' | 'entering' | 'site'
 
-export function HomeExperience() {
+type HomeExperienceProps = {
+  portfolioSection: ReactNode
+  blogSection: ReactNode
+}
+
+export function HomeExperience({ portfolioSection, blogSection }: HomeExperienceProps) {
   const [phase, setPhase] = useState<Phase>('gate')
 
   return (
@@ -68,8 +72,8 @@ export function HomeExperience() {
               <HowItWorks />
               <PricingSection />
               <ReviewsSection />
-              <PortfolioPreviewSection />
-              <BlogPreviewSection />
+              {portfolioSection}
+              {blogSection}
               <OrderForm />
               <FaqSection />
             </main>

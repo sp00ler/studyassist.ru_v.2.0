@@ -1,9 +1,8 @@
 import Link from 'next/link'
-import { unstable_cache } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 
-const getLatestPosts = unstable_cache(
-  async () => prisma.post.findMany({
+async function getLatestPosts() {
+  return prisma.post.findMany({
     where: { published: true },
     orderBy: { publishedAt: 'desc' },
     take: 3,
@@ -11,10 +10,8 @@ const getLatestPosts = unstable_cache(
       id: true, type: true, title: true, slug: true,
       excerpt: true, coverImage: true, publishedAt: true, createdAt: true,
     },
-  }),
-  ['blog-preview'],
-  { revalidate: 3600 },
-)
+  })
+}
 
 function formatDate(d: Date | null) {
   if (!d) return ''

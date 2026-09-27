@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import { HomeExperience } from '@/components/home/HomeExperience'
+import { PortfolioPreviewSection } from '@/components/home/PortfolioPreviewSection'
+import { BlogPreviewSection } from '@/components/home/BlogPreviewSection'
 
 export const metadata: Metadata = {
   title: 'StudyAssist — Образовательные консультации для студентов | Помощь в учёбе онлайн',
@@ -99,7 +101,10 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <HomeExperience />
+      <HomeExperience
+        portfolioSection={<PortfolioPreviewSection />}
+        blogSection={<BlogPreviewSection />}
+      />
     </>
   )
 }
