@@ -22,7 +22,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <div id="how-it-works" className="bg-[#0E0E1C] border-t border-b border-white/[.06]">
+    <div id="how-it-works" className="bg-[#211C15] border-t border-b border-white/[.06]">
       <section className="py-[120px] max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -30,7 +30,6 @@ export function HowItWorks() {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <span className="section-tag">// Как это работает</span>
           <h2 className="section-heading">
             Три шага до<br />готовой работы
           </h2>
@@ -43,7 +42,7 @@ export function HowItWorks() {
             style={{
               left: 'calc(16.6% + 16px)',
               right: 'calc(16.6% + 16px)',
-              background: 'linear-gradient(90deg, transparent, rgba(197,255,69,.18), #C5FF45, rgba(197,255,69,.18), transparent)',
+              background: 'linear-gradient(90deg, transparent, rgba(197,255,69,.18), #2FAE5B, rgba(197,255,69,.18), transparent)',
             }}
             aria-hidden="true"
           />
@@ -57,15 +56,15 @@ export function HowItWorks() {
               transition={{ duration: 0.5, delay: i * 0.15 }}
               className="text-center"
             >
-              <div className="w-16 h-16 rounded-full bg-[#07070E] border-2 border-[#C5FF45]/[.18] flex items-center justify-center mx-auto mb-6 relative z-10">
-                <span className="font-unbounded text-[18px] font-black text-[#C5FF45]">
+              <div className="w-16 h-16 rounded-full bg-[#17130F] border-2 border-[#2FAE5B]/[.18] flex items-center justify-center mx-auto mb-6 relative z-10">
+                <span className="font-unbounded text-[18px] font-black text-[#2FAE5B]">
                   {step.number}
                 </span>
               </div>
-              <h3 className="font-unbounded text-[16px] font-bold tracking-[-0.4px] mb-2.5 text-[#F0F0EC]">
+              <h3 className="font-unbounded text-[16px] font-bold tracking-[-0.4px] mb-2.5 text-[#F5F0E3]">
                 {step.title}
               </h3>
-              <p className="text-[13px] text-[#6A6A88] leading-[1.7]">{step.desc}</p>
+              <p className="text-[13px] text-[#6B6255] leading-[1.7]">{step.desc}</p>
             </motion.li>
           ))}
         </ol>

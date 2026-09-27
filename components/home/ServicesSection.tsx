@@ -2,59 +2,77 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import {
+  FileText,
+  BookOpen,
+  GraduationCap,
+  FlaskConical,
+  BarChart3,
+  Building2,
+  Compass,
+  Sparkles,
+  type LucideIcon,
+} from 'lucide-react'
 
-const services = [
+const services: {
+  icon: LucideIcon
+  title: string
+  desc: string
+  price: string
+  unit: string
+  ghost?: boolean
+}[] = [
   {
-    icon: '📄',
+    icon: FileText,
     title: 'Рефераты и эссе',
     desc: 'Грамотно, по требованиям вашего вуза, без воды',
     price: 'от 1 000₽',
     unit: 'за работу',
   },
   {
-    icon: '📚',
+    icon: BookOpen,
     title: 'Курсовые работы',
     desc: 'Структура, расчёты, оформление по ГОСТ',
     price: 'от 3 500₽',
     unit: 'за работу',
   },
   {
-    icon: '🎓',
+    icon: GraduationCap,
     title: 'ВКР и дипломы',
     desc: 'Полный цикл: план → текст → презентация',
     price: 'от 15 000₽',
     unit: 'за работу',
   },
   {
-    icon: '🔬',
+    icon: FlaskConical,
     title: 'Лабораторные',
     desc: 'Расчёты, графики, оформление отчёта',
     price: 'от 1 000₽',
     unit: 'за задание',
   },
   {
-    icon: '📊',
+    icon: BarChart3,
     title: 'Презентации',
     desc: 'Содержание + дизайн под тему и аудиторию',
     price: 'от 1 200₽',
     unit: 'за работу',
   },
   {
-    icon: '🏢',
+    icon: Building2,
     title: 'Отчёты по практике',
     desc: 'Производственная и учебная практика',
     price: 'от 5 000₽',
     unit: 'за работу',
   },
   {
-    icon: '🔭',
+    icon: Compass,
     title: 'УИР',
     desc: 'Учебно-исследовательские работы по кафедральным требованиям',
     price: 'от 7 000₽',
     unit: 'за работу',
   },
   {
-    icon: '✨',
+    icon: Sparkles,
     title: 'Другой тип работы',
     desc: 'Не нашёл своё? Напишите — уточним детали и стоимость',
     price: 'по запросу',
@@ -72,7 +90,6 @@ export function ServicesSection() {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <span className="section-tag">// Услуги</span>
         <h2 className="section-heading">
           Любая учебная<br />работа — наша
         </h2>
@@ -90,35 +107,34 @@ export function ServicesSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: i * 0.06 }}
             whileHover={{ y: -5 }}
-            className={`group relative overflow-hidden rounded-3xl p-8 border transition-all duration-280 cursor-default ${
+            className={`group relative overflow-hidden rounded-[2px] p-8 border-2 transition-all duration-200 cursor-default ${
               svc.ghost
-                ? 'bg-[#0E0E1C]/60 border-white/[.06] hover:border-white/[.12]'
-                : 'bg-[#0E0E1C] border-white/[.06] hover:border-[#C5FF45]/[.18] hover:shadow-[0_24px_64px_rgba(0,0,0,.45)]'
+                ? 'bg-[#211C15]/60 border-white/[.12] border-dashed hover:border-[#E8A33D]/50'
+                : 'bg-[#211C15] border-white/15 hover:border-[#2FAE5B] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_rgba(0,0,0,.4)]'
             }`}
           >
-            {/* Lime gradient overlay on hover */}
             {!svc.ghost && (
-              <div className="absolute inset-0 bg-gradient-to-br from-[#C5FF45]/[.07] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-280 pointer-events-none" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-[#2FAE5B] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-200" />
             )}
 
             <div className="relative">
-              <span className="text-[30px] mb-3.5 block">{svc.icon}</span>
-              <h3 className="font-unbounded text-[15px] font-bold tracking-[-0.4px] mb-2 text-[#F0F0EC]">
+              <svc.icon className="w-7 h-7 mb-3.5 text-[#2FAE5B]" strokeWidth={1.75} />
+              <h3 className="font-unbounded text-[15px] font-bold tracking-[-0.4px] mb-2 text-[#F5F0E3]">
                 {svc.title}
               </h3>
-              <p className="text-[13px] text-[#6A6A88] leading-[1.6] mb-5">{svc.desc}</p>
+              <p className="text-[13px] text-[#6B6255] leading-[1.6] mb-5">{svc.desc}</p>
               <div className="flex items-center justify-between">
-                <div className="font-mono text-[20px] font-bold text-[#C5FF45]">
+                <div className="font-mono text-[20px] font-bold text-[#2FAE5B]">
                   {svc.price}
                   {svc.unit && (
-                    <span className="text-[12px] text-[#6A6A88] font-sans font-normal ml-1">
+                    <span className="text-[12px] text-[#6B6255] font-sans font-normal ml-1">
                       {svc.unit}
                     </span>
                   )}
                 </div>
                 <Link
                   href="#order"
-                  className="text-[12px] font-semibold px-3 py-1.5 rounded-lg bg-[#C5FF45]/10 border border-[#C5FF45]/[.18] text-[#C5FF45] hover:bg-[#C5FF45]/20 transition-all"
+                  className="text-[12px] font-semibold px-3 py-1.5 rounded-[2px] border-2 border-[#2FAE5B]/60 text-[#2FAE5B] hover:bg-[#2FAE5B] hover:text-[#17130F] transition-all"
                 >
                   {svc.ghost ? 'Написать' : 'Заявка'}
                 </Link>

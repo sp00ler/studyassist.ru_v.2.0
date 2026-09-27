@@ -56,7 +56,7 @@ const stats = [
 
 export function StatsSection() {
   return (
-    <div className="bg-[#0E0E1C] border-t border-b border-white/[.06]">
+    <div className="bg-[#211C15] border-t border-b border-white/[.06]">
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-14">
         <div className="grid grid-cols-2 md:grid-cols-4">
           {stats.map((stat, i) => {
@@ -73,10 +73,10 @@ export function StatsSection() {
               key={i}
               className={`text-center py-4 px-4 md:px-8 ${borderCls}`}
             >
-              <div className="font-unbounded text-[clamp(36px,4.5vw,52px)] font-black text-[#C5FF45] tracking-[-2px] leading-none mb-2">
+              <div className="font-unbounded text-[clamp(36px,4.5vw,52px)] font-black text-[#2FAE5B] tracking-[-2px] leading-none mb-2">
                 {stat.value}
               </div>
-              <div className="text-[13px] text-[#6A6A88] mt-2 leading-snug">{stat.label}</div>
+              <div className="text-[13px] text-[#6B6255] mt-2 leading-snug">{stat.label}</div>
             </div>
             )
           })}

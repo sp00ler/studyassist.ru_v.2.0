@@ -46,31 +46,31 @@ export default async function BlogPage({
   ]
 
   return (
-    <div className="min-h-screen bg-[#07070E] text-[#F0F0EC]">
+    <div className="min-h-screen bg-[#17130F] text-[#F5F0E3]">
       <Navbar />
       <main id="main-content">
 
         {/* Breadcrumb */}
         <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 pt-6">
           <nav aria-label="Breadcrumb">
-            <ol className="flex items-center gap-1.5 text-[12px] text-[#6A6A88]">
-              <li><Link href="/" className="hover:text-[#C5FF45] transition-colors">Главная</Link></li>
+            <ol className="flex items-center gap-1.5 text-[12px] text-[#6B6255]">
+              <li><Link href="/" className="hover:text-[#2FAE5B] transition-colors">Главная</Link></li>
               <li><ChevronRight className="w-3 h-3" /></li>
-              <li className="text-[#F0F0EC]" aria-current="page">Блог</li>
+              <li className="text-[#F5F0E3]" aria-current="page">Блог</li>
             </ol>
           </nav>
         </div>
 
         {/* Header */}
         <section className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-14">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#C5FF45]/10 border border-[#C5FF45]/[.18] text-[#C5FF45] text-[11px] font-bold uppercase tracking-[.8px] mb-5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C5FF45] animate-pulse" />
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2FAE5B]/10 border border-[#2FAE5B]/[.18] text-[#2FAE5B] text-[11px] font-bold uppercase tracking-[.8px] mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2FAE5B] animate-pulse" />
             Материалы
           </span>
           <h1 className="font-unbounded font-black text-[clamp(28px,5vw,48px)] tracking-[-2px] leading-[1.1] mb-4">
             Блог и новости
           </h1>
-          <p className="text-[16px] text-[#6A6A88] max-w-[560px] leading-[1.75]">
+          <p className="text-[16px] text-[#6B6255] max-w-[560px] leading-[1.75]">
             Полезные статьи, советы для студентов и обновления сервиса
           </p>
 
@@ -85,8 +85,8 @@ export default async function BlogPage({
                   href={href}
                   className={`px-4 py-2 rounded-full text-[13px] font-bold transition-all ${
                     active
-                      ? 'bg-[#C5FF45] text-[#07070E]'
-                      : 'bg-[#0E0E1C] border border-white/[.08] text-[#6A6A88] hover:border-[#C5FF45]/30 hover:text-[#F0F0EC]'
+                      ? 'bg-[#2FAE5B] text-[#17130F]'
+                      : 'bg-[#211C15] border border-white/[.08] text-[#6B6255] hover:border-[#2FAE5B]/30 hover:text-[#F5F0E3]'
                   }`}
                 >
                   {tab.label}
@@ -99,7 +99,7 @@ export default async function BlogPage({
         {/* Grid */}
         <section className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 pb-24">
           {posts.length === 0 ? (
-            <div className="text-center py-20 text-[#6A6A88]">
+            <div className="text-center py-20 text-[#6B6255]">
               <p className="text-[18px] font-bold mb-2">Статей пока нет</p>
               <p className="text-[14px]">Скоро появятся — заходите позже</p>
             </div>
@@ -109,7 +109,7 @@ export default async function BlogPage({
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug}`}
-                  className="group bg-[#0E0E1C] border border-white/[.06] rounded-2xl overflow-hidden hover:border-[#C5FF45]/[.22] transition-all hover:-translate-y-0.5"
+                  className="group bg-[#211C15] border border-white/[.06] rounded-2xl overflow-hidden hover:border-[#2FAE5B]/[.22] transition-all hover:-translate-y-0.5"
                 >
                   {post.coverImage ? (
                     <div className="aspect-[16/9] overflow-hidden">
@@ -120,24 +120,24 @@ export default async function BlogPage({
                       />
                     </div>
                   ) : (
-                    <div className="aspect-[16/9] bg-[#141428] flex items-center justify-center">
-                      <span className="font-unbounded font-black text-[#C5FF45]/10 text-[48px]">SA</span>
+                    <div className="aspect-[16/9] bg-[#2A2118] flex items-center justify-center">
+                      <span className="font-unbounded font-black text-[#2FAE5B]/10 text-[48px]">SA</span>
                     </div>
                   )}
                   <div className="p-5">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2.5 py-1 rounded-full bg-[#C5FF45]/10 text-[#C5FF45] text-[11px] font-bold uppercase tracking-[.6px]">
+                      <span className="px-2.5 py-1 rounded-full bg-[#2FAE5B]/10 text-[#2FAE5B] text-[11px] font-bold uppercase tracking-[.6px]">
                         {TYPE_LABELS[post.type] ?? post.type}
                       </span>
-                      <span className="text-[12px] text-[#6A6A88]">
+                      <span className="text-[12px] text-[#6B6255]">
                         {formatDate(post.publishedAt ?? post.createdAt)}
                       </span>
                     </div>
-                    <h2 className="font-bold text-[15px] text-[#F0F0EC] leading-snug mb-2 group-hover:text-[#C5FF45] transition-colors line-clamp-2">
+                    <h2 className="font-bold text-[15px] text-[#F5F0E3] leading-snug mb-2 group-hover:text-[#2FAE5B] transition-colors line-clamp-2">
                       {post.title}
                     </h2>
                     {post.excerpt && (
-                      <p className="text-[13px] text-[#6A6A88] leading-[1.65] line-clamp-3">
+                      <p className="text-[13px] text-[#6B6255] leading-[1.65] line-clamp-3">
                         {post.excerpt}
                       </p>
                     )}

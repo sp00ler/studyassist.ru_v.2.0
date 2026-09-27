@@ -39,7 +39,6 @@ export function PricingSection() {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <span className="section-tag">// Цены</span>
         <h2 className="section-heading">
           Прозрачные цены.<br />Никаких скрытых доплат.
         </h2>
@@ -59,36 +58,36 @@ export function PricingSection() {
             whileHover={{ y: -5 }}
             className={`relative overflow-hidden rounded-3xl p-10 border transition-all duration-280 ${
               plan.hot
-                ? 'bg-gradient-to-br from-[#C5FF45]/[.08] to-[#7C3AED]/[.1] border-[#C5FF45]/[.18]'
-                : 'bg-[#0E0E1C] border-white/[.06] hover:border-[#C5FF45]/[.18] hover:shadow-[0_24px_64px_rgba(0,0,0,.4)]'
+                ? 'bg-[#2FAE5B] border-[#2FAE5B]/[.18]'
+                : 'bg-[#211C15] border-white/[.06] hover:border-[#2FAE5B]/[.18] hover:shadow-[0_24px_64px_rgba(0,0,0,.4)]'
             }`}
           >
             {/* HOT ribbon */}
             {plan.hot && (
               <div
-                className="absolute top-[18px] right-[-28px] bg-[#C5FF45] text-[#07070E] font-unbounded text-[9px] font-black tracking-[1px] py-1 px-10 rotate-45 pointer-events-none"
+                className="absolute top-[18px] right-[-28px] bg-[#2FAE5B] text-[#17130F] font-unbounded text-[9px] font-black tracking-[1px] py-1 px-10 rotate-45 pointer-events-none"
               >
                 ХИТ
               </div>
             )}
 
-            <div className="font-unbounded text-[11px] font-bold uppercase tracking-[1.2px] text-[#6A6A88] mb-3.5">
+            <div className="font-unbounded text-[11px] font-bold uppercase tracking-[1.2px] text-[#6B6255] mb-3.5">
               {plan.label}
             </div>
 
-            <div className="font-unbounded font-black tracking-[-2px] leading-none mb-1 text-[#F0F0EC]"
+            <div className="font-unbounded font-black tracking-[-2px] leading-none mb-1 text-[#F5F0E3]"
               style={{ fontSize: 52 }}>
               {plan.price}
             </div>
-            <div className="text-[12px] text-[#6A6A88] mb-8">начальная цена</div>
+            <div className="text-[12px] text-[#6B6255] mb-8">начальная цена</div>
 
             <ul className="space-y-0 mb-8">
               {plan.features.map((f) => (
                 <li
                   key={f}
-                  className="flex items-start gap-2.5 text-[13px] text-[#6A6A88] py-2.5 border-b border-white/[.06] last:border-0"
+                  className="flex items-start gap-2.5 text-[13px] text-[#6B6255] py-2.5 border-b border-white/[.06] last:border-0"
                 >
-                  <span className="text-[#C5FF45] font-bold flex-shrink-0 mt-px">→</span>
+                  <span className="text-[#2FAE5B] font-bold flex-shrink-0 mt-px">→</span>
                   {f}
                 </li>
               ))}
@@ -98,8 +97,8 @@ export function PricingSection() {
               <button
                 className={`w-full py-3.5 rounded-full font-unbounded text-[13px] font-bold tracking-[-0.2px] transition-all duration-200 ${
                   plan.hot
-                    ? 'bg-[#C5FF45] text-[#07070E] hover:bg-[#D4FF60] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)]'
-                    : 'bg-transparent text-[#F0F0EC] border border-white/10 hover:border-white/20 hover:bg-white/5'
+                    ? 'bg-[#2FAE5B] text-[#17130F] hover:bg-[#3FC96B] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)]'
+                    : 'bg-transparent text-[#F5F0E3] border border-white/10 hover:border-white/20 hover:bg-white/5'
                 }`}
               >
                 {plan.cta}
@@ -114,10 +113,10 @@ export function PricingSection() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ delay: 0.4 }}
-        className="text-center text-[13px] text-[#6A6A88] mt-8"
+        className="text-center text-[13px] text-[#6B6255] mt-8"
       >
         Также: лабораторные от 1 000₽, отчёты по практике от 5 000₽, УИР от 7 000₽, презентации от 1 200₽.{' '}
-        <Link href="#order" className="text-[#C5FF45] hover:underline">Узнать точную стоимость →</Link>
+        <Link href="#order" className="text-[#2FAE5B] hover:underline">Узнать точную стоимость →</Link>
       </motion.p>
     </section>
   )

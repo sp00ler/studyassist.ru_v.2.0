@@ -11,7 +11,7 @@ export default function OgImage() {
         style={{
           width: 1200,
           height: 630,
-          background: '#07070E',
+          background: '#17130F',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -64,12 +64,12 @@ export default function OgImage() {
               width: 8,
               height: 8,
               borderRadius: '50%',
-              background: '#C5FF45',
+              background: '#2FAE5B',
             }}
           />
           <span
             style={{
-              color: '#C5FF45',
+              color: '#2FAE5B',
               fontSize: 18,
               fontWeight: 700,
               letterSpacing: 1.2,
@@ -84,7 +84,7 @@ export default function OgImage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           <span
             style={{
-              color: '#F0F0EC',
+              color: '#F5F0E3',
               fontSize: 110,
               fontWeight: 900,
               lineHeight: 0.92,
@@ -95,7 +95,7 @@ export default function OgImage() {
           </span>
           <span
             style={{
-              color: '#C5FF45',
+              color: '#2FAE5B',
               fontSize: 110,
               fontWeight: 900,
               lineHeight: 0.92,
@@ -106,7 +106,7 @@ export default function OgImage() {
           </span>
           <span
             style={{
-              color: '#6A6A88',
+              color: '#6B6255',
               fontSize: 38,
               fontWeight: 400,
               marginTop: 20,
@@ -127,7 +127,7 @@ export default function OgImage() {
         >
           <span
             style={{
-              color: '#F0F0EC',
+              color: '#F5F0E3',
               fontSize: 28,
               fontWeight: 700,
               letterSpacing: -0.5,
@@ -137,7 +137,7 @@ export default function OgImage() {
           </span>
           <span
             style={{
-              color: '#6A6A88',
+              color: '#6B6255',
               fontSize: 22,
             }}
           >

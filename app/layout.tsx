@@ -46,20 +46,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const metrikaId = process.env.NEXT_PUBLIC_METRIKA_ID
 
   return (
-    <html lang="ru" className="dark">
+    <html lang="ru">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Press+Start+2P&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans antialiased bg-[#07070E] text-[#F0F0EC] min-h-screen">
+      <body className="font-sans antialiased bg-[#17130F] text-[#F5F0E3] min-h-screen">
         <MagicCursor />
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#C5FF45] focus:text-[#07070E] focus:rounded-full focus:text-sm focus:font-bold"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#2FAE5B] focus:text-[#17130F] focus:rounded-[2px] focus:text-sm focus:font-bold"
         >
           Перейти к основному содержанию
         </a>

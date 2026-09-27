@@ -122,7 +122,7 @@ export function SocialContacts({ size = 'md', label = false }: SocialContactsPro
                 }
               `}
               style={{
-                color: isHovered ? c.brandColor : '#C5FF45',
+                color: isHovered ? c.brandColor : '#2FAE5B',
                 boxShadow: isHovered ? `0 0 16px ${c.brandGlow}` : 'none',
               }}
             >
@@ -145,7 +145,7 @@ export function SocialContacts({ size = 'md', label = false }: SocialContactsPro
       })}
 
       {label && (
-        <span className="text-[12px] text-[#6A6A88] ml-1">Написать нам</span>
+        <span className="text-[12px] text-[#6B6255] ml-1">Написать нам</span>
       )}
     </div>
   )

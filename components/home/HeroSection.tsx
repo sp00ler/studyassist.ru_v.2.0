@@ -65,8 +65,8 @@ export function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#C5FF45]/10 border border-[#C5FF45]/[.18] text-[#C5FF45] text-[11px] font-bold uppercase tracking-[.8px] mb-7">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#C5FF45] animate-blink" />
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2FAE5B]/10 border border-[#2FAE5B]/[.18] text-[#2FAE5B] text-[11px] font-bold uppercase tracking-[.8px] mb-7">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#2FAE5B] animate-blink" />
                 Более 1000 студентов уже сдали
               </span>
             </motion.div>
@@ -78,16 +78,16 @@ export function HeroSection() {
               className="font-unbounded font-black leading-[.93] tracking-[-3px] mb-7"
               style={{ fontSize: 'clamp(52px, 8.5vw, 100px)' }}
             >
-              <span className="block text-[#F0F0EC] relative">
+              <span className="block text-[#F5F0E3] relative">
                 <span className="invisible select-none">ДЕДЛАЙН</span>
                 <span className="absolute inset-0">{line1}</span>
               </span>
-              <span className="block text-[#C5FF45] relative">
+              <span className="block text-[#2FAE5B] relative">
                 <span className="invisible select-none">ЗАВТРА?</span>
                 <span className="absolute inset-0">{line2}</span>
               </span>
               <span
-                className="block text-[#6A6A88] font-normal tracking-[-1px]"
+                className="block text-[#6B6255] font-normal tracking-[-1px]"
                 style={{ fontSize: 'clamp(20px, 3.2vw, 42px)' }}
               >
                 Мы уже работаем.
@@ -98,7 +98,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-[17px] text-[#6A6A88] max-w-[480px] leading-[1.75] mb-10"
+              className="text-[17px] text-[#6B6255] max-w-[480px] leading-[1.75] mb-10"
             >
               От реферата до диплома — профильный специалист,{' '}
               ответ за 30 минут, работа любой сложности.
@@ -113,7 +113,7 @@ export function HeroSection() {
               <MagneticButton>
                 <Link
                   href="#order"
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#C5FF45] text-[#07070E] font-black font-unbounded text-[13px] tracking-[-0.2px] hover:bg-[#D4FF60] hover:shadow-[0_14px_36px_rgba(197,255,69,.28)] hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#2FAE5B] text-[#17130F] font-black font-unbounded text-[13px] tracking-[-0.2px] hover:bg-[#3FC96B] hover:shadow-[0_14px_36px_rgba(197,255,69,.28)] hover:-translate-y-0.5 transition-all duration-200 active:scale-95"
                   onClick={() => {
                     if (typeof window !== 'undefined' && (window as Window & { ym?: Function }).ym) {
                       (window as Window & { ym?: Function }).ym?.(
@@ -132,7 +132,7 @@ export function HeroSection() {
               </MagneticButton>
               <Link
                 href="#how-it-works"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-transparent text-[#F0F0EC] border border-white/10 font-bold font-unbounded text-[13px] hover:border-white/20 hover:bg-white/5 transition-all duration-200"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-transparent text-[#F5F0E3] border border-white/10 font-bold font-unbounded text-[13px] hover:border-white/20 hover:bg-white/5 transition-all duration-200"
               >
                 Как это работает
               </Link>
@@ -144,19 +144,19 @@ export function HeroSection() {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="bg-[#0E0E1C] border border-white/[.06] rounded-3xl p-5 sm:p-8 flex flex-col gap-6"
+            className="bg-[#211C15] border border-white/[.06] rounded-3xl p-5 sm:p-8 flex flex-col gap-6"
           >
-            <div className="font-mono text-[10px] font-bold uppercase tracking-[1.4px] text-[#6A6A88]">
+            <div className="font-mono text-[10px] font-bold uppercase tracking-[1.4px] text-[#6B6255]">
               // Сейчас на связи
             </div>
 
-            <div className="font-mono font-bold text-[#C5FF45] tracking-[-2px] leading-none"
+            <div className="font-mono font-bold text-[#2FAE5B] tracking-[-2px] leading-none"
               style={{ fontSize: 'clamp(36px, 9vw, 52px)' }}>
               {mounted ? time : '--:--:--'}
             </div>
 
-            <div className="inline-flex items-center gap-1.5 self-start px-3 py-1.5 rounded-full bg-[#C5FF45]/10 border border-[#C5FF45]/[.18] text-[#C5FF45] text-[12px] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C5FF45] animate-blink" />
+            <div className="inline-flex items-center gap-1.5 self-start px-3 py-1.5 rounded-full bg-[#2FAE5B]/10 border border-[#2FAE5B]/[.18] text-[#2FAE5B] text-[12px] font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#2FAE5B] animate-blink" />
               Эксперты онлайн
             </div>
 
@@ -169,8 +169,8 @@ export function HeroSection() {
                 { label: 'Довольных клиентов',  value: '98%' },
               ].map((stat) => (
                 <div key={stat.label} className="flex items-center justify-between">
-                  <span className="text-[13px] text-[#6A6A88]">{stat.label}</span>
-                  <span className="font-mono text-[15px] font-bold text-[#C5FF45]">{stat.value}</span>
+                  <span className="text-[13px] text-[#6B6255]">{stat.label}</span>
+                  <span className="font-mono text-[15px] font-bold text-[#2FAE5B]">{stat.value}</span>
                 </div>
               ))}
             </div>
@@ -179,7 +179,7 @@ export function HeroSection() {
 
             <Link
               href="#order"
-              className="flex items-center justify-center px-6 py-3.5 rounded-full bg-[#C5FF45] text-[#07070E] font-black font-unbounded text-[12px] tracking-[-0.2px] hover:bg-[#D4FF60] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)] transition-all duration-200"
+              className="flex items-center justify-center px-6 py-3.5 rounded-full bg-[#2FAE5B] text-[#17130F] font-black font-unbounded text-[12px] tracking-[-0.2px] hover:bg-[#3FC96B] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)] transition-all duration-200"
             >
               Написать прямо сейчас
             </Link>
@@ -189,7 +189,7 @@ export function HeroSection() {
       </div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#07070E] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#17130F] to-transparent pointer-events-none" />
     </section>
   )
 }

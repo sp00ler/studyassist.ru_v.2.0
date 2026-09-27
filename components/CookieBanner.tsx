@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { X } from 'lucide-react'
+import { X, Cookie } from 'lucide-react'
 
 type CookieConsent = 'all' | 'necessary' | null
 
@@ -51,10 +51,13 @@ export function CookieBanner() {
     <div
       role="dialog"
       aria-label="Уведомление об использовании cookie"
-      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md z-50 bg-[#1A1A2E] border border-white/10 rounded-2xl shadow-2xl p-5"
+      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md z-50 bg-[#211C15] chrome-bevel-out p-5"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
-        <p className="text-white font-semibold text-sm">🍪 Мы используем cookie</p>
+        <p className="text-white font-semibold text-sm flex items-center gap-2">
+          <Cookie className="w-4 h-4 text-[#2FAE5B]" strokeWidth={2} />
+          Мы используем cookie
+        </p>
         <button
           onClick={() => accept('necessary')}
           aria-label="Закрыть (принять только необходимые)"
@@ -73,10 +76,10 @@ export function CookieBanner() {
       {showDetails && (
         <div className="text-xs text-white/50 bg-white/5 rounded-xl p-3 mb-3 space-y-1.5">
           <p><span className="text-white/70 font-medium">Необходимые cookie:</span> сессия, авторизация, защита от CSRF. Срок — до закрытия браузера / 30 дней.</p>
-          <p><span className="text-white/70 font-medium">Аналитика (Яндекс.Метрика):</span> переходы, клики, Вебвизор. Срок cookie — 1 год. Можно отключить в настройках браузера или через <a href="https://yandex.ru/support/metrika/general/opt-out.html" target="_blank" rel="noopener noreferrer" className="text-[#6C3EF4] hover:underline">Яндекс.Оптаут</a>.</p>
+          <p><span className="text-white/70 font-medium">Аналитика (Яндекс.Метрика):</span> переходы, клики, Вебвизор. Срок cookie — 1 год. Можно отключить в настройках браузера или через <a href="https://yandex.ru/support/metrika/general/opt-out.html" target="_blank" rel="noopener noreferrer" className="text-[#2FAE5B] hover:underline">Яндекс.Оптаут</a>.</p>
           <p>
             Подробнее —{' '}
-            <Link href="/cookies" className="text-[#6C3EF4] hover:underline">Политика использования cookie</Link>
+            <Link href="/cookies" className="text-[#2FAE5B] hover:underline">Политика использования cookie</Link>
           </p>
         </div>
       )}
@@ -91,13 +94,13 @@ export function CookieBanner() {
       <div className="flex gap-2">
         <button
           onClick={() => accept('all')}
-          className="flex-1 bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] text-white text-xs font-semibold py-2.5 px-4 rounded-xl hover:opacity-90 transition-opacity"
+          className="flex-1 bg-[#2FAE5B] text-[#17130F] text-xs font-bold py-2.5 px-4 rounded-[2px] hover:bg-[#3FC96B] transition-colors"
         >
           Принять все
         </button>
         <button
           onClick={() => accept('necessary')}
-          className="flex-1 bg-white/5 border border-white/10 text-white/70 text-xs font-semibold py-2.5 px-4 rounded-xl hover:bg-white/10 transition-colors"
+          className="flex-1 bg-transparent border-2 border-white/20 text-white/70 text-xs font-semibold py-2.5 px-4 rounded-[2px] hover:bg-white/10 transition-colors"
         >
           Только необходимые
         </button>

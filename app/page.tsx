@@ -1,18 +1,6 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { UrgencyBar } from '@/components/layout/UrgencyBar'
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
-import { HeroSection } from '@/components/home/HeroSection'
-import { StatsSection } from '@/components/home/StatsSection'
-import { ServicesSection } from '@/components/home/ServicesSection'
-import { HowItWorks } from '@/components/home/HowItWorks'
-import { PricingSection } from '@/components/home/PricingSection'
-import { ReviewsSection } from '@/components/home/ReviewsSection'
-import { OrderForm } from '@/components/home/OrderForm'
-import { FaqSection } from '@/components/home/FaqSection'
-import { PortfolioPreviewSection } from '@/components/home/PortfolioPreviewSection'
-import { BlogPreviewSection } from '@/components/home/BlogPreviewSection'
+import { HomeExperience } from '@/components/home/HomeExperience'
 
 export const metadata: Metadata = {
   title: 'StudyAssist — Образовательные консультации для студентов | Помощь в учёбе онлайн',
@@ -111,21 +99,7 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <UrgencyBar />
-      <Navbar />
-      <main id="main-content">
-        <HeroSection />
-        <StatsSection />
-        <ServicesSection />
-        <HowItWorks />
-        <PricingSection />
-        <ReviewsSection />
-        <PortfolioPreviewSection />
-        <BlogPreviewSection />
-        <OrderForm />
-        <FaqSection />
-      </main>
-      <Footer />
+      <HomeExperience />
     </>
   )
 }

@@ -3,24 +3,24 @@ import { SocialContacts } from '@/components/layout/SocialContacts'
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[.06] bg-[#07070E]">
+    <footer className="border-t border-white/[.06] bg-[#17130F]">
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 pt-[72px] pb-10">
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-8 md:gap-12 mb-12">
 
           {/* Brand */}
           <div>
-            <Link href="/" className="font-unbounded text-[17px] font-black tracking-[-0.3px] text-[#F0F0EC] hover:text-white transition-colors">
-              Study<span className="text-[#C5FF45]">Assist</span>
+            <Link href="/" className="font-unbounded text-[17px] font-black tracking-[-0.3px] text-[#F5F0E3] hover:text-white transition-colors">
+              Study<span className="text-[#2FAE5B]">Assist</span>
             </Link>
-            <p className="text-[13px] text-[#6A6A88] leading-[1.75] mt-4 max-w-[240px]">
+            <p className="text-[13px] text-[#6B6255] leading-[1.75] mt-4 max-w-[240px]">
               Помогаем студентам справляться с любыми учебными задачами. Быстро, качественно, конфиденциально.
             </p>
           </div>
 
           {/* Services */}
           <div>
-            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6A6A88] mb-4">
+            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6B6255] mb-4">
               Услуги
             </div>
             <ul className="space-y-2.5">
@@ -33,7 +33,7 @@ export function Footer() {
                 { href: '/#services', label: 'Отчёты по практике' },
               ].map((item) => (
                 <li key={item.label}>
-                  <Link href={item.href} className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                  <Link href={item.href} className="text-[#6B6255] hover:text-[#2FAE5B] text-[13px] transition-colors">
                     {item.label}
                   </Link>
                 </li>
@@ -43,7 +43,7 @@ export function Footer() {
 
           {/* Navigation */}
           <div>
-            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6A6A88] mb-4">
+            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6B6255] mb-4">
               Навигация
             </div>
             <ul className="space-y-2.5">
@@ -54,7 +54,7 @@ export function Footer() {
                 { href: '/#order', label: 'Оставить заявку' },
               ].map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                  <Link href={item.href} className="text-[#6B6255] hover:text-[#2FAE5B] text-[13px] transition-colors">
                     {item.label}
                   </Link>
                 </li>
@@ -64,7 +64,7 @@ export function Footer() {
 
           {/* Legal & Contacts */}
           <div>
-            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6A6A88] mb-4">
+            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6B6255] mb-4">
               Контакты
             </div>
 
@@ -75,7 +75,7 @@ export function Footer() {
 
             <ul className="space-y-2.5">
               <li>
-                <a href="mailto:support@studyassist.ru" className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                <a href="mailto:support@studyassist.ru" className="text-[#6B6255] hover:text-[#2FAE5B] text-[13px] transition-colors">
                   support@studyassist.ru
                 </a>
               </li>
@@ -88,7 +88,7 @@ export function Footer() {
                 { href: '/contacts', label: 'Контакты' },
               ].map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                  <Link href={item.href} className="text-[#6B6255] hover:text-[#2FAE5B] text-[13px] transition-colors">
                     {item.label}
                   </Link>
                 </li>
@@ -98,8 +98,8 @@ export function Footer() {
         </div>
 
         <div className="pt-6 border-t border-white/[.06] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[12px] text-[#6A6A88]">© 2025 StudyAssist. Образовательные консультации.</p>
-          <p className="text-[12px] text-[#6A6A88]">Режим работы: 9:00 – 23:00 МСК</p>
+          <p className="text-[12px] text-[#6B6255]">© 2025 StudyAssist. Образовательные консультации.</p>
+          <p className="text-[12px] text-[#6B6255]">Режим работы: 9:00 – 23:00 МСК</p>
         </div>
       </div>
     </footer>

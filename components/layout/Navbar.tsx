@@ -40,16 +40,16 @@ export function Navbar() {
       style={{ top: 'var(--yb-banner-h, 0px)' }}
       className={`sticky left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#07070E]/92 backdrop-blur-xl border-b border-white/[.06] shadow-[0_4px_24px_rgba(0,0,0,.5)]'
-          : 'bg-[#07070E]/60 backdrop-blur-md border-b border-white/[.04]'
+          ? 'bg-[#17130F]/92 backdrop-blur-xl border-b border-white/[.06] shadow-[0_4px_24px_rgba(0,0,0,.5)]'
+          : 'bg-[#17130F]/60 backdrop-blur-md border-b border-white/[.04]'
       }`}
     >
       <nav className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12">
         <div className="flex items-center justify-between h-16 md:h-[72px]">
 
           {/* Logo */}
-          <Link href="/" className="font-unbounded text-[17px] font-black tracking-[-0.3px] text-[#F0F0EC] hover:text-white transition-colors">
-            Study<span className="text-[#C5FF45]">Assist</span>
+          <Link href="/" className="font-unbounded text-[17px] font-black tracking-[-0.3px] text-[#F5F0E3] hover:text-white transition-colors">
+            Study<span className="text-[#2FAE5B]">Assist</span>
           </Link>
 
           {/* Desktop nav links */}
@@ -58,7 +58,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[#6A6A88] hover:text-[#F0F0EC] transition-colors duration-200 text-[14px] font-medium"
+                className="text-[#6B6255] hover:text-[#F5F0E3] transition-colors duration-200 text-[14px] font-medium"
               >
                 {link.label}
               </Link>
@@ -70,14 +70,14 @@ export function Navbar() {
             {session ? (
               <>
                 <Link href="/dashboard">
-                  <button className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-[#F0F0EC] text-[13px] font-semibold hover:border-white/20 hover:bg-white/5 transition-all">
+                  <button className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-[#F5F0E3] text-[13px] font-semibold hover:border-white/20 hover:bg-white/5 transition-all">
                     <LayoutDashboard className="w-4 h-4" />
                     Личный кабинет
                   </button>
                 </Link>
                 {session.user.isAdmin && (
                   <Link href="/admin">
-                    <button className="px-3 py-2 rounded-full text-[#6A6A88] text-[13px] font-medium hover:text-[#F0F0EC] transition-colors">
+                    <button className="px-3 py-2 rounded-full text-[#6B6255] text-[13px] font-medium hover:text-[#F5F0E3] transition-colors">
                       Админ
                     </button>
                   </Link>
@@ -85,7 +85,7 @@ export function Navbar() {
                 <button
                   onClick={() => signOut()}
                   aria-label="Выйти из аккаунта"
-                  className="p-2 rounded-full text-[#6A6A88] hover:text-[#F0F0EC] transition-colors"
+                  className="p-2 rounded-full text-[#6B6255] hover:text-[#F5F0E3] transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -93,12 +93,12 @@ export function Navbar() {
             ) : (
               <>
                 <Link href="/auth/login">
-                  <button className="px-5 py-2 rounded-full border border-white/10 text-[#F0F0EC] text-[13px] font-semibold hover:border-white/20 hover:bg-white/5 transition-all">
+                  <button className="px-5 py-2 rounded-full border border-white/10 text-[#F5F0E3] text-[13px] font-semibold hover:border-white/20 hover:bg-white/5 transition-all">
                     Войти
                   </button>
                 </Link>
                 <Link href="/#order">
-                  <button className="px-5 py-2 rounded-full bg-[#C5FF45] text-[#07070E] text-[13px] font-bold font-unbounded hover:bg-[#D4FF60] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)] hover:-translate-y-px transition-all active:scale-95">
+                  <button className="px-5 py-2 rounded-full bg-[#2FAE5B] text-[#17130F] text-[13px] font-bold font-unbounded hover:bg-[#3FC96B] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)] hover:-translate-y-px transition-all active:scale-95">
                     Заказать →
                   </button>
                 </Link>
@@ -108,7 +108,7 @@ export function Navbar() {
 
           {/* Mobile burger */}
           <button
-            className="md:hidden text-[#F0F0EC] p-2 rounded-lg hover:bg-white/8 transition-colors"
+            className="md:hidden text-[#F5F0E3] p-2 rounded-lg hover:bg-white/8 transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Закрыть меню' : 'Открыть меню'}
             aria-expanded={mobileOpen}
@@ -130,14 +130,14 @@ export function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-[#07070E]/98 backdrop-blur-xl border-b border-white/[.06]"
+            className="md:hidden bg-[#17130F]/98 backdrop-blur-xl border-b border-white/[.06]"
           >
             <div className="px-4 py-6 space-y-4 max-w-[1100px] mx-auto">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block text-[#6A6A88] hover:text-[#F0F0EC] py-2 text-base font-medium transition-colors"
+                  className="block text-[#6B6255] hover:text-[#F5F0E3] py-2 text-base font-medium transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
@@ -147,13 +147,13 @@ export function Navbar() {
                 {session ? (
                   <>
                     <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
-                      <button className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-white/10 text-[#F0F0EC] text-[14px] font-semibold hover:bg-white/5 transition-all">
+                      <button className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-white/10 text-[#F5F0E3] text-[14px] font-semibold hover:bg-white/5 transition-all">
                         <LayoutDashboard className="w-4 h-4" />
                         Личный кабинет
                       </button>
                     </Link>
                     <button
-                      className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full text-[#FF3B5C] text-[14px] font-semibold hover:bg-[#FF3B5C]/10 transition-all"
+                      className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full text-[#C0392B] text-[14px] font-semibold hover:bg-[#C0392B]/10 transition-all"
                       onClick={() => { signOut(); setMobileOpen(false) }}
                     >
                       <LogOut className="w-4 h-4" />
@@ -163,12 +163,12 @@ export function Navbar() {
                 ) : (
                   <>
                     <Link href="/auth/login" onClick={() => setMobileOpen(false)}>
-                      <button className="w-full px-5 py-3 rounded-full border border-white/10 text-[#F0F0EC] text-[14px] font-semibold hover:bg-white/5 transition-all">
+                      <button className="w-full px-5 py-3 rounded-full border border-white/10 text-[#F5F0E3] text-[14px] font-semibold hover:bg-white/5 transition-all">
                         Войти
                       </button>
                     </Link>
                     <Link href="/#order" onClick={() => setMobileOpen(false)}>
-                      <button className="w-full px-5 py-3 rounded-full bg-[#C5FF45] text-[#07070E] text-[14px] font-bold font-unbounded hover:bg-[#D4FF60] transition-all">
+                      <button className="w-full px-5 py-3 rounded-full bg-[#2FAE5B] text-[#17130F] text-[14px] font-bold font-unbounded hover:bg-[#3FC96B] transition-all">
                         Заказать →
                       </button>
                     </Link>

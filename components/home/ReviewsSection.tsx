@@ -165,7 +165,7 @@ function ReviewGraph({ reviews, onNodeClick }: { reviews: Review[]; onNodeClick:
           circ.setAttribute('fill',
             isHov    ? 'rgba(197,255,69,0.18)'
             : proxT > 0 ? `rgba(197,255,69,${(proxT * 0.12).toFixed(3)})`
-            : '#0E0E1C')
+            : '#211C15')
           circ.style.filter = isHov || proxT > 0.55 ? 'url(#ng-glow)' : ''
         }
       }
@@ -188,7 +188,7 @@ function ReviewGraph({ reviews, onNodeClick }: { reviews: Review[]; onNodeClick:
 
         line.style.opacity = op.toFixed(3)
         line.setAttribute('stroke-width', isLit ? '1.9' : e.cross ? '0.75' : '1.05')
-        line.setAttribute('stroke', isLit ? '#C5FF45' : `rgba(197,255,69,${e.cross ? 0.5 : 0.65})`)
+        line.setAttribute('stroke', isLit ? '#2FAE5B' : `rgba(197,255,69,${e.cross ? 0.5 : 0.65})`)
         line.style.filter  = isLit ? 'url(#ng-glow)' : ''
       }
 
@@ -235,8 +235,8 @@ function ReviewGraph({ reviews, onNodeClick }: { reviews: Review[]; onNodeClick:
             <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
           <radialGradient id="ng-bg" cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stopColor="#C5FF45" stopOpacity="0.07" />
-            <stop offset="100%" stopColor="#C5FF45" stopOpacity="0"    />
+            <stop offset="0%"   stopColor="#2FAE5B" stopOpacity="0.07" />
+            <stop offset="100%" stopColor="#2FAE5B" stopOpacity="0"    />
           </radialGradient>
           {/* Avatar patterns — move with node regardless of CSS/SVG transforms */}
           {reviews.map(rev => rev.avatar ? (
@@ -277,7 +277,7 @@ function ReviewGraph({ reviews, onNodeClick }: { reviews: Review[]; onNodeClick:
           const dur   = `${(1.6 + (i % 6) * 0.38).toFixed(2)}s`
           const begin = `${((i * 0.55) % 2.8).toFixed(2)}s`
           return (
-            <circle key={`p-${i}`} r={2.2} fill="#C5FF45" filter="url(#ng-glow)">
+            <circle key={`p-${i}`} r={2.2} fill="#2FAE5B" filter="url(#ng-glow)">
               <animateMotion dur={dur} begin={begin} repeatCount="indefinite"
                 path={`M${pos.x},${pos.y} L${CX},${CY}`} />
               <animate attributeName="opacity" values="0;0.9;0.9;0" keyTimes="0;0.07;0.88;1"
@@ -297,9 +297,9 @@ function ReviewGraph({ reviews, onNodeClick }: { reviews: Review[]; onNodeClick:
             animate={{ scale: [1, 1.15, 1] }}
             transition={{ duration: 2.1, repeat: Infinity, ease: 'easeInOut' }}
           />
-          <circle cx={CX} cy={CY} r={40} fill="#0E0E1C" stroke="#C5FF45" strokeWidth={2.5} filter="url(#ng-glow)" />
-          <text x={CX} y={CY - 4} textAnchor="middle" fill="#C5FF45" fontSize={20} fontWeight="700" filter="url(#ng-glow)">★</text>
-          <text x={CX} y={CY + 14} textAnchor="middle" fill="#E8E8E0" fontSize={11} fontWeight="600">Отзывы</text>
+          <circle cx={CX} cy={CY} r={40} fill="#211C15" stroke="#2FAE5B" strokeWidth={2.5} filter="url(#ng-glow)" />
+          <text x={CX} y={CY - 4} textAnchor="middle" fill="#2FAE5B" fontSize={20} fontWeight="700" filter="url(#ng-glow)">★</text>
+          <text x={CX} y={CY + 14} textAnchor="middle" fill="#EFE8D8" fontSize={11} fontWeight="600">Отзывы</text>
         </motion.g>
 
         {/* Review nodes
@@ -329,7 +329,7 @@ function ReviewGraph({ reviews, onNodeClick }: { reviews: Review[]; onNodeClick:
               {/* Node body — fill/stroke controlled by RAF */}
               <circle ref={el => { circRefs.current[i] = el }}
                 cx={0} cy={0} r={r}
-                fill="#0E0E1C" stroke="rgba(197,255,69,0.42)" strokeWidth={1}
+                fill="#211C15" stroke="rgba(197,255,69,0.42)" strokeWidth={1}
               />
               {/* Avatar via SVG pattern, or initial letter */}
               {rev.avatar
@@ -340,8 +340,8 @@ function ReviewGraph({ reviews, onNodeClick }: { reviews: Review[]; onNodeClick:
                     {rev.name.charAt(0)}
                   </text>
               }
-              <text x={0} y={r + 14} textAnchor="middle" fill="#606078" fontSize={10}>{label}</text>
-              <text x={0} y={r + 25} textAnchor="middle" fill="#C5FF45" fontSize={8.5} opacity={0.3}>
+              <text x={0} y={r + 14} textAnchor="middle" fill="#6B6255" fontSize={10}>{label}</text>
+              <text x={0} y={r + 25} textAnchor="middle" fill="#2FAE5B" fontSize={8.5} opacity={0.3}>
                 {'★'.repeat(rev.rating)}
               </text>
             </g>
@@ -364,8 +364,8 @@ function StarRating({ rating, onChange }: { rating: number; onChange?: (r: numbe
           onMouseLeave={() => onChange && setHov(0)}
           className={`transition-all duration-150 ${onChange ? 'cursor-pointer hover:scale-110' : 'cursor-default'}`}>
           <Star className="w-5 h-5"
-            fill={s <= (hov || rating) ? '#C5FF45' : 'none'}
-            stroke={s <= (hov || rating) ? '#C5FF45' : 'rgba(255,255,255,.2)'}
+            fill={s <= (hov || rating) ? '#2FAE5B' : 'none'}
+            stroke={s <= (hov || rating) ? '#2FAE5B' : 'rgba(255,255,255,.2)'}
           />
         </button>
       ))}
@@ -418,14 +418,13 @@ export function ReviewsSection() {
   }
 
   return (
-    <div id="reviews" className="bg-[#0E0E1C] border-t border-b border-white/[.06]">
+    <div id="reviews" className="bg-[#211C15] border-t border-b border-white/[.06]">
       <section className="py-[120px]">
         <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 mb-10">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.5 }}>
-            <span className="section-tag">// Отзывы</span>
             <h2 className="section-heading">Говорят студенты</h2>
-            <p className="text-[#6A6A88] text-sm mt-2">Наведите на узел — прочитайте отзыв</p>
+            <p className="text-[#6B6255] text-sm mt-2">Наведите на узел — прочитайте отзыв</p>
           </motion.div>
         </div>
 
@@ -438,32 +437,32 @@ export function ReviewsSection() {
         <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.5 }} className="max-w-xl mx-auto">
-            <div className="bg-[#141428] border border-white/[.06] rounded-3xl p-8">
-              <h3 className="font-unbounded text-[18px] font-bold text-[#F0F0EC] mb-6 text-center tracking-[-0.4px]">
+            <div className="bg-[#2A2118] border border-white/[.06] rounded-3xl p-8">
+              <h3 className="font-unbounded text-[18px] font-bold text-[#F5F0E3] mb-6 text-center tracking-[-0.4px]">
                 Оставить отзыв
               </h3>
               {!session ? (
-                <p className="text-[#6A6A88] text-sm text-center">
+                <p className="text-[#6B6255] text-sm text-center">
                   Чтобы оставить отзыв, необходимо{' '}
-                  <a href="/auth/login" className="text-[#C5FF45] hover:underline">войти</a>
+                  <a href="/auth/login" className="text-[#2FAE5B] hover:underline">войти</a>
                 </p>
               ) : submitted ? (
-                <p role="status" className="text-[#C5FF45] text-sm text-center">
+                <p role="status" className="text-[#2FAE5B] text-sm text-center">
                   ✓ Отзыв отправлен на модерацию. Спасибо!
                 </p>
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <p id="rl" className="text-[#6A6A88] text-sm mb-2">Ваша оценка</p>
+                    <p id="rl" className="text-[#6B6255] text-sm mb-2">Ваша оценка</p>
                     <div role="group" aria-labelledby="rl"><StarRating rating={rating} onChange={setRating} /></div>
                   </div>
                   <div>
-                    <label htmlFor="rv-text" className="text-[#6A6A88] text-sm block mb-2">Текст отзыва</label>
+                    <label htmlFor="rv-text" className="text-[#6B6255] text-sm block mb-2">Текст отзыва</label>
                     <Textarea id="rv-text" value={text} onChange={e => setText(e.target.value)}
                       placeholder="Расскажите о своём опыте..." rows={4} />
                   </div>
                   <button onClick={handleSubmit} disabled={submitting}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#C5FF45] text-[#07070E] font-bold font-unbounded text-[13px] hover:bg-[#D4FF60] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#2FAE5B] text-[#17130F] font-bold font-unbounded text-[13px] hover:bg-[#3FC96B] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                     {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                     Отправить отзыв
                   </button>
@@ -485,33 +484,33 @@ export function ReviewsSection() {
               exit={{ opacity: 0, scale: 0.88, y: 20 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
               onClick={e => e.stopPropagation()}
-              className="relative bg-[#141428] border border-[#C5FF45]/20 rounded-3xl p-8 max-w-md w-full shadow-[0_0_60px_rgba(197,255,69,0.1),0_32px_80px_rgba(0,0,0,.65)]">
+              className="relative bg-[#2A2118] border border-[#2FAE5B]/20 rounded-3xl p-8 max-w-md w-full shadow-[0_0_60px_rgba(197,255,69,0.1),0_32px_80px_rgba(0,0,0,.65)]">
               <button onClick={() => setActive(null)}
                 className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/[.06] hover:bg-white/10 transition-colors">
-                <X className="w-4 h-4 text-[#6A6A88]" />
+                <X className="w-4 h-4 text-[#6B6255]" />
               </button>
-              <div className="text-[#C5FF45] text-[20px] tracking-[4px] mb-4"
+              <div className="text-[#2FAE5B] text-[20px] tracking-[4px] mb-4"
                 style={{ filter: 'drop-shadow(0 0 6px rgba(197,255,69,.6))' }}>
                 {'★'.repeat(active.rating)}{'☆'.repeat(5 - active.rating)}
               </div>
-              <p className="text-[15px] leading-[1.78] text-[#F0F0EC] italic mb-6">
+              <p className="text-[15px] leading-[1.78] text-[#F5F0E3] italic mb-6">
                 &quot;{active.text}&quot;
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-[#7C3AED] to-[#C5FF45]">
+                <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-[#2FAE5B]">
                   {active.avatar ? (
                     <Image src={active.avatar} alt={active.name} width={40} height={40}
                       className="w-full h-full object-cover"
                       unoptimized={active.avatar.startsWith('https://randomuser.me')} />
                   ) : (
-                    <span className="w-full h-full flex items-center justify-center text-[14px] font-bold text-[#07070E]">
+                    <span className="w-full h-full flex items-center justify-center text-[14px] font-bold text-[#17130F]">
                       {active.name.charAt(0)}
                     </span>
                   )}
                 </div>
                 <div>
-                  <div className="font-bold text-[14px] text-[#F0F0EC]">{active.name}</div>
-                  <div className="text-[12px] text-[#6A6A88]">{active.subtitle}</div>
+                  <div className="font-bold text-[14px] text-[#F5F0E3]">{active.name}</div>
+                  <div className="text-[12px] text-[#6B6255]">{active.subtitle}</div>
                 </div>
               </div>
             </motion.div>

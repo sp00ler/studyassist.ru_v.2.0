@@ -35,14 +35,14 @@ export function ContactsFloat() {
           }
         `}
       >
-        <div className="bg-[#0E0E1C] border border-white/[.08] rounded-2xl p-3 shadow-[0_8px_32px_rgba(0,0,0,.5)]">
-          <p className="text-[10px] font-bold uppercase tracking-[1.2px] text-[#6A6A88] mb-3 px-1">
+        <div className="bg-[#211C15] border border-white/[.08] rounded-2xl p-3 shadow-[0_8px_32px_rgba(0,0,0,.5)]">
+          <p className="text-[10px] font-bold uppercase tracking-[1.2px] text-[#6B6255] mb-3 px-1">
             Связаться с нами
           </p>
           <div className="flex flex-col gap-2">
             <SocialContacts size="md" />
           </div>
-          <p className="text-[10px] text-[#6A6A88]/70 mt-3 px-1 max-w-[180px] leading-snug">
+          <p className="text-[10px] text-[#6B6255]/70 mt-3 px-1 max-w-[180px] leading-snug">
             Наведите на иконку — и увидите название
           </p>
         </div>
@@ -58,7 +58,7 @@ export function ContactsFloat() {
           font-bold transition-all duration-200 shadow-lg
           ${open
             ? 'bg-white/10 border border-white/20 text-white/70 hover:bg-white/15'
-            : 'bg-[#C5FF45] text-[#07070E] hover:bg-[#D4FF60] hover:shadow-[0_8px_24px_rgba(197,255,69,.3)] hover:-translate-y-0.5'
+            : 'bg-[#2FAE5B] text-[#17130F] hover:bg-[#3FC96B] hover:shadow-[0_8px_24px_rgba(197,255,69,.3)] hover:-translate-y-0.5'
           }
         `}
       >

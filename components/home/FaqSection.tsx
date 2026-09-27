@@ -49,11 +49,11 @@ export function FaqSection() {
         >
           <h2 className="font-unbounded text-3xl md:text-4xl font-black tracking-[-1.5px] mb-4">
             Частые{' '}
-            <span className="text-[#C5FF45]">
+            <span className="text-[#2FAE5B]">
               вопросы
             </span>
           </h2>
-          <p className="text-[#6A6A88] text-lg">
+          <p className="text-[#6B6255] text-lg">
             Отвечаем честно и по делу
           </p>
         </motion.div>
