@@ -150,10 +150,11 @@ export function ChatWidget() {
     return (
       <button
         onClick={openChat}
-        className="btn-95-primary pixel-shadow fixed bottom-6 right-6 z-50 w-14 h-14 flex items-center justify-center"
+        className="btn-95-primary pixel-shadow fixed bottom-6 right-6 z-40 h-14 pl-4 pr-5 inline-flex items-center gap-2 whitespace-nowrap"
         aria-label="Открыть чат поддержки"
       >
-        <MessageCircle className="w-6 h-6" />
+        <MessageCircle className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+        <span className="font-sans text-[13px] font-bold">Поддержка</span>
         {unread > 0 && (
           <span className="bevel-out absolute -top-2 -right-2 min-w-[20px] h-5 px-1 bg-danger text-white text-xs flex items-center justify-center font-bold">
             {unread > 9 ? '9+' : unread}

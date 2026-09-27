@@ -9,30 +9,30 @@ const STATUS_ROWS = [
 export function HeroSection() {
   return (
     <section className="relative bg-desk dither border-b-2 border-chrome-shadow overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 pt-16 md:pt-20 pb-16 md:pb-24">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 pt-8 sm:pt-16 md:pt-20 pb-16 md:pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 lg:gap-16 items-start">
           {/* Left: headline */}
           <div>
-            <span className="inline-flex items-center gap-2 btn-95 px-3 py-1.5 text-[12px] font-mono font-semibold mb-7">
+            <span className="inline-flex items-center gap-2 btn-95 px-3 py-1 sm:py-1.5 text-[12px] font-mono font-semibold mb-4 sm:mb-7">
               <span className="w-1.5 h-1.5 bg-success" aria-hidden="true" />
               Более 1000 студентов уже сдали
             </span>
 
             <h1
-              className="font-display font-bold text-paper leading-[1.05] mb-6"
-              style={{ fontSize: 'clamp(40px, 7vw, 88px)' }}
+              className="font-display font-semibold text-paper leading-[1.15] mb-3 sm:mb-6 max-w-[16ch]"
+              style={{ fontSize: 'clamp(36px, 5.5vw, 64px)' }}
             >
               <span className="block">Дедлайн завтра?</span>
               <span className="block">Мы уже за компьютером.</span>
               <span
-                className="block font-sans font-normal mt-3"
+                className="block font-sans font-normal mt-2 sm:mt-3 max-w-[46ch]"
                 style={{ fontSize: 'clamp(16px, 2.2vw, 26px)', lineHeight: 1.4 }}
               >
-                Курсовая, диплом, реферат — разберёмся и подготовим работу вместе.
+                Курсовая, диплом, реферат{' '}— разберёмся и подготовим работу вместе.
               </span>
             </h1>
 
-            <p className="text-[17px] sm:text-[18px] text-paper leading-[1.55] max-w-[52ch] mb-9">
+            <p className="text-[17px] sm:text-[18px] text-paper leading-[1.55] max-w-[52ch] mb-4 sm:mb-9">
               Профильный специалист, ответ за 30 минут, консультация по задаче любой сложности.
             </p>
 

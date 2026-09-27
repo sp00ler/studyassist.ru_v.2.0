@@ -102,7 +102,7 @@ export async function PortfolioPreviewSection() {
             <div className="text-center mt-10">
               <Link
                 href="/portfolio"
-                className="btn-95-primary inline-flex items-center gap-2 px-8 py-3.5 font-display text-[13px]"
+                className="btn-95-primary inline-flex items-center gap-2 px-8 py-3.5 font-sans font-bold text-[13px]"
               >
                 Смотреть все примеры →
               </Link>

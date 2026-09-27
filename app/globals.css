@@ -39,9 +39,9 @@
     --title:         0 0 128;     /* #000080 navy — active titlebars, links */
     --title-alt:     16 132 208;  /* #1084D0 — titlebar gradient end (ONLY allowed gradient) */
     --accent:        255 212 0;   /* #FFD400 — sparingly: price tags, key CTA hover */
-    --success:       22 163 74;   /* #16A34A */
-    --warning:       217 119 6;   /* #D97706 */
-    --danger:        220 38 38;   /* #DC2626 */
+    --success:       21 128 61;   /* #15803D — darkened from #16A34A for AA text contrast on paper/white */
+    --warning:       180 83 9;    /* #B45309 — darkened from #D97706 for AA text contrast on paper/white */
+    --danger:        220 38 38;   /* #DC2626 — verified AA on paper (4.65:1) and white (4.83:1) */
   }
 }
 

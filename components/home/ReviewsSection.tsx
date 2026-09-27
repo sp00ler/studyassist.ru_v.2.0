@@ -435,7 +435,7 @@ export function ReviewsSection() {
               <span className="truncate">НОВЫЙ_ОТЗЫВ.TXT — Блокнот</span>
             </div>
             <div className="bg-paper p-6 sm:p-8">
-              <h3 className="font-display text-lg font-bold text-ink mb-6 text-center">
+              <h3 className="font-sans text-lg font-bold text-ink mb-6 text-center">
                 Оставить отзыв
               </h3>
               {!session ? (

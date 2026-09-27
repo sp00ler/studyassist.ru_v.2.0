@@ -35,7 +35,7 @@ export function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="font-display text-[15px] sm:text-[18px] text-ink hover:text-title transition-colors shrink-0"
+            className="font-sans font-bold text-[15px] sm:text-[18px] text-ink hover:text-title transition-colors shrink-0"
           >
             Study<span className="text-title">Assist</span>
           </Link>
@@ -141,7 +141,7 @@ export function Navbar() {
                       </Link>
                     )}
                     <button
-                      className="btn-95 w-full min-h-[44px] flex items-center gap-2 px-4 text-[14px] justify-start text-danger"
+                      className="btn-95 w-full min-h-[44px] flex items-center gap-2 px-4 text-[14px] justify-start"
                       onClick={() => {
                         signOut()
                         setMobileOpen(false)

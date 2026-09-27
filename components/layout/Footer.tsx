@@ -8,7 +8,7 @@ export function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-8 md:gap-12 mb-12">
           {/* Brand */}
           <div>
-            <Link href="/" className="font-display text-[17px] text-ink hover:text-title transition-colors">
+            <Link href="/" className="font-sans font-bold text-[17px] text-ink hover:text-title transition-colors">
               Study<span className="text-title">Assist</span>
             </Link>
             <p className="text-[13px] text-ink-soft leading-[1.75] mt-4 max-w-[260px]">

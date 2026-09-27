@@ -80,7 +80,7 @@ export function HowItWorks() {
                       {step.number}
                     </span>
                   </div>
-                  <h3 className="font-display text-base sm:text-[18px] font-bold text-ink mb-2 leading-[1.15]">
+                  <h3 className="font-sans text-base sm:text-[18px] font-bold text-ink mb-2 leading-[1.15]">
                     {step.title}
                   </h3>
                   <p className="text-sm text-ink-soft leading-[1.6]">{step.desc}</p>

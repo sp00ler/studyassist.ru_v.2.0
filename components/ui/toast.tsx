@@ -29,8 +29,10 @@ const toastVariants = cva(
     variants: {
       variant: {
         default: 'text-ink',
-        destructive: 'destructive group border-danger text-danger',
-        success: 'border-success text-success',
+        // bg-paper overrides .window's chrome background — status-red/green text
+        // needs a light surface to clear AA contrast (fails on chrome silver).
+        destructive: 'destructive group bg-paper border-danger text-danger',
+        success: 'bg-paper border-success text-success',
       },
     },
     defaultVariants: {

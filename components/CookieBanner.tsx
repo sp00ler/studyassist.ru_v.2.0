@@ -67,8 +67,8 @@ export function CookieBanner() {
         </button>
       </div>
 
-      <div className="p-4">
-        <p className="text-ink-soft text-xs leading-relaxed mb-3">
+      <div className="p-3 sm:p-4">
+        <p className="text-ink-soft text-xs leading-snug sm:leading-relaxed mb-2 sm:mb-3">
           Для работы сайта используются технические cookie. С вашего согласия также подключается{' '}
           <strong className="text-ink">Яндекс.Метрика</strong> (включая Вебвизор) для анализа поведения
           пользователей. Данные аналитики не передаются третьим лицам.
@@ -87,7 +87,7 @@ export function CookieBanner() {
 
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="text-title hover:underline text-xs mb-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
+          className="text-title hover:underline text-xs mb-2 sm:mb-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
         >
           {showDetails ? 'Скрыть подробности' : 'Подробнее о cookie'}
         </button>
@@ -95,13 +95,13 @@ export function CookieBanner() {
         <div className="flex gap-2">
           <button
             onClick={() => accept('all')}
-            className="btn-95-primary flex-1 text-xs py-2.5 px-4"
+            className="btn-95-primary flex-1 min-h-[44px] text-xs px-4"
           >
             Принять все
           </button>
           <button
             onClick={() => accept('necessary')}
-            className="btn-95 flex-1 text-xs py-2.5 px-4"
+            className="btn-95 flex-1 min-h-[44px] text-xs px-4"
           >
             Только необходимые
           </button>

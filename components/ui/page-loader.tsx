@@ -33,7 +33,7 @@ export function PageLoader({ text = 'Загрузка', fullScreen = true }: Pag
 
         {/* Brand + text */}
         <div className="text-center">
-          <div className="font-display text-base font-bold text-title mb-1 tracking-wide">
+          <div className="font-sans text-base font-bold text-title mb-1 tracking-wide">
             StudyAssist
           </div>
           <div className="flex items-center justify-center gap-2">
