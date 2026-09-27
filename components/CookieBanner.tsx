@@ -51,59 +51,61 @@ export function CookieBanner() {
     <div
       role="dialog"
       aria-label="Уведомление об использовании cookie"
-      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md z-50 bg-[#211C15] chrome-bevel-out p-5"
+      className="window pixel-shadow fixed bottom-0 left-0 right-0 sm:bottom-6 sm:left-auto sm:right-6 sm:max-w-md z-50 p-0"
     >
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <p className="text-white font-semibold text-sm flex items-center gap-2">
-          <Cookie className="w-4 h-4 text-[#2FAE5B]" strokeWidth={2} />
-          Мы используем cookie
-        </p>
+      <div className="titlebar">
+        <span className="flex items-center gap-1.5 truncate">
+          <Cookie className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2} />
+          COOKIES.SYS
+        </span>
         <button
           onClick={() => accept('necessary')}
           aria-label="Закрыть (принять только необходимые)"
-          className="text-white/30 hover:text-white/70 flex-shrink-0"
+          className="titlebar-btn"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3 h-3" />
         </button>
       </div>
 
-      <p className="text-white/60 text-xs leading-relaxed mb-3">
-        Для работы сайта используются технические cookie. С вашего согласия также подключается{' '}
-        <strong className="text-white/80">Яндекс.Метрика</strong> (включая Вебвизор) для анализа поведения
-        пользователей. Данные аналитики не передаются третьим лицам.
-      </p>
+      <div className="p-4">
+        <p className="text-ink-soft text-xs leading-relaxed mb-3">
+          Для работы сайта используются технические cookie. С вашего согласия также подключается{' '}
+          <strong className="text-ink">Яндекс.Метрика</strong> (включая Вебвизор) для анализа поведения
+          пользователей. Данные аналитики не передаются третьим лицам.
+        </p>
 
-      {showDetails && (
-        <div className="text-xs text-white/50 bg-white/5 rounded-xl p-3 mb-3 space-y-1.5">
-          <p><span className="text-white/70 font-medium">Необходимые cookie:</span> сессия, авторизация, защита от CSRF. Срок — до закрытия браузера / 30 дней.</p>
-          <p><span className="text-white/70 font-medium">Аналитика (Яндекс.Метрика):</span> переходы, клики, Вебвизор. Срок cookie — 1 год. Можно отключить в настройках браузера или через <a href="https://yandex.ru/support/metrika/general/opt-out.html" target="_blank" rel="noopener noreferrer" className="text-[#2FAE5B] hover:underline">Яндекс.Оптаут</a>.</p>
-          <p>
-            Подробнее —{' '}
-            <Link href="/cookies" className="text-[#2FAE5B] hover:underline">Политика использования cookie</Link>
-          </p>
+        {showDetails && (
+          <div className="field-95 text-xs text-ink-soft p-3 mb-3 space-y-1.5">
+            <p><span className="text-ink font-medium">Необходимые cookie:</span> сессия, авторизация, защита от CSRF. Срок — до закрытия браузера / 30 дней.</p>
+            <p><span className="text-ink font-medium">Аналитика (Яндекс.Метрика):</span> переходы, клики, Вебвизор. Срок cookie — 1 год. Можно отключить в настройках браузера или через <a href="https://yandex.ru/support/metrika/general/opt-out.html" target="_blank" rel="noopener noreferrer" className="text-title underline hover:no-underline">Яндекс.Оптаут</a>.</p>
+            <p>
+              Подробнее —{' '}
+              <Link href="/cookies" className="text-title underline hover:no-underline">Политика использования cookie</Link>
+            </p>
+          </div>
+        )}
+
+        <button
+          onClick={() => setShowDetails(!showDetails)}
+          className="text-title hover:underline text-xs mb-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
+        >
+          {showDetails ? 'Скрыть подробности' : 'Подробнее о cookie'}
+        </button>
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => accept('all')}
+            className="btn-95-primary flex-1 text-xs py-2.5 px-4"
+          >
+            Принять все
+          </button>
+          <button
+            onClick={() => accept('necessary')}
+            className="btn-95 flex-1 text-xs py-2.5 px-4"
+          >
+            Только необходимые
+          </button>
         </div>
-      )}
-
-      <button
-        onClick={() => setShowDetails(!showDetails)}
-        className="text-white/40 hover:text-white/60 text-xs mb-3 underline"
-      >
-        {showDetails ? 'Скрыть подробности' : 'Подробнее о cookie'}
-      </button>
-
-      <div className="flex gap-2">
-        <button
-          onClick={() => accept('all')}
-          className="flex-1 bg-[#2FAE5B] text-[#17130F] text-xs font-bold py-2.5 px-4 rounded-[2px] hover:bg-[#3FC96B] transition-colors"
-        >
-          Принять все
-        </button>
-        <button
-          onClick={() => accept('necessary')}
-          className="flex-1 bg-transparent border-2 border-white/20 text-white/70 text-xs font-semibold py-2.5 px-4 rounded-[2px] hover:bg-white/10 transition-colors"
-        >
-          Только необходимые
-        </button>
       </div>
     </div>
   )

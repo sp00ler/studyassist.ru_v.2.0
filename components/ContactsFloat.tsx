@@ -28,23 +28,28 @@ export function ContactsFloat() {
       {/* Expanded icons panel */}
       <div
         className={`
-          transition-all duration-250 origin-bottom-left
+          origin-bottom-left
           ${open
             ? 'opacity-100 scale-100 pointer-events-auto'
             : 'opacity-0 scale-95 pointer-events-none'
           }
         `}
       >
-        <div className="bg-[#211C15] border border-white/[.08] rounded-2xl p-3 shadow-[0_8px_32px_rgba(0,0,0,.5)]">
-          <p className="text-[10px] font-bold uppercase tracking-[1.2px] text-[#6B6255] mb-3 px-1">
-            Связаться с нами
-          </p>
-          <div className="flex flex-col gap-2">
-            <SocialContacts size="md" />
+        <div className="window pixel-shadow p-0 overflow-hidden">
+          <div className="titlebar">
+            <span>Контакты</span>
           </div>
-          <p className="text-[10px] text-[#6B6255]/70 mt-3 px-1 max-w-[180px] leading-snug">
-            Наведите на иконку — и увидите название
-          </p>
+          <div className="p-3">
+            <p className="text-[10px] font-bold uppercase tracking-[1.2px] text-ink-soft mb-3 px-1">
+              Связаться с нами
+            </p>
+            <div className="flex flex-col gap-2">
+              <SocialContacts size="md" />
+            </div>
+            <p className="text-[10px] text-ink-soft/70 mt-3 px-1 max-w-[180px] leading-snug">
+              Наведите на иконку — и увидите название
+            </p>
+          </div>
         </div>
       </div>
 
@@ -53,14 +58,9 @@ export function ContactsFloat() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? 'Закрыть контакты' : 'Написать нам'}
         aria-expanded={open}
-        className={`
-          w-12 h-12 rounded-2xl flex items-center justify-center
-          font-bold transition-all duration-200 shadow-lg
-          ${open
-            ? 'bg-white/10 border border-white/20 text-white/70 hover:bg-white/15'
-            : 'bg-[#2FAE5B] text-[#17130F] hover:bg-[#3FC96B] hover:shadow-[0_8px_24px_rgba(197,255,69,.3)] hover:-translate-y-0.5'
-          }
-        `}
+        className={`pixel-shadow w-12 h-12 flex items-center justify-center font-bold ${
+          open ? 'btn-95' : 'btn-95-primary'
+        }`}
       >
         {open ? <XIcon /> : <MessageCircleIcon />}
       </button>

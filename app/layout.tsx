@@ -9,12 +9,19 @@ import { ContactsFloat } from '@/components/ContactsFloat'
 import { YandexBrowserBanner } from '@/components/YandexBrowserBanner'
 import { MagicCursor } from '@/components/MagicCursor'
 
+const SITE_TITLE = 'StudyAssist — курсовые, дипломы, рефераты | Консультации'
+const SITE_DESCRIPTION =
+  'Помощь и консультации по курсовым, дипломным и рефератам. Профильный специалист, ответ за 30 минут, оплата после согласования. Конфиденциально.'
+
 export const metadata: Metadata = {
-  title: 'StudyAssist — Помощь студентам с учёбой | Курсовые, дипломные, рефераты',
-  description:
-    'Профессиональная помощь студентам: курсовые работы, дипломные, рефераты, лабораторные. Гарантия уникальности. Оплата после проверки. Быстро, качественно, конфиденциально.',
-  keywords:
-    'помощь студентам, написать курсовую, заказать курсовую работу, дипломная работа на заказ, реферат на заказ, лабораторная работа помощь, StudyAssist',
+  title: {
+    default: SITE_TITLE,
+    // No-op template: every route already writes its own full "X | StudyAssist"
+    // title, so this only supplies the fallback above — it must not append a
+    // second brand suffix.
+    template: '%s',
+  },
+  description: SITE_DESCRIPTION,
   authors: [{ name: 'StudyAssist' }],
   metadataBase: new URL(process.env.NEXTAUTH_URL || 'https://studyassist.ru'),
   openGraph: {
@@ -22,14 +29,13 @@ export const metadata: Metadata = {
     locale: 'ru_RU',
     url: process.env.NEXTAUTH_URL || 'https://studyassist.ru',
     siteName: 'StudyAssist',
-    title: 'StudyAssist — Помощь студентам с учёбой',
-    description:
-      'Профессиональная помощь студентам: курсовые, дипломные, рефераты. Гарантия уникальности. Оплата после проверки.',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'StudyAssist — Помощь студентам',
-    description: 'Курсовые, дипломные, рефераты. Гарантия уникальности.',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
   },
   icons: {
     icon: '/favicon.svg',
@@ -50,16 +56,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Vintage OS type: Pixelify Sans (display), Golos Text (body), JetBrains Mono
+            (prices/system captions). css2 serves Cyrillic subsets automatically for
+            families that support them (Pixelify Sans + Golos Text both do). */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Press+Start+2P&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans antialiased bg-[#17130F] text-[#F5F0E3] min-h-screen">
+      <body className="font-sans antialiased bg-desk text-ink min-h-screen">
         <MagicCursor />
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#2FAE5B] focus:text-[#17130F] focus:rounded-[2px] focus:text-sm focus:font-bold"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-chrome focus:text-ink focus:border focus:border-black focus:shadow-[inset_1px_1px_0_0_#fff,inset_-1px_-1px_0_0_#808080] focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:outline focus:outline-2 focus:outline-dotted focus:outline-offset-2 focus:outline-black"
         >
           Перейти к основному содержанию
         </a>

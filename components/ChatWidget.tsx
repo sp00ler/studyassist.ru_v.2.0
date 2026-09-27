@@ -150,12 +150,12 @@ export function ChatWidget() {
     return (
       <button
         onClick={openChat}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#2FAE5B] shadow-lg shadow-[#2FAE5B]/30 flex items-center justify-center hover:bg-[#3FC96B] hover:scale-105 active:scale-95 transition-all animate-pulse-ring"
+        className="btn-95-primary pixel-shadow fixed bottom-6 right-6 z-50 w-14 h-14 flex items-center justify-center"
         aria-label="Открыть чат поддержки"
       >
-        <MessageCircle className="w-6 h-6 text-[#17130F]" />
+        <MessageCircle className="w-6 h-6" />
         {unread > 0 && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold">
+          <span className="bevel-out absolute -top-2 -right-2 min-w-[20px] h-5 px-1 bg-danger text-white text-xs flex items-center justify-center font-bold">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
@@ -166,39 +166,34 @@ export function ChatWidget() {
   // ── Окно чата ─────────────────────────────────────────────────────────────────
   return (
     <div
-      className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/60"
+      className="window pixel-shadow fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col overflow-hidden"
       style={{ width: 'min(360px, calc(100vw - 1.5rem))', maxHeight: '85dvh' }}
     >
       {/* Шапка */}
-      <div className="bg-[#211C15] border-b border-white/[.06] px-4 py-3 flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-2.5">
-          <div className="relative">
-            <div className="w-8 h-8 rounded-full bg-[#2FAE5B]/10 border border-[#2FAE5B]/[.18] flex items-center justify-center">
-              <MessageCircle className="w-4 h-4 text-[#2FAE5B]" />
-            </div>
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#2FAE5B] rounded-full border-2 border-[#211C15]" />
-          </div>
-          <div>
-            <p className="text-[#F5F0E3] font-semibold text-sm leading-tight">Онлайн-поддержка</p>
-            <p className="text-[#6B6255] text-xs">Обычно отвечаем за 5–15 минут</p>
-          </div>
-        </div>
+      <div className="titlebar flex-shrink-0">
+        <span className="flex items-center gap-2 truncate">
+          <MessageCircle className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="truncate">Онлайн-поддержка</span>
+        </span>
         <button
           onClick={() => setView('bubble')}
-          className="text-[#6B6255] hover:text-[#F5F0E3] transition-colors p-1"
+          className="titlebar-btn"
           aria-label="Свернуть"
         >
-          <ChevronDown className="w-5 h-5" />
+          <ChevronDown className="w-3 h-3" />
         </button>
       </div>
+      <p className="bg-chrome text-ink-soft text-[11px] px-3 py-1 border-b border-chrome-shadow flex-shrink-0">
+        Обычно отвечаем за 5–15 минут
+      </p>
 
       {/* Форма первого обращения */}
       {view === 'form' && (
         <form
           onSubmit={handleStartChat}
-          className="bg-[#211C15] flex flex-col gap-3 p-4 overflow-y-auto flex-1"
+          className="bg-paper flex flex-col gap-3 p-4 overflow-y-auto flex-1"
         >
-          <p className="text-[#6B6255] text-xs leading-relaxed">
+          <p className="text-ink-soft text-xs leading-relaxed">
             Заполните форму — мы ответим здесь и свяжемся с вами удобным способом.
           </p>
 
@@ -207,13 +202,13 @@ export function ChatWidget() {
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Ваше имя (необязательно)"
-              className="w-full bg-white/5 border border-white/[.08] rounded-xl px-3 py-2.5 text-[#F5F0E3] text-sm placeholder-[#6B6255] focus:outline-none focus:border-[#2FAE5B]/70 transition-colors"
+              className="field-95 w-full px-3 py-2.5 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
             />
             <input
               value={contact}
               onChange={e => setContact(e.target.value)}
               placeholder="Email, телефон, Telegram, ВКонтакте..."
-              className="w-full bg-white/5 border border-white/[.08] rounded-xl px-3 py-2.5 text-[#F5F0E3] text-sm placeholder-[#6B6255] focus:outline-none focus:border-[#2FAE5B]/70 transition-colors"
+              className="field-95 w-full px-3 py-2.5 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
             />
             <textarea
               value={firstMsg}
@@ -221,24 +216,24 @@ export function ChatWidget() {
               placeholder="Ваш вопрос..."
               required
               rows={4}
-              className="w-full bg-white/5 border border-white/[.08] rounded-xl px-3 py-2.5 text-[#F5F0E3] text-sm placeholder-[#6B6255] focus:outline-none focus:border-[#2FAE5B]/70 transition-colors resize-none"
+              className="field-95 w-full px-3 py-2.5 text-sm resize-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
             />
           </div>
 
           {error && (
-            <p className="text-red-400 text-xs bg-red-500/10 rounded-lg px-3 py-2">{error}</p>
+            <p className="text-danger text-xs bg-danger/10 border border-danger px-3 py-2">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={submitting || !firstMsg.trim()}
-            className="bg-[#2FAE5B] hover:bg-[#3FC96B] disabled:opacity-50 disabled:cursor-not-allowed text-[#17130F] font-bold rounded-xl py-2.5 text-sm flex items-center justify-center gap-2 transition-colors"
+            className="btn-95-primary py-2.5 text-sm flex items-center justify-center gap-2"
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             Начать чат
           </button>
 
-          <p className="text-[#6B6255]/60 text-xs text-center">
+          <p className="text-ink-soft/70 text-xs text-center">
             Нажимая «Начать чат», вы соглашаетесь с политикой конфиденциальности
           </p>
         </form>
@@ -249,23 +244,23 @@ export function ChatWidget() {
         <>
           {/* Сообщения */}
           <div
-            className="bg-[#211C15] flex-1 overflow-y-auto p-4 space-y-2.5"
+            className="bg-paper flex-1 overflow-y-auto p-4 space-y-2.5"
             style={{ minHeight: 0, maxHeight: 380 }}
           >
             {/* Приветственное сообщение */}
             <div className="flex justify-start">
-              <div className="max-w-[85%] bg-white/8 rounded-2xl rounded-tl-sm px-3.5 py-2.5 text-sm text-white/90 border border-white/5">
-                Здравствуйте! Мы готовы ответить на ваши вопросы. Чем можем помочь? 😊
+              <div className="bevel-out max-w-[85%] bg-chrome px-3.5 py-2.5 text-sm text-ink">
+                Здравствуйте! Мы готовы ответить на ваши вопросы. Чем можем помочь?
               </div>
             </div>
 
             {messages.map(msg => (
               <div key={msg.id} className={`flex ${msg.fromAdmin ? 'justify-start' : 'justify-end'}`}>
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm break-words ${
+                  className={`bevel-out max-w-[85%] px-3.5 py-2.5 text-sm break-words ${
                     msg.fromAdmin
-                      ? 'bg-white/8 text-white/90 rounded-tl-sm border border-white/5'
-                      : 'bg-[#2FAE5B] text-[#17130F] rounded-tr-sm font-medium'
+                      ? 'bg-chrome text-ink'
+                      : 'bg-title text-white font-medium'
                   }`}
                 >
                   {msg.text}
@@ -276,10 +271,10 @@ export function ChatWidget() {
             {/* Индикатор ожидания ответа */}
             {messages.length > 0 && messages[messages.length - 1].fromAdmin === false && (
               <div className="flex justify-start">
-                <div className="bg-white/5 rounded-2xl rounded-tl-sm px-4 py-2.5 flex gap-1 items-center">
-                  <span className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="bevel-out bg-chrome px-4 py-2.5 flex gap-1 items-center">
+                  <span className="w-1.5 h-1.5 bg-ink-soft animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 bg-ink-soft animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 bg-ink-soft animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             )}
@@ -290,14 +285,14 @@ export function ChatWidget() {
           {/* Поле ввода */}
           <form
             onSubmit={handleSend}
-            className="bg-[#211C15] border-t border-white/[.06] flex gap-2 p-3 flex-shrink-0"
+            className="bg-chrome border-t border-chrome-shadow flex gap-2 p-3 flex-shrink-0"
           >
             <input
               ref={inputRef}
               value={chatInput}
               onChange={e => setChatInput(e.target.value)}
               placeholder="Написать сообщение..."
-              className="flex-1 bg-white/5 border border-white/[.08] rounded-xl px-3 py-2 text-[#F5F0E3] text-sm placeholder-[#6B6255] focus:outline-none focus:border-[#2FAE5B]/70 transition-colors"
+              className="field-95 flex-1 px-3 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
               onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
@@ -308,7 +303,7 @@ export function ChatWidget() {
             <button
               type="submit"
               disabled={sending || !chatInput.trim()}
-              className="bg-[#2FAE5B] hover:bg-[#3FC96B] disabled:opacity-40 disabled:cursor-not-allowed text-[#17130F] rounded-xl w-10 flex items-center justify-center flex-shrink-0 transition-colors"
+              className="btn-95-primary w-10 flex items-center justify-center flex-shrink-0"
               aria-label="Отправить"
             >
               {sending

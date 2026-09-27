@@ -37,10 +37,6 @@ const config: Config = {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
         },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
         popover: {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
@@ -61,16 +57,43 @@ const config: Config = {
           muted:    '#6B6255',
           danger:   '#C0392B',
         },
+        // "Vintage OS" (Win95/98) tokens — shared brief, use these Tailwind
+        // names everywhere, never raw hex. See scratchpad/BRIEF.md.
+        desk:          'rgb(var(--desk) / <alpha-value>)',
+        chrome:        'rgb(var(--chrome) / <alpha-value>)',
+        'chrome-light':  'rgb(var(--chrome-light) / <alpha-value>)',
+        'chrome-dark':   'rgb(var(--chrome-dark) / <alpha-value>)',
+        'chrome-shadow': 'rgb(var(--chrome-shadow) / <alpha-value>)',
+        paper:         'rgb(var(--paper) / <alpha-value>)',
+        ink:           'rgb(var(--ink) / <alpha-value>)',
+        'ink-soft':      'rgb(var(--ink-soft) / <alpha-value>)',
+        title:         'rgb(var(--title) / <alpha-value>)',
+        'title-alt':     'rgb(var(--title-alt) / <alpha-value>)',
+        accent:        'rgb(var(--accent) / <alpha-value>)',
+        success:       'rgb(var(--success) / <alpha-value>)',
+        warning:       'rgb(var(--warning) / <alpha-value>)',
+        danger:        'rgb(var(--danger) / <alpha-value>)',
       },
       borderRadius: {
+        // Vintage OS shape rule: radius 0 everywhere. Every key kept so
+        // existing `rounded-*` classes across the app keep compiling —
+        // they now render flat instead of erroring.
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 1px)',
         sm: 'calc(var(--radius) - 1px)',
+        none: '0px',
+        DEFAULT: '0px',
+        xl: '0px',
+        '2xl': '0px',
+        '3xl': '0px',
+        full: '0px',
       },
       fontFamily: {
-        sans:       ["'Plus Jakarta Sans'", 'system-ui', 'sans-serif'],
+        // Vintage OS type: display = Pixelify Sans (headings/labels only),
+        // sans = Golos Text (body), mono = JetBrains Mono (unchanged value).
+        sans:       ["'Golos Text'", 'system-ui', 'sans-serif'],
+        display:    ["'Pixelify Sans'", "'Unbounded'", 'sans-serif'],
         unbounded:  ['Unbounded', 'sans-serif'],
-        display:    ['Unbounded', 'sans-serif'],
         pixel:      ["'Press Start 2P'", "'Unbounded'", 'monospace'],
         mono:       ["'JetBrains Mono'", 'Consolas', 'monospace'],
         jakarta:    ["'Plus Jakarta Sans'", 'system-ui', 'sans-serif'],

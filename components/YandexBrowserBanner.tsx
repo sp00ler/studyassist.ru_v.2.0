@@ -41,8 +41,8 @@ export function YandexBrowserBanner() {
       ref={ref}
       role="banner"
       aria-label="Реклама Яндекс Браузера"
-      className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between gap-3 px-4 py-2.5
-        bg-gradient-to-r from-[#FF6600] to-[#FFCC00] text-[#1A1A1A] shadow-lg text-sm font-medium"
+      className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between gap-3 px-4 py-2
+        bg-accent text-ink border-b border-chrome-shadow shadow-[inset_0_-1px_0_0_#fff] text-sm font-medium"
     >
       <div className="flex items-center gap-2 flex-1 min-w-0">
         <svg viewBox="0 0 24 24" className="w-5 h-5 flex-shrink-0" fill="currentColor" aria-hidden="true">
@@ -59,13 +59,16 @@ export function YandexBrowserBanner() {
           target="_blank"
           rel="noopener noreferrer"
           onClick={dismiss}
-          className="whitespace-nowrap bg-[#1A1A1A] text-white text-xs font-semibold
-            px-3 py-1.5 rounded-full hover:bg-[#333] transition-colors"
+          className="btn-95 whitespace-nowrap text-xs font-semibold px-3 py-1"
         >
           Скачать
         </a>
-        <button onClick={dismiss} aria-label="Закрыть" className="hover:opacity-60 transition-opacity">
-          <X className="w-4 h-4" />
+        <button
+          onClick={dismiss}
+          aria-label="Закрыть"
+          className="titlebar-btn bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
+        >
+          <X className="w-3 h-3" />
         </button>
       </div>
     </div>
