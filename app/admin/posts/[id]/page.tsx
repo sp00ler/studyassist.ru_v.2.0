@@ -72,23 +72,22 @@ export default function EditPostPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
-      <Loader2 className="w-6 h-6 text-[#C5FF45] animate-spin" />
+      <Loader2 className="w-6 h-6 text-title animate-spin" />
     </div>
   )
 
   return (
-    <div className="max-w-3xl">
-      <div className="flex items-center gap-3 mb-6">
-        <Link href="/admin/posts">
-          <Button variant="ghost" size="sm" className="gap-2 text-white/50">
-            <ArrowLeft className="w-4 h-4" /> Назад
-          </Button>
-        </Link>
-        <h1 className="text-xl font-bold text-white">Редактировать публикацию</h1>
+    <div className="window pixel-shadow max-w-3xl">
+      <div className="titlebar">
+        <h1 className="truncate">Редактировать публикацию</h1>
       </div>
+      <div className="bg-paper p-4 sm:p-6">
+      <Link href="/admin/posts" className="inline-flex items-center gap-2 text-ink-soft hover:text-ink text-sm mb-6">
+        <ArrowLeft className="w-4 h-4" /> Назад
+      </Link>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-5">
+        <div className="bevel-out bg-chrome/20 p-6 space-y-5">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="mb-2 block">Тип</Label>
@@ -104,10 +103,8 @@ export default function EditPostPage() {
               <button
                 type="button"
                 onClick={() => set('published', !form.published)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all w-full justify-center ${
-                  form.published
-                    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                    : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'
+                className={`btn-95 flex items-center gap-2 px-4 py-2 text-sm font-medium w-full justify-center ${
+                  form.published ? 'bg-success/15 text-success' : 'text-ink-soft'
                 }`}
               >
                 {form.published ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -138,13 +135,13 @@ export default function EditPostPage() {
         </div>
 
         {/* WYSIWYG Content editor */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+        <div className="bevel-out bg-chrome/20 p-6">
           <div className="flex items-center justify-between mb-3">
             <Label>Содержимое *</Label>
             <button
               type="button"
               onClick={() => setPreviewMode((v) => !v)}
-              className="text-xs text-white/40 hover:text-white/70 flex items-center gap-1 transition-colors"
+              className="text-xs text-ink-soft hover:text-ink flex items-center gap-1 transition-colors"
             >
               {previewMode ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
               {previewMode ? 'Редактор' : 'Превью'}
@@ -153,7 +150,7 @@ export default function EditPostPage() {
 
           {previewMode ? (
             <div
-              className="prose-sa min-h-[320px] bg-[#07070E] border border-white/10 rounded-xl px-4 py-3"
+              className="prose-sa min-h-[320px] field-95 px-4 py-3"
               dangerouslySetInnerHTML={{ __html: form.content }}
             />
           ) : (
@@ -174,6 +171,7 @@ export default function EditPostPage() {
           </Link>
         </div>
       </form>
+      </div>
     </div>
   )
 }

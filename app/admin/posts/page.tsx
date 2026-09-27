@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { Plus, Pencil, Trash2, Eye, EyeOff, Loader2, BookOpen, Newspaper } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { formatDate } from '@/lib/utils'
+import { formatDate, cn } from '@/lib/utils'
 
 interface Post {
   id: string
@@ -60,12 +59,13 @@ export default function AdminPostsPage() {
   }
 
   return (
-    <div>
+    <div className="window pixel-shadow">
+      <div className="titlebar">
+        <h1 className="truncate">Блог и новости</h1>
+      </div>
+      <div className="bg-paper p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Блог и новости</h1>
-          <p className="text-white/50 text-sm mt-1">Управление публикациями</p>
-        </div>
+        <p className="text-ink-soft text-sm">Управление публикациями</p>
         <Link href="/admin/posts/new">
           <Button className="gap-2">
             <Plus className="w-4 h-4" />
@@ -75,16 +75,15 @@ export default function AdminPostsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-white/5 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 mb-6 bg-chrome p-1 w-fit border border-chrome-shadow">
         {TYPE_TABS.map((t) => (
           <button
             key={t.value}
             onClick={() => setTab(t.value as typeof tab)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-              tab === t.value
-                ? 'bg-[#6C3EF4]/20 text-white border border-[#6C3EF4]/30'
-                : 'text-white/50 hover:text-white'
-            }`}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all',
+              tab === t.value ? 'btn-95-primary' : 'text-ink-soft hover:text-ink'
+            )}
           >
             {t.icon && <t.icon className="w-3.5 h-3.5" />}
             {t.label}
@@ -94,12 +93,12 @@ export default function AdminPostsPage() {
 
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="w-6 h-6 text-[#6C3EF4] animate-spin" />
+          <Loader2 className="w-6 h-6 text-title animate-spin" />
         </div>
       ) : posts.length === 0 ? (
-        <div className="text-center py-16 bg-white/5 rounded-2xl border border-white/10">
-          <BookOpen className="w-12 h-12 text-white/20 mx-auto mb-3" />
-          <p className="text-white/40">Публикаций нет</p>
+        <div className="text-center py-16 border border-chrome-dark bg-chrome/20">
+          <BookOpen className="w-12 h-12 text-ink-soft mx-auto mb-3" />
+          <p className="text-ink-soft">Публикаций нет</p>
           <Link href="/admin/posts/new">
             <Button variant="outline" className="mt-4 gap-2">
               <Plus className="w-4 h-4" /> Создать первую
@@ -108,35 +107,34 @@ export default function AdminPostsPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          {posts.map((post, i) => (
-            <motion.div
+          {posts.map((post) => (
+            <div
               key={post.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
-              className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 flex items-center gap-4"
+              className="bevel-out bg-chrome/20 px-5 py-4 flex items-center gap-4"
             >
               {/* Type badge */}
-              <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg flex-shrink-0 ${
+              <span className={cn(
+                'text-[10px] font-bold uppercase tracking-wider px-2 py-1 border flex-shrink-0',
                 post.type === 'blog'
-                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                  : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-              }`}>
+                  ? 'bg-title/10 text-title border-title'
+                  : 'bg-title-alt/10 text-ink border-title-alt'
+              )}>
                 {post.type === 'blog' ? 'Блог' : 'Новость'}
               </span>
 
               {/* Title */}
               <div className="flex-1 min-w-0">
-                <p className="text-white font-medium truncate">{post.title}</p>
-                <p className="text-white/40 text-xs mt-0.5">/{post.slug} · {formatDate(post.createdAt)}</p>
+                <p className="text-ink font-medium truncate">{post.title}</p>
+                <p className="text-ink-soft text-xs mt-0.5">/{post.slug} · {formatDate(post.createdAt)}</p>
               </div>
 
               {/* Published */}
-              <span className={`text-xs px-2 py-1 rounded-lg border flex-shrink-0 ${
+              <span className={cn(
+                'text-xs px-2 py-1 border flex-shrink-0',
                 post.published
-                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                  : 'bg-white/5 text-white/30 border-white/10'
-              }`}>
+                  ? 'bg-success/15 text-success border-success'
+                  : 'bg-chrome text-ink-soft border-chrome-shadow'
+              )}>
                 {post.published ? 'Опубликовано' : 'Черновик'}
               </span>
 
@@ -145,29 +143,30 @@ export default function AdminPostsPage() {
                 <button
                   onClick={() => togglePublish(post)}
                   title={post.published ? 'Снять с публикации' : 'Опубликовать'}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                  className="btn-95 w-9 h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:w-8 sm:h-8 flex items-center justify-center"
                 >
                   {post.published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
                 <Link href={`/admin/posts/${post.id}`}>
-                  <button className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all">
+                  <button className="btn-95 w-9 h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:w-8 sm:h-8 flex items-center justify-center">
                     <Pencil className="w-4 h-4" />
                   </button>
                 </Link>
                 <button
                   onClick={() => deletePost(post.id)}
                   disabled={deleting === post.id}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                  className="btn-95 w-9 h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-danger hover:text-white"
                 >
                   {deleting === post.id
                     ? <Loader2 className="w-4 h-4 animate-spin" />
                     : <Trash2 className="w-4 h-4" />}
                 </button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}
+      </div>
     </div>
   )
 }

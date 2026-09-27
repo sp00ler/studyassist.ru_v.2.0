@@ -27,7 +27,7 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
       }),
       Link.configure({
         openOnClick: false,
-        HTMLAttributes: { class: 'text-[#C5FF45] underline' },
+        HTMLAttributes: { class: 'text-title underline' },
       }),
     ],
     content: value,
@@ -52,7 +52,7 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
   if (!editor) return null
 
   const btn = (active: boolean) =>
-    `p-1.5 rounded-lg transition-colors ${active ? 'bg-[#C5FF45]/20 text-[#C5FF45]' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`
+    `btn-95 p-1.5 min-w-[32px] min-h-[32px] flex items-center justify-center ${active ? 'bg-title text-white' : 'text-ink-soft'}`
 
   const setLink = () => {
     const prev = editor.getAttributes('link').href
@@ -63,9 +63,9 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
   }
 
   return (
-    <div className="bg-[#07070E] border border-white/10 rounded-xl overflow-hidden">
+    <div className="field-95 overflow-hidden">
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-3 py-2 border-b border-white/10 flex-wrap">
+      <div className="flex items-center gap-1 px-3 py-2 border-b border-chrome-shadow bg-chrome flex-wrap">
         <button type="button" className={btn(editor.isActive('bold'))}
           onClick={() => editor.chain().focus().toggleBold().run()} title="Жирный">
           <Bold className="w-4 h-4" />
@@ -75,7 +75,7 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
           <Italic className="w-4 h-4" />
         </button>
 
-        <div className="w-px h-5 bg-white/10 mx-1" />
+        <div className="w-px h-5 bg-chrome-dark mx-1" />
 
         <button type="button" className={btn(editor.isActive('heading', { level: 2 }))}
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} title="Заголовок H2">
@@ -86,7 +86,7 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
           <Heading3 className="w-4 h-4" />
         </button>
 
-        <div className="w-px h-5 bg-white/10 mx-1" />
+        <div className="w-px h-5 bg-chrome-dark mx-1" />
 
         <button type="button" className={btn(editor.isActive('bulletList'))}
           onClick={() => editor.chain().focus().toggleBulletList().run()} title="Список">
@@ -97,7 +97,7 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
           <ListOrdered className="w-4 h-4" />
         </button>
 
-        <div className="w-px h-5 bg-white/10 mx-1" />
+        <div className="w-px h-5 bg-chrome-dark mx-1" />
 
         <button type="button" className={btn(editor.isActive('blockquote'))}
           onClick={() => editor.chain().focus().toggleBlockquote().run()} title="Цитата">
@@ -116,7 +116,7 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
           <Link2 className="w-4 h-4" />
         </button>
 
-        <div className="w-px h-5 bg-white/10 mx-1" />
+        <div className="w-px h-5 bg-chrome-dark mx-1" />
 
         <button type="button" className={btn(false)}
           onClick={() => editor.chain().focus().undo().run()}
@@ -131,7 +131,7 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
       </div>
 
       {/* Editor area */}
-      <div className="px-4 py-3">
+      <div className="px-4 py-3 bg-paper">
         <EditorContent editor={editor} />
       </div>
     </div>

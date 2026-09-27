@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Loader2, FileText, User, Calendar, DollarSign, MessageSquare, Link2, Trash2, Upload, X, Download } from 'lucide-react'
+import { Loader2, FileText, User, Calendar, DollarSign, MessageSquare, Link2, Trash2, Upload, X, Download, RefreshCw } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { formatDate, formatOrderId, getOrderTypeLabel, getStatusColor, getStatusLabel } from '@/lib/utils'
+import { formatDate, formatOrderId, getOrderTypeLabel, getStatusLabel } from '@/lib/utils'
 
 function toFileUrl(p: string) {
   if (!p) return p
@@ -181,7 +181,7 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#6C3EF4]" />
+            <FileText className="w-5 h-5 text-title" />
             Заявка {formatOrderId(order.id)}
           </DialogTitle>
         </DialogHeader>
@@ -189,30 +189,30 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
         <div className="space-y-6">
           {/* Order info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-white/5 rounded-xl p-4">
-              <p className="text-white/40 text-xs mb-1">Тип работы</p>
-              <p className="text-white font-medium">{getOrderTypeLabel(order.type)}</p>
+            <div className="bevel-out bg-chrome/20 p-4">
+              <p className="text-ink-soft text-xs mb-1">Тип работы</p>
+              <p className="text-ink font-medium">{getOrderTypeLabel(order.type)}</p>
             </div>
-            <div className="bg-white/5 rounded-xl p-4">
-              <p className="text-white/40 text-xs mb-1">Предмет</p>
-              <p className="text-white font-medium">{order.subject}</p>
+            <div className="bevel-out bg-chrome/20 p-4">
+              <p className="text-ink-soft text-xs mb-1">Предмет</p>
+              <p className="text-ink font-medium">{order.subject}</p>
             </div>
-            <div className="bg-white/5 rounded-xl p-4">
-              <p className="text-white/40 text-xs mb-1 flex items-center gap-1">
+            <div className="bevel-out bg-chrome/20 p-4">
+              <p className="text-ink-soft text-xs mb-1 flex items-center gap-1">
                 <Calendar className="w-3 h-3" /> Дедлайн
               </p>
-              <p className="text-amber-400 font-medium">{formatDate(order.deadline)}</p>
+              <p className="text-ink font-medium font-mono">{formatDate(order.deadline)}</p>
             </div>
-            <div className="bg-white/5 rounded-xl p-4">
-              <p className="text-white/40 text-xs mb-1">Дата создания</p>
-              <p className="text-white/70">{formatDate(order.createdAt)}</p>
+            <div className="bevel-out bg-chrome/20 p-4">
+              <p className="text-ink-soft text-xs mb-1">Дата создания</p>
+              <p className="text-ink-soft">{formatDate(order.createdAt)}</p>
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <Label className="mb-2 block text-white/60">Описание задания</Label>
-            <div className="bg-white/5 rounded-xl p-4 text-white/80 text-sm leading-relaxed whitespace-pre-wrap">
+            <Label className="mb-2 block text-ink-soft">Описание задания</Label>
+            <div className="bevel-out bg-chrome/20 p-4 text-ink text-sm leading-relaxed whitespace-pre-wrap">
               {order.description}
             </div>
           </div>
@@ -220,7 +220,7 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
           {/* Client files */}
           {files.length > 0 && (
             <div>
-              <Label className="mb-2 block text-white/60">Файлы от заказчика ({files.length})</Label>
+              <Label className="mb-2 block text-ink-soft">Файлы от заказчика ({files.length})</Label>
               <div className="space-y-2">
                 {files.map((f, i) => (
                   <a
@@ -228,7 +228,7 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
                     href={toFileUrl(f)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-white/5 hover:bg-white/10 rounded-lg px-3 py-2 text-sm text-[#6C3EF4] transition-colors"
+                    className="btn-95 flex items-center gap-2 px-3 py-2 text-sm text-title"
                   >
                     <FileText className="w-4 h-4" />
                     {f.split('/').pop()}
@@ -240,27 +240,27 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
 
           {/* Revision request from client */}
           {(order.revisionNote || revisionFiles.length > 0) && (
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
-              <p className="text-amber-400 text-xs mb-3 font-semibold flex items-center gap-1">
-                🔄 Запрос на доработку от клиента
+            <div className="bevel-out bg-warning/10 p-4">
+              <p className="text-ink text-xs mb-3 font-semibold flex items-center gap-1">
+                <RefreshCw className="w-3.5 h-3.5 text-warning" /> Запрос на доработку от клиента
               </p>
               {order.revisionNote && (
-                <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap mb-3">
+                <p className="text-ink text-sm leading-relaxed whitespace-pre-wrap mb-3">
                   {order.revisionNote}
                 </p>
               )}
               {revisionFiles.length > 0 && (
                 <div className="space-y-1.5">
-                  <p className="text-white/40 text-xs">Прикреплено файлов: {revisionFiles.length}</p>
+                  <p className="text-ink-soft text-xs">Прикреплено файлов: {revisionFiles.length}</p>
                   {revisionFiles.map((f, i) => (
                     <a
                       key={i}
                       href={toFileUrl(f)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-amber-400 hover:text-amber-300 text-sm transition-colors"
+                      className="flex items-center gap-2 text-ink hover:text-title text-sm transition-colors"
                     >
-                      <Download className="w-3.5 h-3.5" />
+                      <Download className="w-3.5 h-3.5 text-warning" />
                       {f.split('/').pop()}
                     </a>
                   ))}
@@ -271,28 +271,28 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
 
           {/* Client info */}
           {(order.user || order.clientEmail || order.clientName) && (
-            <div className="bg-white/5 rounded-xl p-4">
-              <p className="text-white/40 text-xs mb-3 flex items-center gap-1">
+            <div className="bevel-out bg-chrome/20 p-4">
+              <p className="text-ink-soft text-xs mb-3 flex items-center gap-1">
                 <User className="w-3 h-3" /> Клиент
-                {!order.user && <span className="ml-1 text-white/20">(гость)</span>}
+                {!order.user && <span className="ml-1 text-ink-soft">(гость)</span>}
               </p>
               <div className="space-y-1 text-sm">
-                <p className="text-white">{order.user?.name || order.clientName || 'Без имени'}</p>
-                <p className="text-white/60">{order.user?.email || order.clientEmail}</p>
+                <p className="text-ink">{order.user?.name || order.clientName || 'Без имени'}</p>
+                <p className="text-ink-soft">{order.user?.email || order.clientEmail}</p>
                 {(order.user?.phone || order.clientPhone) && (
-                  <p className="text-white/60">{order.user?.phone || order.clientPhone}</p>
+                  <p className="text-ink-soft">{order.user?.phone || order.clientPhone}</p>
                 )}
                 {order.user?.telegramId && (
-                  <p className="text-white/40">Telegram ID: {order.user.telegramId}</p>
+                  <p className="text-ink-soft">Telegram ID: {order.user.telegramId}</p>
                 )}
               </div>
             </div>
           )}
 
           {/* Result files section */}
-          <div className="border-t border-white/10 pt-4">
-            <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
-              <Download className="w-4 h-4 text-emerald-400" />
+          <div className="border-t border-chrome-dark pt-4">
+            <h3 className="font-display text-sm text-ink mb-3 flex items-center gap-2">
+              <Download className="w-4 h-4 text-success" />
               Файлы готовой работы
             </h3>
 
@@ -300,19 +300,19 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
             {resultFiles.length > 0 && (
               <div className="space-y-2 mb-3">
                 {resultFiles.map((f, i) => (
-                  <div key={i} className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
-                    <FileText className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <div key={i} className="bevel-out bg-success/10 flex items-center gap-2 px-3 py-2">
+                    <FileText className="w-4 h-4 text-success flex-shrink-0" />
                     <a
                       href={toFileUrl(f)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-emerald-300 text-sm hover:underline flex-1 truncate"
+                      className="text-ink text-sm hover:text-title hover:underline flex-1 truncate"
                     >
                       {f.split('/').pop()}
                     </a>
                     <button
                       onClick={() => handleDeleteResultFile(i)}
-                      className="text-white/30 hover:text-red-400 transition-colors ml-auto flex-shrink-0"
+                      className="text-ink-soft hover:text-danger transition-colors ml-auto flex-shrink-0"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -324,12 +324,12 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
             {/* Upload new result files */}
             <div className="space-y-3">
               <div
-                className="border-2 border-dashed border-white/20 rounded-xl p-4 cursor-pointer hover:border-emerald-500/40 transition-colors text-center"
+                className="bevel-in p-4 cursor-pointer text-center"
                 onClick={() => resultFileInputRef.current?.click()}
               >
-                <Upload className="w-6 h-6 text-white/30 mx-auto mb-2" />
-                <p className="text-white/40 text-sm">Нажмите для выбора файлов готовой работы</p>
-                <p className="text-white/20 text-xs mt-1">После загрузки статус изменится на «Завершена» и клиент получит уведомление</p>
+                <Upload className="w-6 h-6 text-ink-soft mx-auto mb-2" />
+                <p className="text-ink-soft text-sm">Нажмите для выбора файлов готовой работы</p>
+                <p className="text-ink-soft text-xs mt-1">После загрузки статус изменится на «Завершена» и клиент получит уведомление</p>
               </div>
               <input
                 ref={resultFileInputRef}
@@ -345,12 +345,12 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
               {selectedResultFiles.length > 0 && (
                 <div className="space-y-1.5">
                   {selectedResultFiles.map((f, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2 text-sm">
-                      <FileText className="w-3.5 h-3.5 text-white/40" />
-                      <span className="text-white/70 flex-1 truncate">{f.name}</span>
+                    <div key={i} className="bevel-out bg-chrome/20 flex items-center gap-2 px-3 py-2 text-sm">
+                      <FileText className="w-3.5 h-3.5 text-ink-soft" />
+                      <span className="text-ink flex-1 truncate">{f.name}</span>
                       <button
                         onClick={() => setSelectedResultFiles(prev => prev.filter((_, idx) => idx !== i))}
-                        className="text-white/30 hover:text-red-400"
+                        className="text-ink-soft hover:text-danger"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -359,7 +359,7 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
                   <Button
                     onClick={handleUploadResultFiles}
                     disabled={resultUploadLoading}
-                    className="w-full gap-2 bg-emerald-600 hover:bg-emerald-500 text-white"
+                    className="w-full gap-2"
                   >
                     {resultUploadLoading
                       ? <Loader2 className="w-4 h-4 animate-spin" />
@@ -373,8 +373,8 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
           </div>
 
           {/* Admin controls */}
-          <div className="border-t border-white/10 pt-4 space-y-4">
-            <h3 className="text-white font-semibold">Управление заявкой</h3>
+          <div className="border-t border-chrome-dark pt-4 space-y-4">
+            <h3 className="font-display text-sm text-ink">Управление заявкой</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -417,12 +417,12 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
 
             {/* Payment link */}
             {order.paymentLink && (
-              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3">
-                <p className="text-emerald-400 text-xs mb-1 flex items-center gap-1">
-                  <Link2 className="w-3 h-3" /> Ссылка оплаты создана
+              <div className="bevel-out bg-success/10 p-3">
+                <p className="text-ink text-xs mb-1 flex items-center gap-1">
+                  <Link2 className="w-3 h-3 text-success" /> Ссылка оплаты создана
                 </p>
                 <a href={order.paymentLink} target="_blank" rel="noopener noreferrer"
-                  className="text-emerald-300 text-xs break-all hover:underline">
+                  className="text-ink text-xs break-all hover:text-title hover:underline">
                   {order.paymentLink}
                 </a>
               </div>
@@ -432,8 +432,8 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
               <Button
                 onClick={handleGeneratePaymentLink}
                 disabled={paymentLoading || !price}
-                variant="outline"
-                className="gap-2 flex-1 border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                variant="amber"
+                className="gap-2 flex-1"
               >
                 {paymentLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <DollarSign className="w-4 h-4" />}
                 Сформировать оплату
@@ -442,8 +442,8 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                 Сохранить
               </Button>
-              <Button onClick={handleDelete} disabled={deleteLoading} variant="outline"
-                className="gap-2 border-red-500/30 text-red-400 hover:bg-red-500/10">
+              <Button onClick={handleDelete} disabled={deleteLoading} variant="destructive"
+                className="gap-2">
                 {deleteLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                 Удалить
               </Button>

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { X, FileText, Calendar, Tag, MessageSquare, CreditCard, ExternalLink, Download, Upload, Loader2, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { formatDate, formatPrice, formatOrderId, getOrderTypeLabel, getStatusLabel, getStatusColor } from '@/lib/utils'
+import { formatDate, formatPrice, formatOrderId, getOrderTypeLabel, getStatusLabel } from '@/lib/utils'
 
 function toFileUrl(p: string) {
   if (!p) return p
@@ -12,6 +12,20 @@ function toFileUrl(p: string) {
   return p
 }
 import { PaymentModal } from './PaymentModal'
+
+// Win95 token classes for order status — see OrdersTable.tsx for rationale
+// (lib/utils.ts getStatusColor() is legacy and out of this migration's scope).
+const STATUS_TOKEN_CLASSES: Record<string, string> = {
+  new: 'bg-title/10 text-title border-title',
+  in_progress: 'bg-title/10 text-title border-title',
+  ready_for_review: 'bg-success/15 text-success border-success',
+  awaiting_payment: 'bg-warning/15 text-warning border-warning',
+  paid: 'bg-success/15 text-success border-success',
+  completed: 'bg-success/15 text-success border-success',
+  revision: 'bg-warning/15 text-warning border-warning',
+  cancelled: 'bg-danger/15 text-danger border-danger',
+}
+const getStatusToken = (status: string) => STATUS_TOKEN_CLASSES[status] || 'bg-chrome text-ink-soft border-chrome-shadow'
 
 interface OrderDetail {
   id: string
@@ -103,250 +117,255 @@ export function OrderViewModal({ orderId, onClose }: OrderViewModalProps) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-ink/60 z-50 flex items-center justify-center p-4"
         onClick={onClose}
       >
         <div
-          className="bg-[#0f1117] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
+          className="window pixel-shadow w-full max-w-2xl max-h-[90vh] overflow-y-auto"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-white/10">
-            <div>
-              <h2 className="text-white font-semibold text-lg">Заявка {order ? formatOrderId(order.id) : '...'}</h2>
-              {order && (
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold border mt-1 ${getStatusColor(order.status)}`}>
-                  {getStatusLabel(order.status)}
-                </span>
-              )}
-            </div>
-            <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
-              <X className="w-5 h-5" />
+          <div className="titlebar sticky top-0 z-10">
+            <span className="truncate">Заявка {order ? formatOrderId(order.id) : '...'}</span>
+            <button onClick={onClose} className="titlebar-btn hover:bg-danger hover:text-white" aria-label="Закрыть">
+              <X className="w-3 h-3" />
             </button>
           </div>
 
-          {loading ? (
-            <div className="p-12 text-center text-white/40">Загрузка...</div>
-          ) : order ? (
-            <div className="p-6 space-y-5">
-              {/* Основная информация */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/5 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-white/40 text-xs mb-1">
-                    <Tag className="w-3.5 h-3.5" /> Тип работы
-                  </div>
-                  <p className="text-white text-sm font-medium">{getOrderTypeLabel(order.type)}</p>
-                </div>
-                <div className="bg-white/5 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-white/40 text-xs mb-1">
-                    <Calendar className="w-3.5 h-3.5" /> Дедлайн
-                  </div>
-                  <p className="text-white text-sm font-medium">{formatDate(order.deadline)}</p>
-                </div>
+          <div className="bg-paper">
+            {order && (
+              <div className="px-6 pt-4">
+                <span className={`inline-flex items-center px-2.5 py-0.5 text-xs font-semibold border ${getStatusToken(order.status)}`}>
+                  {getStatusLabel(order.status)}
+                </span>
               </div>
+            )}
 
-              {/* Предмет */}
-              <div className="bg-white/5 rounded-xl p-4">
-                <p className="text-white/40 text-xs mb-1">Предмет / Тема</p>
-                <p className="text-white text-sm">{order.subject}</p>
-              </div>
-
-              {/* Описание */}
-              {order.description && (
-                <div className="bg-white/5 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-white/40 text-xs mb-2">
-                    <FileText className="w-3.5 h-3.5" /> Описание задания
-                  </div>
-                  <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">{order.description}</p>
-                </div>
-              )}
-
-              {/* Исходные файлы */}
-              {files.length > 0 && (
-                <div className="bg-white/5 rounded-xl p-4">
-                  <p className="text-white/40 text-xs mb-2">Прикреплённые файлы</p>
-                  <div className="space-y-1.5">
-                    {files.map((f, i) => (
-                      <a
-                        key={i}
-                        href={toFileUrl(f)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm transition-colors"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        Файл {i + 1}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Готовые файлы для скачивания */}
-              {resultFiles.length > 0 && (
-                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-emerald-400 text-sm font-semibold mb-3">
-                    <Download className="w-4 h-4" />
-                    Готовая работа — доступна для скачивания
-                  </div>
-                  <div className="space-y-2">
-                    {resultFiles.map((f, i) => (
-                      <a
-                        key={i}
-                        href={toFileUrl(f)}
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg px-3 py-2 text-sm text-emerald-300 transition-colors"
-                      >
-                        <FileText className="w-4 h-4 flex-shrink-0" />
-                        <span className="flex-1 truncate">{f.split('/').pop()}</span>
-                        <Download className="w-3.5 h-3.5 flex-shrink-0" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Заметка от администратора */}
-              {order.adminNote && (
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-blue-400 text-xs mb-2">
-                    <MessageSquare className="w-3.5 h-3.5" /> Сообщение от администратора
-                  </div>
-                  <p className="text-white/80 text-sm leading-relaxed">{order.adminNote}</p>
-                </div>
-              )}
-
-              {/* Ранее отправленный запрос на доработку */}
-              {order.status === 'revision' && order.revisionNote && (
-                <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-orange-400 text-xs font-semibold mb-2">
-                    <RefreshCw className="w-3.5 h-3.5" /> Ваш запрос на доработку отправлен
-                  </div>
-                  <p className="text-white/70 text-sm leading-relaxed whitespace-pre-wrap">{order.revisionNote}</p>
-                </div>
-              )}
-
-              {/* Уведомление об успешной отправке доработки */}
-              {revisionSuccess && (
-                <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4 text-center">
-                  <p className="text-orange-400 font-semibold">✅ Запрос на доработку отправлен!</p>
-                  <p className="text-white/50 text-sm mt-1">Администратор получил уведомление и свяжется с вами.</p>
-                </div>
-              )}
-
-              {/* Стоимость и оплата */}
-              {order.price && (
-                <div className="bg-white/5 rounded-xl p-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-white/40 text-xs mb-1">Стоимость работы</p>
-                    <p className="text-white text-xl font-bold">{formatPrice(order.price)}</p>
-                  </div>
-                  {order.status === 'awaiting_payment' && (
-                    <Button
-                      className="gap-2 bg-gradient-to-r from-[#F59E0B] to-[#EF4444] text-black font-bold hover:opacity-90"
-                      onClick={() => setPaymentModal(true)}
-                    >
-                      <CreditCard className="w-4 h-4" />
-                      Оплатить
-                    </Button>
-                  )}
-                </div>
-              )}
-
-              {/* Кнопка «Запросить доработку» — только когда работа завершена */}
-              {order.status === 'completed' && !revisionSuccess && !showRevisionForm && (
-                <Button
-                  variant="outline"
-                  className="w-full gap-2 border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
-                  onClick={() => setShowRevisionForm(true)}
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Запросить доработку
-                </Button>
-              )}
-
-              {/* Форма доработки */}
-              {showRevisionForm && (
-                <div className="bg-orange-500/5 border border-orange-500/20 rounded-xl p-4 space-y-4">
-                  <h3 className="text-orange-400 font-semibold text-sm flex items-center gap-2">
-                    <RefreshCw className="w-4 h-4" /> Запрос на доработку
-                  </h3>
-                  <div>
-                    <label className="text-white/60 text-xs mb-1.5 block">Опишите замечания</label>
-                    <Textarea
-                      value={revisionNote}
-                      onChange={e => setRevisionNote(e.target.value)}
-                      placeholder="Подробно опишите, что нужно исправить или доработать..."
-                      rows={4}
-                      className="bg-white/5 border-white/10 text-white text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-white/60 text-xs mb-1.5 block">Прикрепить файлы (необязательно)</label>
-                    <div
-                      className="border border-dashed border-white/20 rounded-lg p-3 cursor-pointer hover:border-orange-500/40 transition-colors text-center"
-                      onClick={() => revisionFileInputRef.current?.click()}
-                    >
-                      <Upload className="w-5 h-5 text-white/20 mx-auto mb-1" />
-                      <p className="text-white/30 text-xs">Нажмите для выбора файлов</p>
+            {loading ? (
+              <div className="p-12 text-center text-ink-soft">Загрузка...</div>
+            ) : order ? (
+              <div className="p-6 space-y-5">
+                {/* Основная информация */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bevel-out bg-chrome/20 p-4">
+                    <div className="flex items-center gap-2 text-ink-soft text-xs mb-1">
+                      <Tag className="w-3.5 h-3.5" /> Тип работы
                     </div>
-                    <input
-                      ref={revisionFileInputRef}
-                      type="file"
-                      multiple
-                      className="hidden"
-                      onChange={e => {
-                        const f = Array.from(e.target.files || [])
-                        setRevisionFiles(prev => [...prev, ...f])
-                      }}
-                    />
-                    {revisionFiles.length > 0 && (
-                      <div className="mt-2 space-y-1">
-                        {revisionFiles.map((f, i) => (
-                          <div key={i} className="flex items-center gap-2 text-xs text-white/50">
-                            <FileText className="w-3.5 h-3.5" />
-                            <span className="flex-1 truncate">{f.name}</span>
-                            <button
-                              onClick={() => setRevisionFiles(prev => prev.filter((_, idx) => idx !== i))}
-                              className="text-white/30 hover:text-red-400"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
+                    <p className="text-ink text-sm font-medium">{getOrderTypeLabel(order.type)}</p>
+                  </div>
+                  <div className="bevel-out bg-chrome/20 p-4">
+                    <div className="flex items-center gap-2 text-ink-soft text-xs mb-1">
+                      <Calendar className="w-3.5 h-3.5" /> Дедлайн
+                    </div>
+                    <p className="text-ink text-sm font-medium">{formatDate(order.deadline)}</p>
+                  </div>
+                </div>
+
+                {/* Предмет */}
+                <div className="bevel-out bg-chrome/20 p-4">
+                  <p className="text-ink-soft text-xs mb-1">Предмет / Тема</p>
+                  <p className="text-ink text-sm">{order.subject}</p>
+                </div>
+
+                {/* Описание */}
+                {order.description && (
+                  <div className="bevel-out bg-chrome/20 p-4">
+                    <div className="flex items-center gap-2 text-ink-soft text-xs mb-2">
+                      <FileText className="w-3.5 h-3.5" /> Описание задания
+                    </div>
+                    <p className="text-ink text-sm leading-relaxed whitespace-pre-wrap">{order.description}</p>
+                  </div>
+                )}
+
+                {/* Исходные файлы */}
+                {files.length > 0 && (
+                  <div className="bevel-out bg-chrome/20 p-4">
+                    <p className="text-ink-soft text-xs mb-2">Прикреплённые файлы</p>
+                    <div className="space-y-1.5">
+                      {files.map((f, i) => (
+                        <a
+                          key={i}
+                          href={toFileUrl(f)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-title hover:text-title-alt text-sm transition-colors"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          Файл {i + 1}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Готовые файлы для скачивания */}
+                {resultFiles.length > 0 && (
+                  <div className="bevel-out bg-success/10 p-4">
+                    <div className="flex items-center gap-2 text-ink text-sm font-semibold mb-3">
+                      <Download className="w-4 h-4 text-success" />
+                      Готовая работа — доступна для скачивания
+                    </div>
+                    <div className="space-y-2">
+                      {resultFiles.map((f, i) => (
+                        <a
+                          key={i}
+                          href={toFileUrl(f)}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-95 flex items-center gap-2 px-3 py-2 text-sm text-ink"
+                        >
+                          <FileText className="w-4 h-4 flex-shrink-0" />
+                          <span className="flex-1 truncate">{f.split('/').pop()}</span>
+                          <Download className="w-3.5 h-3.5 flex-shrink-0" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Заметка от администратора */}
+                {order.adminNote && (
+                  <div className="bevel-out bg-title/10 p-4">
+                    <div className="flex items-center gap-2 text-title text-xs mb-2">
+                      <MessageSquare className="w-3.5 h-3.5" /> Сообщение от администратора
+                    </div>
+                    <p className="text-ink text-sm leading-relaxed">{order.adminNote}</p>
+                  </div>
+                )}
+
+                {/* Ранее отправленный запрос на доработку */}
+                {order.status === 'revision' && order.revisionNote && (
+                  <div className="bevel-out bg-warning/10 p-4">
+                    <div className="flex items-center gap-2 text-ink text-xs font-semibold mb-2">
+                      <RefreshCw className="w-3.5 h-3.5 text-warning" /> Ваш запрос на доработку отправлен
+                    </div>
+                    <p className="text-ink-soft text-sm leading-relaxed whitespace-pre-wrap">{order.revisionNote}</p>
+                  </div>
+                )}
+
+                {/* Уведомление об успешной отправке доработки */}
+                {revisionSuccess && (
+                  <div className="bevel-out bg-warning/10 p-4 text-center">
+                    <p className="text-ink font-semibold">Запрос на доработку отправлен!</p>
+                    <p className="text-ink-soft text-sm mt-1">Администратор получил уведомление и свяжется с вами.</p>
+                  </div>
+                )}
+
+                {/* Стоимость и оплата */}
+                {order.price && (
+                  <div className="bevel-out bg-chrome/20 p-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-ink-soft text-xs mb-1">Стоимость работы</p>
+                      <p className="text-ink text-xl font-bold font-mono">{formatPrice(order.price)}</p>
+                    </div>
+                    {order.status === 'awaiting_payment' && (
+                      <Button
+                        variant="amber"
+                        className="gap-2"
+                        onClick={() => setPaymentModal(true)}
+                      >
+                        <CreditCard className="w-4 h-4" />
+                        Оплатить
+                      </Button>
                     )}
                   </div>
+                )}
 
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1 border-white/10 text-white/50"
-                      onClick={() => { setShowRevisionForm(false); setRevisionNote(''); setRevisionFiles([]) }}
-                    >
-                      Отмена
-                    </Button>
-                    <Button
-                      className="flex-1 gap-2 bg-orange-600 hover:bg-orange-500 text-white"
-                      onClick={handleRevisionSubmit}
-                      disabled={revisionLoading || (!revisionNote.trim() && revisionFiles.length === 0)}
-                    >
-                      {revisionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                      Отправить
-                    </Button>
+                {/* Кнопка «Запросить доработку» — только когда работа завершена */}
+                {order.status === 'completed' && !revisionSuccess && !showRevisionForm && (
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2"
+                    onClick={() => setShowRevisionForm(true)}
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Запросить доработку
+                  </Button>
+                )}
+
+                {/* Форма доработки */}
+                {showRevisionForm && (
+                  <div className="bevel-out bg-warning/5 p-4 space-y-4">
+                    <h3 className="text-ink font-semibold text-sm flex items-center gap-2">
+                      <RefreshCw className="w-4 h-4 text-warning" /> Запрос на доработку
+                    </h3>
+                    <div>
+                      <label className="text-ink-soft text-xs mb-1.5 block">Опишите замечания</label>
+                      <Textarea
+                        value={revisionNote}
+                        onChange={e => setRevisionNote(e.target.value)}
+                        placeholder="Подробно опишите, что нужно исправить или доработать..."
+                        rows={4}
+                        className="text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-ink-soft text-xs mb-1.5 block">Прикрепить файлы (необязательно)</label>
+                      <div
+                        className="bevel-in p-3 cursor-pointer text-center"
+                        onClick={() => revisionFileInputRef.current?.click()}
+                      >
+                        <Upload className="w-5 h-5 text-ink-soft mx-auto mb-1" />
+                        <p className="text-ink-soft text-xs">Нажмите для выбора файлов</p>
+                      </div>
+                      <input
+                        ref={revisionFileInputRef}
+                        type="file"
+                        multiple
+                        className="hidden"
+                        onChange={e => {
+                          const f = Array.from(e.target.files || [])
+                          setRevisionFiles(prev => [...prev, ...f])
+                        }}
+                      />
+                      {revisionFiles.length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {revisionFiles.map((f, i) => (
+                            <div key={i} className="flex items-center gap-2 text-xs text-ink-soft">
+                              <FileText className="w-3.5 h-3.5" />
+                              <span className="flex-1 truncate">{f.name}</span>
+                              <button
+                                onClick={() => setRevisionFiles(prev => prev.filter((_, idx) => idx !== i))}
+                                className="text-ink-soft hover:text-danger"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => { setShowRevisionForm(false); setRevisionNote(''); setRevisionFiles([]) }}
+                      >
+                        Отмена
+                      </Button>
+                      <Button
+                        variant="amber"
+                        className="flex-1 gap-2"
+                        onClick={handleRevisionSubmit}
+                        disabled={revisionLoading || (!revisionNote.trim() && revisionFiles.length === 0)}
+                      >
+                        {revisionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                        Отправить
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Дата создания */}
-              <p className="text-white/25 text-xs text-right">Заявка создана {formatDate(order.createdAt)}</p>
-            </div>
-          ) : (
-            <div className="p-12 text-center text-white/40">Заявка не найдена</div>
-          )}
+                {/* Дата создания */}
+                <p className="text-ink-soft text-xs text-right">Заявка создана {formatDate(order.createdAt)}</p>
+              </div>
+            ) : (
+              <div className="p-12 text-center text-ink-soft">Заявка не найдена</div>
+            )}
+          </div>
         </div>
       </div>
 

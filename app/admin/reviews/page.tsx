@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { formatDate } from '@/lib/utils'
+import { formatDate, cn } from '@/lib/utils'
 
 interface Review {
   id: string
@@ -85,12 +85,13 @@ export default function AdminReviewsPage() {
   }
 
   return (
-    <div>
+    <div className="window pixel-shadow">
+      <div className="titlebar">
+        <h1 className="truncate">Отзывы</h1>
+      </div>
+      <div className="bg-paper p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Отзывы</h1>
-          <p className="text-white/50 text-sm">Модерация и добавление отзывов</p>
-        </div>
+        <p className="text-ink-soft text-sm">Модерация и добавление отзывов</p>
         <Button onClick={() => setShowForm((v) => !v)} className="gap-2">
           {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
           {showForm ? 'Отмена' : 'Добавить отзыв'}
@@ -98,7 +99,7 @@ export default function AdminReviewsPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreate} className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-6 space-y-4">
+        <form onSubmit={handleCreate} className="bevel-out bg-chrome/20 p-6 mb-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="mb-2 block">Имя *</Label>
@@ -119,7 +120,7 @@ export default function AdminReviewsPage() {
               <div className="flex items-center gap-2 pt-2">
                 {[1,2,3,4,5].map((n) => (
                   <button key={n} type="button" onClick={() => setForm((f) => ({ ...f, rating: n }))}>
-                    <Star className="w-6 h-6" fill={n <= form.rating ? '#F59E0B' : 'none'} stroke={n <= form.rating ? '#F59E0B' : '#ffffff30'} />
+                    <Star className="w-6 h-6" fill={n <= form.rating ? 'rgb(var(--accent))' : 'none'} stroke={n <= form.rating ? 'rgb(var(--accent))' : 'rgb(var(--chrome-dark))'} />
                   </button>
                 ))}
               </div>
@@ -137,14 +138,15 @@ export default function AdminReviewsPage() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-white/5 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 mb-6 bg-chrome p-1 w-fit border border-chrome-shadow">
         {([['pending', 'На модерации'], ['approved', 'Одобренные'], ['all', 'Все']] as const).map(([v, l]) => (
           <button
             key={v}
             onClick={() => setFilter(v)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              filter === v ? 'bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] text-white' : 'text-white/60 hover:text-white'
-            }`}
+            className={cn(
+              'px-4 py-2 text-sm font-medium transition-all',
+              filter === v ? 'btn-95-primary' : 'text-ink-soft hover:text-ink'
+            )}
           >
             {l}
           </button>
@@ -153,53 +155,53 @@ export default function AdminReviewsPage() {
 
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="w-8 h-8 text-[#6C3EF4] animate-spin" />
+          <Loader2 className="w-8 h-8 text-title animate-spin" />
         </div>
       ) : reviews.length === 0 ? (
-        <div className="text-center py-16 bg-white/5 rounded-2xl border border-white/10">
-          <Star className="w-12 h-12 text-white/20 mx-auto mb-3" />
-          <p className="text-white/40">Отзывов нет</p>
+        <div className="text-center py-16 border border-chrome-dark bg-chrome/20">
+          <Star className="w-12 h-12 text-ink-soft mx-auto mb-3" />
+          <p className="text-ink-soft">Отзывов нет</p>
         </div>
       ) : (
         <div className="space-y-4">
           {reviews.map((review) => (
-            <div key={review.id} className="bg-white/5 border border-white/10 rounded-2xl p-5">
+            <div key={review.id} className="bevel-out bg-chrome/20 p-5">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-white font-semibold">{review.name}</p>
-                  <p className="text-white/40 text-xs">
+                  <p className="text-ink font-semibold">{review.name}</p>
+                  <p className="text-ink-soft text-xs">
                     {[review.university, review.city].filter(Boolean).join(', ')}
                     {review.user && <span className="ml-2">· {review.user.email}</span>}
                   </p>
                 </div>
                 <div className="flex items-center gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="w-4 h-4" fill={i < review.rating ? '#F59E0B' : 'none'} stroke={i < review.rating ? '#F59E0B' : '#ffffff30'} />
+                    <Star key={i} className="w-4 h-4" fill={i < review.rating ? 'rgb(var(--accent))' : 'none'} stroke={i < review.rating ? 'rgb(var(--accent))' : 'rgb(var(--chrome-dark))'} />
                   ))}
                 </div>
               </div>
 
-              <p className="text-white/70 text-sm leading-relaxed mb-3">&quot;{review.text}&quot;</p>
+              <p className="text-ink-soft text-sm leading-relaxed mb-3">&quot;{review.text}&quot;</p>
 
               <div className="flex items-center justify-between">
-                <p className="text-white/30 text-xs">{formatDate(review.createdAt)}</p>
+                <p className="text-ink-soft text-xs">{formatDate(review.createdAt)}</p>
                 <div className="flex gap-2">
                   {!review.approved && (
                     <Button
                       size="sm"
                       onClick={() => handleApprove(review.id)}
-                      className="gap-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30"
-                      variant="ghost"
+                      variant="outline"
+                      className="gap-1 hover:bg-success/15"
                     >
-                      <Check className="w-4 h-4" />
+                      <Check className="w-4 h-4 text-success" />
                       Одобрить
                     </Button>
                   )}
                   <Button
                     size="sm"
                     onClick={() => handleReject(review.id)}
-                    className="gap-1 bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30"
-                    variant="ghost"
+                    variant="destructive"
+                    className="gap-1"
                   >
                     <Trash2 className="w-4 h-4" />
                     Удалить
@@ -210,6 +212,7 @@ export default function AdminReviewsPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   )
 }

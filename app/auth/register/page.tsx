@@ -4,14 +4,14 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { GraduationCap, Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { AuthWindow } from '../_components/AuthWindow'
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
@@ -93,184 +93,153 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0F0F1A] relative overflow-hidden px-4 py-8">
-      {/* Back button */}
-      <Link
-        href="/"
-        className="absolute top-6 left-6 flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        На главную
-      </Link>
+    <AuthWindow title="Регистрация" backLabel="На главную">
+      <p className="text-ink-soft text-sm mb-6">Создайте аккаунт, чтобы отслеживать заявки</p>
 
-      {/* Background effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#6C3EF4] rounded-full blur-[128px] opacity-10" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#3B82F6] rounded-full blur-[128px] opacity-10" />
-
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6C3EF4] to-[#3B82F6] flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-[#6C3EF4] to-[#3B82F6] bg-clip-text text-transparent">
-              StudyAssist
-            </span>
-          </Link>
-          <h1 className="text-2xl font-bold text-white mt-6 mb-2">Регистрация</h1>
-          <p className="text-white/50 text-sm">Создайте аккаунт, чтобы отслеживать заявки</p>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
+        <div>
+          <Label className="mb-2 block">Ваше имя *</Label>
+          <Input {...register('name')} placeholder="Как к вам обращаться?" />
+          {errors.name && <p className="text-danger text-xs mt-1">{errors.name.message}</p>}
         </div>
 
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mb-6">
-            <div>
-              <Label className="mb-2 block">Ваше имя *</Label>
-              <Input {...register('name')} placeholder="Как к вам обращаться?" />
-              {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
-            </div>
-
-            <div>
-              <Label className="mb-2 block">Email *</Label>
-              <Input {...register('email')} type="email" placeholder="your@email.ru" />
-              {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
-            </div>
-
-            <div>
-              <Label className="mb-2 block">Пароль *</Label>
-              <div className="relative">
-                <Input
-                  {...register('password')}
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Минимум 6 символов"
-                  className="pr-10"
-                />
-                <button type="button" onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70">
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>}
-            </div>
-
-            <div>
-              <Label className="mb-2 block">Подтвердите пароль *</Label>
-              <div className="relative">
-                <Input
-                  {...register('confirmPassword')}
-                  type={showConfirm ? 'text' : 'password'}
-                  placeholder="Повторите пароль"
-                  className="pr-10"
-                />
-                <button type="button" onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70">
-                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              {errors.confirmPassword && <p className="text-red-400 text-xs mt-1">{errors.confirmPassword.message}</p>}
-            </div>
-
-            {/* Чекбокс 1: принятие оферты */}
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="consentOffer"
-                {...register('consentOffer')}
-                className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 accent-[#6C3EF4] cursor-pointer flex-shrink-0"
-              />
-              <label htmlFor="consentOffer" className="text-white/50 text-sm cursor-pointer">
-                Я ознакомился(ась) с{' '}
-                <Link href="/offer" className="text-[#6C3EF4] hover:underline">Публичной офертой</Link>
-                {' '}и принимаю её условия *
-              </label>
-            </div>
-            {errors.consentOffer && <p className="text-red-400 text-xs -mt-2">{errors.consentOffer.message}</p>}
-
-            {/* Чекбокс 2: согласие на обработку ПД */}
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="consentPd"
-                {...register('consentPd')}
-                className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 accent-[#6C3EF4] cursor-pointer flex-shrink-0"
-              />
-              <label htmlFor="consentPd" className="text-white/50 text-sm cursor-pointer">
-                Я даю согласие на обработку моих персональных данных (ФИО, email, телефон) в целях
-                регистрации аккаунта и исполнения заказов в соответствии с{' '}
-                <Link href="/privacy" className="text-[#6C3EF4] hover:underline">Политикой конфиденциальности</Link>.
-                Согласие можно отозвать, написав на{' '}
-                <a href="mailto:support@studyassist.ru" className="text-[#6C3EF4] hover:underline">support@studyassist.ru</a> *
-              </label>
-            </div>
-            {errors.consentPd && <p className="text-red-400 text-xs -mt-2">{errors.consentPd.message}</p>}
-
-            {/* Чекбокс 3: маркетинговые рассылки (необязательный) */}
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="consentMarketing"
-                {...register('consentMarketing')}
-                className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 accent-[#6C3EF4] cursor-pointer flex-shrink-0"
-              />
-              <label htmlFor="consentMarketing" className="text-white/50 text-sm cursor-pointer">
-                Я согласен(а) получать рекламные рассылки: акции, скидки, новые услуги.
-                Можно отписаться в любой момент.
-              </label>
-            </div>
-
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
-                <p className="text-red-400 text-sm">{error}</p>
-              </div>
-            )}
-
-            <Button type="submit" disabled={loading} className="w-full gap-2" size="lg">
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-              Создать аккаунт
-            </Button>
-          </form>
-
-          {/* OAuth */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-[#1A1A2E] px-3 text-white/40">или войти через</span>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <button onClick={() => handleOAuth('vk')} disabled={!!oauthLoading}
-              className="w-full flex items-center justify-center gap-3 h-11 rounded-xl bg-[#0077FF] hover:bg-[#0066DD] text-white font-medium text-sm transition-all disabled:opacity-50">
-              {oauthLoading === 'vk' ? <Loader2 className="w-4 h-4 animate-spin" /> : <VKIcon />}
-              Войти через ВКонтакте
-            </button>
-            <button onClick={() => handleOAuth('mailru')} disabled={!!oauthLoading}
-              className="w-full flex items-center justify-center gap-3 h-11 rounded-xl bg-[#005FF9] hover:bg-[#0050D0] text-white font-medium text-sm transition-all disabled:opacity-50">
-              {oauthLoading === 'mailru' ? <Loader2 className="w-4 h-4 animate-spin" /> : <MailRuIcon />}
-              Войти через Mail.ru
-            </button>
-            <button onClick={() => handleOAuth('yandex')} disabled={!!oauthLoading}
-              className="w-full flex items-center justify-center gap-3 h-11 rounded-xl bg-[#FC3F1D] hover:bg-[#E03518] text-white font-medium text-sm transition-all disabled:opacity-50">
-              {oauthLoading === 'yandex' ? <Loader2 className="w-4 h-4 animate-spin" /> : <YandexIcon />}
-              Войти через Яндекс
-            </button>
-          </div>
-
-          <p className="text-center text-white/50 text-sm mt-6">
-            Уже есть аккаунт?{' '}
-            <Link href="/auth/login" className="text-[#6C3EF4] hover:text-[#8B5CF6] transition-colors">
-              Войти
-            </Link>
-          </p>
+        <div>
+          <Label className="mb-2 block">Email *</Label>
+          <Input {...register('email')} type="email" placeholder="your@email.ru" />
+          {errors.email && <p className="text-danger text-xs mt-1">{errors.email.message}</p>}
         </div>
-      </motion.div>
-    </div>
+
+        <div>
+          <Label className="mb-2 block">Пароль *</Label>
+          <div className="relative">
+            <Input
+              {...register('password')}
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Минимум 6 символов"
+              className="pr-10"
+            />
+            <button type="button" onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-ink">
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+          {errors.password && <p className="text-danger text-xs mt-1">{errors.password.message}</p>}
+        </div>
+
+        <div>
+          <Label className="mb-2 block">Подтвердите пароль *</Label>
+          <div className="relative">
+            <Input
+              {...register('confirmPassword')}
+              type={showConfirm ? 'text' : 'password'}
+              placeholder="Повторите пароль"
+              className="pr-10"
+            />
+            <button type="button" onClick={() => setShowConfirm(!showConfirm)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-ink">
+              {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+          {errors.confirmPassword && <p className="text-danger text-xs mt-1">{errors.confirmPassword.message}</p>}
+        </div>
+
+        {/* Чекбокс 1: принятие оферты */}
+        <div className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="consentOffer"
+            {...register('consentOffer')}
+            className="mt-0.5 w-4 h-4 field-95 accent-title cursor-pointer flex-shrink-0"
+          />
+          <label htmlFor="consentOffer" className="text-ink-soft text-sm cursor-pointer">
+            Я ознакомился(ась) с{' '}
+            <Link href="/offer" className="text-title hover:text-title-alt hover:underline">Публичной офертой</Link>
+            {' '}и принимаю её условия *
+          </label>
+        </div>
+        {errors.consentOffer && <p className="text-danger text-xs -mt-2">{errors.consentOffer.message}</p>}
+
+        {/* Чекбокс 2: согласие на обработку ПД */}
+        <div className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="consentPd"
+            {...register('consentPd')}
+            className="mt-0.5 w-4 h-4 field-95 accent-title cursor-pointer flex-shrink-0"
+          />
+          <label htmlFor="consentPd" className="text-ink-soft text-sm cursor-pointer">
+            Я даю согласие на обработку моих персональных данных (ФИО, email, телефон) в целях
+            регистрации аккаунта и исполнения заказов в соответствии с{' '}
+            <Link href="/privacy" className="text-title hover:text-title-alt hover:underline">Политикой конфиденциальности</Link>.
+            Согласие можно отозвать, написав на{' '}
+            <a href="mailto:support@studyassist.ru" className="text-title hover:text-title-alt hover:underline">support@studyassist.ru</a> *
+          </label>
+        </div>
+        {errors.consentPd && <p className="text-danger text-xs -mt-2">{errors.consentPd.message}</p>}
+
+        {/* Чекбокс 3: маркетинговые рассылки (необязательный) */}
+        <div className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="consentMarketing"
+            {...register('consentMarketing')}
+            className="mt-0.5 w-4 h-4 field-95 accent-title cursor-pointer flex-shrink-0"
+          />
+          <label htmlFor="consentMarketing" className="text-ink-soft text-sm cursor-pointer">
+            Я согласен(а) получать рекламные рассылки: акции, скидки, новые услуги.
+            Можно отписаться в любой момент.
+          </label>
+        </div>
+
+        {error && (
+          <div className="bg-danger/10 border border-danger px-4 py-3">
+            <p className="text-danger text-sm">{error}</p>
+          </div>
+        )}
+
+        <Button type="submit" disabled={loading} className="w-full gap-2" size="lg">
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+          Создать аккаунт
+        </Button>
+      </form>
+
+      {/* OAuth */}
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-chrome-dark" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="bg-paper px-3 text-ink-soft">или войти через</span>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <button onClick={() => handleOAuth('vk')} disabled={!!oauthLoading}
+          style={{ backgroundColor: '#0077FF' }}
+          className="btn-95 w-full flex items-center justify-center gap-3 h-11 text-white font-medium text-sm disabled:opacity-50">
+          {oauthLoading === 'vk' ? <Loader2 className="w-4 h-4 animate-spin" /> : <VKIcon />}
+          Войти через ВКонтакте
+        </button>
+        <button onClick={() => handleOAuth('mailru')} disabled={!!oauthLoading}
+          style={{ backgroundColor: '#005FF9' }}
+          className="btn-95 w-full flex items-center justify-center gap-3 h-11 text-white font-medium text-sm disabled:opacity-50">
+          {oauthLoading === 'mailru' ? <Loader2 className="w-4 h-4 animate-spin" /> : <MailRuIcon />}
+          Войти через Mail.ru
+        </button>
+        <button onClick={() => handleOAuth('yandex')} disabled={!!oauthLoading}
+          style={{ backgroundColor: '#FC3F1D' }}
+          className="btn-95 w-full flex items-center justify-center gap-3 h-11 text-white font-medium text-sm disabled:opacity-50">
+          {oauthLoading === 'yandex' ? <Loader2 className="w-4 h-4 animate-spin" /> : <YandexIcon />}
+          Войти через Яндекс
+        </button>
+      </div>
+
+      <p className="text-center text-ink-soft text-sm mt-6">
+        Уже есть аккаунт?{' '}
+        <Link href="/auth/login" className="text-title hover:text-title-alt transition-colors font-medium">
+          Войти
+        </Link>
+      </p>
+    </AuthWindow>
   )
 }
