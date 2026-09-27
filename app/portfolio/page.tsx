@@ -38,7 +38,7 @@ export default async function PortfolioPage({
       id: true, title: true, workType: true, subject: true,
       description: true, previewText: true, fileUrl: true,
     },
-  })
+  }).catch(() => []) // ponytail: DB down → empty state instead of 500
 
   const tabs = [
     { key: undefined, label: 'Все' },

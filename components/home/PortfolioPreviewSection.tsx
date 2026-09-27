@@ -11,7 +11,7 @@ async function getPortfolioPreview() {
       id: true, title: true, workType: true, subject: true,
       previewText: true, description: true,
     },
-  })
+  }).catch(() => []) // ponytail: DB down → empty section instead of crashing the page
 }
 
 const WORK_TYPE_LABELS: Record<string, string> = {

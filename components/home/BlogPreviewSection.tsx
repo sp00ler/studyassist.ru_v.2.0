@@ -10,7 +10,7 @@ async function getLatestPosts() {
       id: true, type: true, title: true, slug: true,
       excerpt: true, coverImage: true, publishedAt: true, createdAt: true,
     },
-  })
+  }).catch(() => []) // ponytail: DB down → empty section instead of crashing the page
 }
 
 function formatDate(d: Date | null) {

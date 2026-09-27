@@ -37,7 +37,7 @@ export default async function BlogPage({
       id: true, type: true, title: true, slug: true,
       excerpt: true, coverImage: true, publishedAt: true, createdAt: true,
     },
-  })
+  }).catch(() => []) // ponytail: DB down → empty state instead of 500
 
   const tabs = [
     { key: undefined, label: 'Все' },
