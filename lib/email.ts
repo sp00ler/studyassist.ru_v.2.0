@@ -66,8 +66,8 @@ function formatOrderId(id: string): string {
 // Table-based, all styles inline, email-client-safe. No flex/grid/CSS vars/JS.
 // ---------------------------------------------------------------------------
 
-const FONT_DISPLAY = "'Press Start 2P','Courier New',monospace"
-const FONT_BODY = "Tahoma,Verdana,Arial,sans-serif"
+const FONT_DISPLAY = "'Press Start 2P','Courier New',Courier,monospace"
+const FONT_BODY = "'Tiny5','Lucida Console','Courier New',monospace"
 
 /** Raised (outward) Win95 bevel border via border colors — no box-shadow needed in email. */
 const BEVEL_OUT = 'border-top:2px solid #FFFFFF;border-left:2px solid #FFFFFF;border-right:2px solid #000000;border-bottom:2px solid #000000;'
@@ -98,13 +98,13 @@ function renderPanel(rowsHtml: string): string {
 /** Centered, bulletproof (table-based) Win95 button — primary CTA, min 44px tall. */
 function renderCta(label: string, href: string, opts?: { bg?: string; color?: string }): string {
   const bg = opts?.bg || '#000080'
-  const color = opts?.color || '#FFFFFF'
+  const color = opts?.color || (bg === '#C0C0C0' ? '#000000' : '#FFFFFF')
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;">
   <tr><td align="center">
     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
       <tr>
-        <td style="background-color:${bg};${BEVEL_OUT}">
-          <a href="${href}" style="display:inline-block;min-height:44px;line-height:44px;padding:0 28px;font-family:${FONT_DISPLAY};font-size:11px;color:${color};text-decoration:none;">${label}</a>
+        <td style="background-color:${bg};${BEVEL_OUT}border-radius:0;">
+          <a href="${href}" style="display:inline-block;min-height:44px;line-height:44px;padding:0 28px;font-family:${FONT_DISPLAY};font-size:12px;color:${color};text-decoration:none;border-radius:0;">${label}</a>
         </td>
       </tr>
     </table>
@@ -114,12 +114,13 @@ function renderCta(label: string, href: string, opts?: { bg?: string; color?: st
 
 /** Small raised badge (status pill / order-number chip). */
 function renderBadge(label: string, opts?: { bg?: string; color?: string; size?: number }): string {
-  const bg = opts?.bg || '#000080'
-  const color = opts?.color || '#FFFFFF'
+  // Status reads as a sunken Win95 status field with a coloured indicator — not as a button.
+  const dot = opts?.bg || '#000080'
   const size = opts?.size || 12
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
-  <tr><td style="background-color:${bg};${BEVEL_OUT}padding:10px 20px;">
-    <span style="font-family:${FONT_DISPLAY};font-size:${size}px;color:${color};">${label}</span>
+  <tr><td style="background-color:#FFFFFF;${BEVEL_IN}padding:8px 14px;">
+    <span style="font-family:${FONT_DISPLAY};font-size:${size}px;color:${dot};">&#9632;</span>
+    <span style="font-family:${FONT_DISPLAY};font-size:${size}px;color:#000000;">&nbsp;${label}</span>
   </td></tr>
 </table>`
 }
@@ -138,17 +139,19 @@ function getStatusBadgeColor(status: string): { bg: string; color: string } {
 }
 
 /**
- * Shared "window" layout every StudyAssist email renders through:
- * teal desktop, silver bevel frame, navy title bar with decorative
- * controls, paper content area, grey footer strip, taskbar sliver.
+ * Shared "Explorer window" layout every StudyAssist email renders through:
+ * teal desktop, silver bevel frame, navy title bar (folder glyph + window
+ * controls), menu bar, address bar, sunken content pane, sunken status bar.
  */
 function renderLayout(opts: {
   title: string
   preheader: string
   bodyHtml: string
   footerHtml?: string
+  addressPath?: string
 }): string {
-  const { title, preheader, bodyHtml, footerHtml } = opts
+  const { title, preheader, bodyHtml, footerHtml, addressPath } = opts
+  const address = addressPath ? `studyassist.ru/${addressPath}` : 'studyassist.ru'
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -158,6 +161,9 @@ function renderLayout(opts: {
 <meta name="supported-color-schemes" content="light">
 <title>${title}</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Tiny5&display=swap" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Tiny5&display=swap');
+</style>
 </head>
 <body style="margin:0;padding:0;background-color:#008080;font-family:${FONT_BODY};">
 <span style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">${preheader}</span>
@@ -165,43 +171,76 @@ function renderLayout(opts: {
 <tr><td align="center" style="padding:32px 12px;">
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#C0C0C0;${BEVEL_OUT}">
-<tr><td style="border-top:1px solid #DFDFDF;border-left:1px solid #DFDFDF;border-right:1px solid #808080;border-bottom:1px solid #808080;">
+<tr><td style="border-top:1px solid #DFDFDF;border-left:1px solid #DFDFDF;border-right:1px solid #808080;border-bottom:1px solid #000000;">
 
+  <!-- Title bar -->
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#000080;">
     <tr>
-      <td style="padding:8px 10px;font-family:${FONT_DISPLAY};font-size:11px;line-height:1.4;color:#FFFFFF;">${title}</td>
+      <td style="width:20px;padding:7px 4px 7px 8px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="width:13px;height:10px;background-color:#FFCC33;border-top:1px solid #FFE8A3;border-left:1px solid #FFE8A3;border-right:1px solid #8A6D1F;border-bottom:1px solid #8A6D1F;font-size:1px;line-height:1px;">&nbsp;</td>
+        </tr></table>
+      </td>
+      <td style="padding:7px 4px;font-family:${FONT_DISPLAY};font-size:10px;line-height:1.5;color:#FFFFFF;word-break:break-word;">${title}</td>
       <td align="right" style="padding:6px 8px;white-space:nowrap;">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-          <td style="width:16px;height:14px;background-color:#C0C0C0;${BEVEL_OUT}font-family:${FONT_BODY};font-size:9px;line-height:14px;text-align:center;color:#000000;">_</td>
+          <td style="width:16px;height:14px;background-color:#C0C0C0;${BEVEL_OUT}font-family:${FONT_BODY};font-size:10px;line-height:14px;text-align:center;color:#000000;">_</td>
           <td style="width:3px;font-size:1px;line-height:1px;">&nbsp;</td>
-          <td style="width:16px;height:14px;background-color:#C0C0C0;${BEVEL_OUT}font-family:${FONT_BODY};font-size:9px;line-height:14px;text-align:center;color:#000000;">&#9633;</td>
+          <td style="width:16px;height:14px;background-color:#C0C0C0;${BEVEL_OUT}font-family:${FONT_BODY};font-size:10px;line-height:14px;text-align:center;color:#000000;">&#9633;</td>
           <td style="width:3px;font-size:1px;line-height:1px;">&nbsp;</td>
-          <td style="width:16px;height:14px;background-color:#C0C0C0;${BEVEL_OUT}font-family:${FONT_BODY};font-size:9px;line-height:14px;text-align:center;color:#000000;">&#215;</td>
+          <td style="width:16px;height:14px;background-color:#C0C0C0;${BEVEL_OUT}font-family:${FONT_BODY};font-size:10px;line-height:14px;text-align:center;color:#000000;">&#215;</td>
         </tr></table>
       </td>
     </tr>
   </table>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FFFBEA;">
-    <tr><td style="padding:28px 24px;font-family:${FONT_BODY};font-size:15px;line-height:1.5;color:#000000;">
-      ${bodyHtml}
+  <!-- Menu bar -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#C0C0C0;border-bottom:1px solid #808080;">
+    <tr><td style="padding:5px 10px;font-family:${FONT_BODY};font-size:12px;line-height:1.4;color:#000000;white-space:nowrap;">Файл&nbsp;&nbsp;Правка&nbsp;&nbsp;Вид&nbsp;&nbsp;Справка</td></tr>
+  </table>
+
+  <!-- Address bar -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#C0C0C0;border-bottom:1px solid #808080;">
+    <tr><td style="padding:6px 8px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="padding:0 6px 0 0;font-family:${FONT_BODY};font-size:12px;color:#000000;white-space:nowrap;">Адрес:</td>
+        <td width="100%" style="background-color:#FFFFFF;${BEVEL_IN}padding:4px 8px;">
+          <span style="font-family:${FONT_BODY};font-size:13px;color:#000000;">${address}</span>
+        </td>
+      </tr></table>
     </td></tr>
   </table>
 
-  ${footerHtml ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#C0C0C0;border-top:1px solid #808080;">
-    <tr><td style="padding:14px 24px;font-family:${FONT_BODY};font-size:11px;line-height:1.6;color:#3A3A3A;text-align:center;">
+  <!-- Content pane (sunken) -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#C0C0C0;">
+    <tr><td style="padding:6px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FFFFF6;${BEVEL_IN}">
+        <tr><td style="padding:22px 20px;font-family:${FONT_BODY};font-size:17px;line-height:1.5;color:#000000;">
+          ${bodyHtml}
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+
+  ${footerHtml ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#C0C0C0;">
+    <tr><td style="padding:8px 24px 4px;font-family:${FONT_BODY};font-size:12px;line-height:1.6;color:#3A3A3A;text-align:center;">
       ${footerHtml}
     </td></tr>
   </table>` : ''}
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#C0C0C0;border-top:1px solid #FFFFFF;">
+  <!-- Status bar (sunken cells) -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#C0C0C0;border-top:1px solid #808080;">
     <tr>
-      <td style="padding:6px 10px;">
+      <td style="padding:6px 8px 8px;">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-          <td style="background-color:#C0C0C0;${BEVEL_OUT}padding:3px 10px;font-family:${FONT_DISPLAY};font-size:9px;color:#000000;">Пуск</td>
+          <td style="background-color:#C0C0C0;${BEVEL_IN}padding:3px 10px;font-family:${FONT_BODY};font-size:12px;color:#000000;">Готово</td>
         </tr></table>
       </td>
-      <td align="right" style="padding:6px 10px;font-family:${FONT_BODY};font-size:11px;color:#3A3A3A;">StudyAssist.ru</td>
+      <td align="right" style="padding:6px 8px 8px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="background-color:#C0C0C0;${BEVEL_IN}padding:3px 10px;font-family:${FONT_BODY};font-size:12px;color:#000000;white-space:nowrap;">${address}</td>
+        </tr></table>
+      </td>
     </tr>
   </table>
 
@@ -236,7 +275,7 @@ function buildNewOrderEmailHtml(data: OrderEmailData): string {
     renderRow('Прикреплённые файлы', `${data.files?.length || 0} шт.`)
 
   const bodyHtml = `
-    <p style="margin:0 0 16px;font-family:${FONT_DISPLAY};font-size:13px;line-height:1.5;color:#000080;">Новая заявка ${orderLabel}</p>
+    <p style="margin:0 0 16px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;">Новая заявка ${orderLabel}</p>
     <p style="margin:0 0 4px;">Поступила новая заявка на сайте StudyAssist.ru.</p>
     ${renderPanel(rows)}
     ${renderCta('Открыть в панели', `${process.env.NEXTAUTH_URL}/admin/orders`)}
@@ -246,6 +285,7 @@ function buildNewOrderEmailHtml(data: OrderEmailData): string {
     title: `StudyAssist — Новая заявка ${orderLabel}`,
     preheader: `${typeLabel}: ${data.subject} — от ${data.name}`,
     bodyHtml,
+    addressPath: `заказы/№${orderLabel.replace('#', '')}`,
   })
 }
 
@@ -259,7 +299,7 @@ function buildOrderReceivedEmailHtml(data: OrderReceivedEmailData): string {
     renderRow('Дедлайн', data.deadline, { valueColor: '#D97706', bold: true })
 
   const bodyHtml = `
-    <p style="margin:0 0 12px;font-family:${FONT_DISPLAY};font-size:13px;line-height:1.5;color:#000080;">${data.name}, спасибо за обращение!</p>
+    <p style="margin:0 0 12px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;">${data.name}, спасибо за обращение!</p>
     <p style="margin:0 0 20px;">Мы получили вашу заявку и уже передали её менеджеру. Обычно связываемся в течение 30 минут в рабочее время.</p>
     <p style="margin:0 0 6px;text-align:center;font-size:12px;color:#3A3A3A;">Номер заявки</p>
     <div style="text-align:center;margin:0 0 20px;">${renderBadge(orderLabel, { size: 16 })}</div>
@@ -272,6 +312,7 @@ function buildOrderReceivedEmailHtml(data: OrderReceivedEmailData): string {
     preheader: `Заявка ${orderLabel} принята, свяжемся в течение 30 минут`,
     bodyHtml,
     footerHtml: `© ${new Date().getFullYear()} StudyAssist.ru — Все права защищены`,
+    addressPath: `заказы/№${orderLabel.replace('#', '')}`,
   })
 }
 
@@ -291,12 +332,12 @@ function buildStatusUpdateEmailHtml(newStatus: string, orderLabel: string, payme
   const badge = getStatusBadgeColor(newStatus)
 
   const bodyHtml = `
-    <p style="margin:0 0 8px;font-family:${FONT_DISPLAY};font-size:13px;line-height:1.5;color:#000080;">Обновление заявки ${orderLabel}</p>
+    <p style="margin:0 0 8px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;">Обновление заявки ${orderLabel}</p>
     <p style="margin:0 0 16px;">Статус вашей заявки изменён:</p>
     <div style="text-align:center;margin:0 0 8px;">${renderBadge(statusLabel, { bg: badge.bg, color: badge.color })}</div>
     ${isPayment ? `
     <p style="margin:24px 0 4px;">Ваша работа готова! Для получения файлов перейдите к оплате:</p>
-    ${renderCta('Оплатить работу', paymentLink!, { bg: '#D97706' })}
+    ${renderCta('Оплатить работу', paymentLink!)}
     ` : ''}
     <p style="margin:24px 0 0;font-size:13px;color:#3A3A3A;text-align:center;">
       Вы можете отслеживать статус в <a href="${process.env.NEXTAUTH_URL}/dashboard" style="color:#000080;">личном кабинете</a>
@@ -307,6 +348,7 @@ function buildStatusUpdateEmailHtml(newStatus: string, orderLabel: string, payme
     title: `StudyAssist — Заявка ${orderLabel}`,
     preheader: `Статус заявки ${orderLabel} изменён на «${statusLabel}»`,
     bodyHtml,
+    addressPath: `заказы/№${orderLabel.replace('#', '')}`,
   })
 }
 
@@ -356,7 +398,7 @@ function buildWorkCompletedEmailHtml(orderLabel: string, fileCount: number, dash
     <p style="margin:0 0 20px;font-size:13px;color:#3A3A3A;text-align:center;">Заявка ${orderLabel}</p>
     <p style="margin:0 0 8px;text-align:center;">Мы завершили работу над вашим заданием.</p>
     <p style="margin:0 0 8px;text-align:center;color:#3A3A3A;">Файлы готовой работы (${fileCount} шт.) доступны для скачивания в личном кабинете.</p>
-    ${renderCta('Скачать работу', dashboardUrl, { bg: '#16A34A' })}
+    ${renderCta('Скачать работу', dashboardUrl)}
     <p style="margin:16px 0 0;font-size:13px;color:#3A3A3A;text-align:center;">Если у вас есть замечания, вы можете запросить доработку прямо из личного кабинета.</p>
   `
 
@@ -364,6 +406,7 @@ function buildWorkCompletedEmailHtml(orderLabel: string, fileCount: number, dash
     title: `StudyAssist — Заявка ${orderLabel} готова`,
     preheader: `Файлы готовой работы (${fileCount} шт.) доступны в личном кабинете`,
     bodyHtml,
+    addressPath: `заказы/№${orderLabel.replace('#', '')}`,
   })
 }
 
@@ -391,6 +434,7 @@ function buildRevisionRequestEmailHtml(
     title: `StudyAssist — Доработка ${orderLabel}`,
     preheader: `${clientName} запросил(а) доработку по заявке ${orderLabel}`,
     bodyHtml,
+    addressPath: `заказы/№${orderLabel.replace('#', '')}`,
   })
 }
 
@@ -400,8 +444,8 @@ function buildPaymentLinkEmailHtml(orderLabel: string, paymentLink: string, amou
     <p style="margin:0 0 20px;font-size:13px;color:#3A3A3A;text-align:center;">Заявка ${orderLabel}</p>
     <p style="margin:0 0 4px;text-align:center;">Ваша работа проверена и готова к передаче.</p>
     <p style="margin:0 0 8px;text-align:center;color:#3A3A3A;">Стоимость работы:</p>
-    <p style="margin:0 0 8px;text-align:center;font-family:${FONT_DISPLAY};font-size:24px;color:#D97706;">${amount.toLocaleString('ru-RU')} ₽</p>
-    ${renderCta('Оплатить сейчас', paymentLink, { bg: '#D97706' })}
+    <p style="margin:0 0 8px;text-align:center;font-family:${FONT_DISPLAY};font-size:24px;color:#000080;">${amount.toLocaleString('ru-RU')} ₽</p>
+    ${renderCta('Оплатить сейчас', paymentLink)}
     <p style="margin:16px 0 0;font-size:12px;color:#3A3A3A;text-align:center;">
       После оплаты работа будет автоматически доступна в вашем <a href="${process.env.NEXTAUTH_URL}/dashboard" style="color:#000080;">личном кабинете</a>
     </p>
@@ -411,6 +455,7 @@ function buildPaymentLinkEmailHtml(orderLabel: string, paymentLink: string, amou
     title: `StudyAssist — Оплата заявки ${orderLabel}`,
     preheader: `К оплате: ${amount.toLocaleString('ru-RU')} ₽ по заявке ${orderLabel}`,
     bodyHtml,
+    addressPath: `заказы/№${orderLabel.replace('#', '')}`,
   })
 }
 
