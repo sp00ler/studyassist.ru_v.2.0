@@ -228,7 +228,7 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
                     href={toFileUrl(f)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-95 flex items-center gap-2 px-3 py-2 text-sm text-title"
+                    className="btn-95 flex items-center gap-2 px-3 py-2 text-[11px] text-title font-display"
                   >
                     <FileText className="w-4 h-4" />
                     {f.split('/').pop()}

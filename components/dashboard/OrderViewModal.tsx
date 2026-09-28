@@ -213,7 +213,7 @@ export function OrderViewModal({ orderId, onClose }: OrderViewModalProps) {
                           download
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn-95 flex items-center gap-2 px-3 py-2 text-sm text-ink"
+                          className="btn-95 flex items-center gap-2 px-3 py-2 text-[11px] text-ink font-display"
                         >
                           <FileText className="w-4 h-4 flex-shrink-0" />
                           <span className="flex-1 truncate">{f.split('/').pop()}</span>
@@ -287,7 +287,7 @@ export function OrderViewModal({ orderId, onClose }: OrderViewModalProps) {
                 {/* Форма доработки */}
                 {showRevisionForm && (
                   <div className="bevel-out bg-warning/5 p-4 space-y-4">
-                    <h3 className="text-ink font-semibold text-sm flex items-center gap-2">
+                    <h3 className="text-ink text-sm flex items-center gap-2 font-display">
                       <RefreshCw className="w-4 h-4 text-warning" /> Запрос на доработку
                     </h3>
                     <div>
