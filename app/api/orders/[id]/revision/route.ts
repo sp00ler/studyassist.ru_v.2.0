@@ -6,26 +6,26 @@ import { sendRevisionRequestEmail } from '@/lib/email'
 import { sendRevisionRequestNotification } from '@/lib/telegram'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
-import os from 'os'
+import { randomUUID } from 'crypto'
+import { resolvePrivateUploadPath } from '@/lib/private-file-storage'
+
+const MAX_FILES = 10
+const MAX_SINGLE_FILE_SIZE = 30 * 1024 * 1024
+const MAX_TOTAL_SIZE = 50 * 1024 * 1024
+const ALLOWED_EXTENSIONS = new Set(['.pdf', '.doc', '.docx', '.txt', '.zip', '.jpg', '.jpeg', '.png', '.rar', '.7z'])
 
 async function saveFile(file: File, orderId: string): Promise<string> {
-  const bytes = await file.arrayBuffer()
-  const buffer = Buffer.from(bytes)
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-  const timestamp = Date.now()
-  const filename = `${timestamp}_${safeName}`
+  const extension = path.extname(file.name).toLowerCase()
+  const baseName = path.basename(file.name, path.extname(file.name))
+  const safeName = baseName.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 80) || 'file'
+  const filename = `${randomUUID()}_${safeName}${extension}`
+  const relativePath = `revisions/${orderId}/${filename}`
+  const destination = resolvePrivateUploadPath(relativePath)
+  if (!destination) throw new Error('Invalid revision file path')
 
-  const publicDir = path.join(process.cwd(), 'public', 'uploads', 'revisions', orderId)
-  try {
-    await mkdir(publicDir, { recursive: true })
-    await writeFile(path.join(publicDir, filename), buffer)
-    return `/uploads/revisions/${orderId}/${filename}`
-  } catch {
-    const tmpDir = path.join(os.tmpdir(), 'studyassist-revisions', orderId)
-    await mkdir(tmpDir, { recursive: true })
-    await writeFile(path.join(tmpDir, filename), buffer)
-    return `/uploads/revisions/${orderId}/${filename}`
-  }
+  await mkdir(path.dirname(destination), { recursive: true })
+  await writeFile(destination, Buffer.from(await file.arrayBuffer()), { flag: 'wx' })
+  return `/api/files/${relativePath}`
 }
 
 export async function POST(
@@ -60,6 +60,18 @@ export async function POST(
     const formData = await req.formData()
     const note = (formData.get('note') as string) || ''
     const files = formData.getAll('files') as File[]
+    const selectedFiles = files.filter((file) => file instanceof File && file.size > 0)
+
+    if (selectedFiles.length > MAX_FILES) {
+      return NextResponse.json({ error: `Можно прикрепить не более ${MAX_FILES} файлов` }, { status: 400 })
+    }
+    const invalidFile = selectedFiles.find((file) => !ALLOWED_EXTENSIONS.has(path.extname(file.name).toLowerCase()))
+    if (invalidFile) {
+      return NextResponse.json({ error: `Тип файла "${invalidFile.name}" не поддерживается` }, { status: 400 })
+    }
+    if (selectedFiles.some((file) => file.size > MAX_SINGLE_FILE_SIZE) || selectedFiles.reduce((size, file) => size + file.size, 0) > MAX_TOTAL_SIZE) {
+      return NextResponse.json({ error: 'Размер файлов превышает допустимый предел' }, { status: 413 })
+    }
 
     if (!note.trim() && (!files || files.every(f => !(f instanceof File) || f.size === 0))) {
       return NextResponse.json({ error: 'Укажите текст замечаний или прикрепите файлы' }, { status: 400 })
@@ -67,11 +79,9 @@ export async function POST(
 
     // Save revision files
     const savedPaths: string[] = []
-    for (const file of files) {
-      if (file instanceof File && file.size > 0) {
-        const filePath = await saveFile(file, params.id)
-        savedPaths.push(filePath)
-      }
+    for (const file of selectedFiles) {
+      const filePath = await saveFile(file, params.id)
+      savedPaths.push(filePath)
     }
 
     // Update order
