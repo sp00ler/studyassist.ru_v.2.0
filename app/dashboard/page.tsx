@@ -5,7 +5,7 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { LogOut, User, Package, CreditCard, Loader2, Plus, Send, CheckCircle, X, Camera } from 'lucide-react'
+import { LogOut, User, Package, CreditCard, Loader2, Plus, Send, CheckCircle, X, Camera, Globe } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
 import { OrdersTable } from '@/components/dashboard/OrdersTable'
 import { Button } from '@/components/ui/button'
@@ -211,12 +211,24 @@ export default function DashboardPage() {
                 )}
                 <span className="text-ink-soft text-sm">{session.user.name || session.user.email}</span>
               </div>
+              <Link href="/?go=site">
+                <button
+                  title="На сайт"
+                  aria-label="На сайт"
+                  className="btn-95 min-h-[44px] px-3 text-[11px] font-display inline-flex items-center gap-2"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span>На сайт</span>
+                </button>
+              </Link>
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="btn-95 h-9 px-3 text-[11px] font-display inline-flex items-center gap-2"
+                title="Выйти"
+                aria-label="Выйти"
+                className="btn-95 min-h-[44px] px-3 text-[11px] font-display inline-flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Выйти</span>
+                <span>Выйти</span>
               </button>
             </div>
           </div>
@@ -269,7 +281,7 @@ export default function DashboardPage() {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="font-display text-base text-ink">Мои заявки</h2>
-                  <Link href="/#order">
+                  <Link href="/?go=order">
                     <Button size="sm" className="gap-2">
                       <Plus className="w-4 h-4" />
                       Новая заявка

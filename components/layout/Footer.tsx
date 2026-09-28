@@ -1,7 +1,16 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { SocialContacts } from '@/components/layout/SocialContacts'
 
 export function Footer() {
+  const pathname = usePathname()
+  // Same reasoning as Navbar: "#order" only works as a plain anchor when
+  // we're already on the home page (past the gate); elsewhere it must go
+  // through ?go=order so it doesn't land on the RetroGate.
+  const orderHref = pathname === '/' ? '/#order' : '/?go=order'
+
   return (
     <footer className="bg-paper border-t-2 border-chrome-shadow">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 pt-[64px] pb-8">
@@ -49,7 +58,7 @@ export function Footer() {
                 { href: '/#how-it-works', label: 'Как это работает' },
                 { href: '/#pricing', label: 'Цены' },
                 { href: '/#reviews', label: 'Отзывы' },
-                { href: '/#order', label: 'Оставить заявку' },
+                { href: orderHref, label: 'Оставить заявку' },
               ].map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} className="text-ink-soft hover:text-title text-[13px] transition-colors">

@@ -208,7 +208,7 @@ export default async function PortfolioPage({
                     Опишите задачу — подберём специалиста и назовём цену за 30 минут
                   </p>
                   <Button asChild variant="amber" size="lg" className="h-auto min-h-[44px] py-3 whitespace-normal text-center leading-snug">
-                    <Link href="/#order">Оставить заявку — бесплатно</Link>
+                    <Link href="/?go=order">Оставить заявку — бесплатно</Link>
                   </Button>
                 </section>
               </div>

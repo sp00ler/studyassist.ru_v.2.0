@@ -160,7 +160,7 @@ export default async function BlogPostPage({ params }: Props) {
                   </h2>
                   <p className="text-sm text-white/80 mb-7">Оставьте заявку — ответим за 30 минут</p>
                   <Button asChild variant="amber" size="lg">
-                    <Link href="/#order">Оставить заявку →</Link>
+                    <Link href="/?go=order">Оставить заявку →</Link>
                   </Button>
                 </div>
               </div>

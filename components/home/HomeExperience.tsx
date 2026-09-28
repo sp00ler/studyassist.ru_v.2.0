@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { UrgencyBar } from '@/components/layout/UrgencyBar'
 import { Navbar } from '@/components/layout/Navbar'
@@ -26,10 +26,32 @@ type Phase = 'gate' | 'entering' | 'site'
 type HomeExperienceProps = {
   portfolioSection: ReactNode
   blogSection: ReactNode
+  // Set by app/page.tsx from the `?go=` search param so links that mean
+  // "take me to the order form / site" (dashboard, service pages, footer…)
+  // can skip the RetroGate entirely — no flash of it on mount.
+  initialPhase?: Phase
+  initialScrollTarget?: 'order'
 }
 
-export function HomeExperience({ portfolioSection, blogSection }: HomeExperienceProps) {
-  const [phase, setPhase] = useState<Phase>('gate')
+export function HomeExperience({
+  portfolioSection,
+  blogSection,
+  initialPhase = 'gate',
+  initialScrollTarget,
+}: HomeExperienceProps) {
+  const [phase, setPhase] = useState<Phase>(initialPhase)
+
+  useEffect(() => {
+    if (initialPhase !== 'site' || initialScrollTarget !== 'order') return
+    // BrowserChrome's inner container is already laid out by the time this
+    // effect runs (the fade-in is opacity/scale only), but give it a frame
+    // so the browser has committed layout before we ask it to scroll.
+    const raf = requestAnimationFrame(() => {
+      document.getElementById('order')?.scrollIntoView({ behavior: 'auto', block: 'start' })
+    })
+    return () => cancelAnimationFrame(raf)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <>

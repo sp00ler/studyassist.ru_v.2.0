@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react'
@@ -24,6 +25,12 @@ export const serviceLinks = [
 export function Navbar() {
   const { data: session } = useSession()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const pathname = usePathname()
+  // On the home page itself "#order" is a plain in-page anchor (site is
+  // already past the gate). Anywhere else, "/#order" would land on a fresh
+  // "/" load and show the RetroGate first — route through ?go=order instead
+  // so it opens straight on the order form.
+  const orderHref = pathname === '/' ? '/#order' : '/?go=order'
 
   return (
     <header
@@ -77,7 +84,7 @@ export function Navbar() {
                 <Link href="/auth/login">
                   <button className="btn-95 h-9 px-4 text-[11px] font-display">Войти</button>
                 </Link>
-                <Link href="/#order">
+                <Link href={orderHref}>
                   <button className="btn-95-primary h-9 px-5 text-[11px] font-display">Заказать</button>
                 </Link>
               </>
@@ -86,7 +93,7 @@ export function Navbar() {
 
           {/* Mobile: CTA always visible + Start-menu-style burger */}
           <div className="flex md:hidden items-center gap-2">
-            <Link href="/#order">
+            <Link href={orderHref}>
               <button className="btn-95-primary min-h-[44px] px-4 text-[11px] font-display">Заказать</button>
             </Link>
             <button

@@ -33,7 +33,7 @@ export default function NotFound() {
                   <Link href="/">На главную</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
-                  <Link href="/#order">Оставить заявку</Link>
+                  <Link href="/?go=order">Оставить заявку</Link>
                 </Button>
               </div>
             </div>

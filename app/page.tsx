@@ -87,7 +87,18 @@ const jsonLd = {
   ],
 }
 
-export default function HomePage() {
+export default function HomePage({
+  searchParams,
+}: {
+  searchParams: { go?: string }
+}) {
+  // `?go=order` / `?go=site` (used by links that would otherwise dump the
+  // user on the RetroGate — dashboard "Новая заявка", "На сайт", service
+  // pages, etc.) skip the gate and open straight on the site view.
+  const go = searchParams.go
+  const initialPhase = go === 'order' || go === 'site' ? 'site' : 'gate'
+  const initialScrollTarget = go === 'order' ? 'order' : undefined
+
   return (
     <>
       <Script
@@ -98,6 +109,8 @@ export default function HomePage() {
       <HomeExperience
         portfolioSection={<PortfolioPreviewSection />}
         blogSection={<BlogPreviewSection />}
+        initialPhase={initialPhase}
+        initialScrollTarget={initialScrollTarget}
       />
     </>
   )

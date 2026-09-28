@@ -85,7 +85,7 @@ export function ServicePage({
                     <p className="text-[17px] text-ink-soft leading-[1.7] mb-8">{tagline}</p>
                     <div className="flex flex-wrap gap-3">
                       <Button asChild size="lg">
-                        <Link href="/#order">
+                        <Link href="/?go=order">
                           Оставить заявку
                           <ChevronRight className="w-4 h-4 ml-1" />
                         </Link>
@@ -173,7 +173,7 @@ export function ServicePage({
                     Точную цену называем после изучения задачи — до копейки, без скрытых доплат
                   </p>
                   <Button asChild variant="amber" size="lg" className="h-auto min-h-[44px] py-3 whitespace-normal text-center leading-snug">
-                    <Link href="/#order">Оставить заявку — бесплатно</Link>
+                    <Link href="/?go=order">Оставить заявку — бесплатно</Link>
                   </Button>
                 </section>
 
@@ -199,7 +199,7 @@ export function ServicePage({
                         <p className="text-ink-soft text-sm">Опишите задачу — ответим за 30 минут и согласуем детали</p>
                       </div>
                       <Button asChild size="lg" className="flex-shrink-0">
-                        <Link href="/#order">Оставить заявку →</Link>
+                        <Link href="/?go=order">Оставить заявку →</Link>
                       </Button>
                     </div>
                   </div>
