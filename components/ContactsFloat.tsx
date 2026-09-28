@@ -1,11 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { Contact, X } from 'lucide-react'
 import { SocialContacts } from '@/components/layout/SocialContacts'
 
 export function ContactsFloat() {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+
+  // Cabinet/admin/auth keep their own controls in the bottom-left (e.g. «Выйти») — don't cover them.
+  if (/^\/(dashboard|admin|auth)(\/|$)/.test(pathname ?? '')) return null
 
   return (
     <div className="fixed bottom-6 left-6 z-40 flex flex-col items-start gap-3">
