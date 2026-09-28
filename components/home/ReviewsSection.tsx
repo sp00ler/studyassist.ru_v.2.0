@@ -126,8 +126,8 @@ export function ReviewsSection() {
         {/* ICQ-style messenger window: contact list + conversation view */}
         <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}
-          className="window pixel-shadow mb-10 sm:mb-14">
-          <div className="titlebar">
+          className="window pixel-shadow mb-10 sm:mb-14 flex flex-col max-h-[calc(100dvh-260px)] min-h-[420px] overflow-hidden">
+          <div className="titlebar shrink-0">
             <span className="truncate">ICQ — Отзывы студентов</span>
             <div className="flex gap-1 shrink-0" aria-hidden="true">
               <span className="titlebar-btn" tabIndex={-1}>_</span>
@@ -136,14 +136,14 @@ export function ReviewsSection() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row bg-white">
+          <div className="flex flex-col sm:flex-row bg-white flex-1 min-h-0">
             {/* Contact list */}
-            <div className="sm:w-64 sm:shrink-0 sm:border-r sm:border-chrome-shadow bg-chrome/30 flex flex-col">
-              <div className="hidden sm:block px-3 py-2 border-b border-chrome-shadow bg-chrome">
+            <div className="sm:w-64 sm:shrink-0 sm:border-r sm:border-chrome-shadow bg-chrome/30 flex flex-col shrink-0 sm:min-h-0">
+              <div className="hidden sm:block px-3 py-2 border-b border-chrome-shadow bg-chrome shrink-0">
                 <span className="font-display text-[10px] text-ink">Контакты</span>
               </div>
               <div role="listbox" aria-label="Контакты" onKeyDown={onListKeyDown}
-                className="flex flex-row gap-1 overflow-x-auto p-2 sm:flex-col sm:gap-0.5 sm:overflow-visible sm:p-1.5">
+                className="flex flex-row gap-1 overflow-x-auto p-2 sm:flex-col sm:flex-1 sm:min-h-0 sm:gap-0.5 sm:overflow-y-auto sm:p-1.5">
                 {reviews.map(r => {
                   const isSel = r.id === active.id
                   return (
@@ -168,8 +168,8 @@ export function ReviewsSection() {
             </div>
 
             {/* Conversation view */}
-            <div className="flex-1 flex flex-col min-w-0">
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-chrome-shadow bg-chrome/15">
+            <div className="flex-1 flex flex-col min-w-0 min-h-0">
+              <div className="flex items-center gap-3 px-4 py-3 border-b border-chrome-shadow bg-chrome/15 shrink-0">
                 <div className="w-9 h-9 overflow-hidden shrink-0 bg-title bevel-out flex items-center justify-center">
                   {active.avatar ? (
                     <Image src={active.avatar} alt={active.name} width={36} height={36}
@@ -185,7 +185,7 @@ export function ReviewsSection() {
                 </div>
               </div>
 
-              <div className="flex-1 p-4 sm:p-6">
+              <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6">
                 <AnimatePresence mode="wait">
                   <motion.div key={active.id}
                     initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -202,7 +202,7 @@ export function ReviewsSection() {
                 </AnimatePresence>
               </div>
 
-              <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-chrome-shadow bg-chrome/15">
+              <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-chrome-shadow bg-chrome/15 shrink-0">
                 <button type="button" onClick={() => stepContact(-1)} className="btn-95 font-display text-[10px] px-3 py-2.5">
                   ← Пред.
                 </button>
