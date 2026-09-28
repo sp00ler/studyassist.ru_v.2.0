@@ -61,6 +61,375 @@ function formatOrderId(id: string): string {
   return `#${hash}`
 }
 
+// ---------------------------------------------------------------------------
+// "Vintage OS" (Win95/98) email design system
+// Table-based, all styles inline, email-client-safe. No flex/grid/CSS vars/JS.
+// ---------------------------------------------------------------------------
+
+const FONT_DISPLAY = "'Press Start 2P','Courier New',monospace"
+const FONT_BODY = "Tahoma,Verdana,Arial,sans-serif"
+
+/** Raised (outward) Win95 bevel border via border colors — no box-shadow needed in email. */
+const BEVEL_OUT = 'border-top:2px solid #FFFFFF;border-left:2px solid #FFFFFF;border-right:2px solid #000000;border-bottom:2px solid #000000;'
+/** Sunken (inward) Win95 bevel border, used for panels/badges. */
+const BEVEL_IN = 'border-top:1px solid #808080;border-left:1px solid #808080;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;'
+
+/** One key/value row inside a sunken details panel. */
+function renderRow(label: string, value: string, opts?: { valueColor?: string; bold?: boolean }): string {
+  const color = opts?.valueColor || '#000000'
+  const weight = opts?.bold ? 'bold' : 'normal'
+  return `<tr>
+  <td style="padding:10px 12px;border-bottom:1px solid #C0C0C0;font-family:${FONT_BODY};font-size:12px;color:#3A3A3A;vertical-align:top;white-space:nowrap;">${label}</td>
+  <td style="padding:10px 12px;border-bottom:1px solid #C0C0C0;font-family:${FONT_BODY};font-size:14px;color:${color};font-weight:${weight};">${value}</td>
+</tr>`
+}
+
+/** Sunken panel (inset border) wrapping a table of rows — used for order detail tables. */
+function renderPanel(rowsHtml: string): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FFFFFF;${BEVEL_IN}margin:16px 0;">
+  <tr><td style="padding:2px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FFFFFF;">
+      ${rowsHtml}
+    </table>
+  </td></tr>
+</table>`
+}
+
+/** Centered, bulletproof (table-based) Win95 button — primary CTA, min 44px tall. */
+function renderCta(label: string, href: string, opts?: { bg?: string; color?: string }): string {
+  const bg = opts?.bg || '#000080'
+  const color = opts?.color || '#FFFFFF'
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;">
+  <tr><td align="center">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td style="background-color:${bg};${BEVEL_OUT}">
+          <a href="${href}" style="display:inline-block;min-height:44px;line-height:44px;padding:0 28px;font-family:${FONT_DISPLAY};font-size:11px;color:${color};text-decoration:none;">${label}</a>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>`
+}
+
+/** Small raised badge (status pill / order-number chip). */
+function renderBadge(label: string, opts?: { bg?: string; color?: string; size?: number }): string {
+  const bg = opts?.bg || '#000080'
+  const color = opts?.color || '#FFFFFF'
+  const size = opts?.size || 12
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+  <tr><td style="background-color:${bg};${BEVEL_OUT}padding:10px 20px;">
+    <span style="font-family:${FONT_DISPLAY};font-size:${size}px;color:${color};">${label}</span>
+  </td></tr>
+</table>`
+}
+
+function getStatusBadgeColor(status: string): { bg: string; color: string } {
+  const map: Record<string, { bg: string; color: string }> = {
+    new: { bg: '#000080', color: '#FFFFFF' },
+    in_progress: { bg: '#1084D0', color: '#FFFFFF' },
+    ready_for_review: { bg: '#1084D0', color: '#FFFFFF' },
+    awaiting_payment: { bg: '#D97706', color: '#FFFFFF' },
+    paid: { bg: '#16A34A', color: '#FFFFFF' },
+    completed: { bg: '#16A34A', color: '#FFFFFF' },
+    cancelled: { bg: '#DC2626', color: '#FFFFFF' },
+  }
+  return map[status] || { bg: '#000080', color: '#FFFFFF' }
+}
+
+/**
+ * Shared "window" layout every StudyAssist email renders through:
+ * teal desktop, silver bevel frame, navy title bar with decorative
+ * controls, paper content area, grey footer strip, taskbar sliver.
+ */
+function renderLayout(opts: {
+  title: string
+  preheader: string
+  bodyHtml: string
+  footerHtml?: string
+}): string {
+  const { title, preheader, bodyHtml, footerHtml } = opts
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>${title}</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Tiny5&display=swap" rel="stylesheet">
+</head>
+<body style="margin:0;padding:0;background-color:#008080;font-family:${FONT_BODY};">
+<span style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">${preheader}</span>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#008080;">
+<tr><td align="center" style="padding:32px 12px;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#C0C0C0;${BEVEL_OUT}">
+<tr><td style="border-top:1px solid #DFDFDF;border-left:1px solid #DFDFDF;border-right:1px solid #808080;border-bottom:1px solid #808080;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#000080;">
+    <tr>
+      <td style="padding:8px 10px;font-family:${FONT_DISPLAY};font-size:11px;line-height:1.4;color:#FFFFFF;">${title}</td>
+      <td align="right" style="padding:6px 8px;white-space:nowrap;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="width:16px;height:14px;background-color:#C0C0C0;${BEVEL_OUT}font-family:${FONT_BODY};font-size:9px;line-height:14px;text-align:center;color:#000000;">_</td>
+          <td style="width:3px;font-size:1px;line-height:1px;">&nbsp;</td>
+          <td style="width:16px;height:14px;background-color:#C0C0C0;${BEVEL_OUT}font-family:${FONT_BODY};font-size:9px;line-height:14px;text-align:center;color:#000000;">&#9633;</td>
+          <td style="width:3px;font-size:1px;line-height:1px;">&nbsp;</td>
+          <td style="width:16px;height:14px;background-color:#C0C0C0;${BEVEL_OUT}font-family:${FONT_BODY};font-size:9px;line-height:14px;text-align:center;color:#000000;">&#215;</td>
+        </tr></table>
+      </td>
+    </tr>
+  </table>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FFFBEA;">
+    <tr><td style="padding:28px 24px;font-family:${FONT_BODY};font-size:15px;line-height:1.5;color:#000000;">
+      ${bodyHtml}
+    </td></tr>
+  </table>
+
+  ${footerHtml ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#C0C0C0;border-top:1px solid #808080;">
+    <tr><td style="padding:14px 24px;font-family:${FONT_BODY};font-size:11px;line-height:1.6;color:#3A3A3A;text-align:center;">
+      ${footerHtml}
+    </td></tr>
+  </table>` : ''}
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#C0C0C0;border-top:1px solid #FFFFFF;">
+    <tr>
+      <td style="padding:6px 10px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td style="background-color:#C0C0C0;${BEVEL_OUT}padding:3px 10px;font-family:${FONT_DISPLAY};font-size:9px;color:#000000;">Пуск</td>
+        </tr></table>
+      </td>
+      <td align="right" style="padding:6px 10px;font-family:${FONT_BODY};font-size:11px;color:#3A3A3A;">StudyAssist.ru</td>
+    </tr>
+  </table>
+
+</td></tr>
+</table>
+
+</td></tr>
+</table>
+</body>
+</html>`
+}
+
+// ---------------------------------------------------------------------------
+// Pure HTML builders (one per email type) — no side effects, used both by the
+// send functions below and by offline preview tooling.
+// ---------------------------------------------------------------------------
+
+function buildNewOrderEmailHtml(data: OrderEmailData): string {
+  const orderLabel = formatOrderId(data.orderId)
+  const typeLabel = getOrderTypeLabel(data.orderType)
+
+  const rows =
+    renderRow('Тип работы', typeLabel) +
+    renderRow('Предмет / Дисциплина', data.subject) +
+    renderRow('Дедлайн', data.deadline, { valueColor: '#D97706', bold: true }) +
+    renderRow('Описание задания', data.description.replace(/\n/g, '<br>')) +
+    renderRow('Имя клиента', data.name) +
+    renderRow('Email', `<a href="mailto:${data.email}" style="color:#000080;">${data.email}</a>`) +
+    (data.phone
+      ? renderRow('Телефон', `<a href="tel:${data.phone}" style="color:#000080;">${data.phone}</a>`)
+      : '') +
+    renderRow('Прикреплённые файлы', `${data.files?.length || 0} шт.`)
+
+  const bodyHtml = `
+    <p style="margin:0 0 16px;font-family:${FONT_DISPLAY};font-size:13px;line-height:1.5;color:#000080;">Новая заявка ${orderLabel}</p>
+    <p style="margin:0 0 4px;">Поступила новая заявка на сайте StudyAssist.ru.</p>
+    ${renderPanel(rows)}
+    ${renderCta('Открыть в панели', `${process.env.NEXTAUTH_URL}/admin/orders`)}
+  `
+
+  return renderLayout({
+    title: `StudyAssist — Новая заявка ${orderLabel}`,
+    preheader: `${typeLabel}: ${data.subject} — от ${data.name}`,
+    bodyHtml,
+  })
+}
+
+function buildOrderReceivedEmailHtml(data: OrderReceivedEmailData): string {
+  const orderLabel = formatOrderId(data.orderId)
+  const typeLabel = getOrderTypeLabel(data.orderType)
+
+  const rows =
+    renderRow('Тип работы', typeLabel) +
+    renderRow('Предмет', data.subject) +
+    renderRow('Дедлайн', data.deadline, { valueColor: '#D97706', bold: true })
+
+  const bodyHtml = `
+    <p style="margin:0 0 12px;font-family:${FONT_DISPLAY};font-size:13px;line-height:1.5;color:#000080;">${data.name}, спасибо за обращение!</p>
+    <p style="margin:0 0 20px;">Мы получили вашу заявку и уже передали её менеджеру. Обычно связываемся в течение 30 минут в рабочее время.</p>
+    <p style="margin:0 0 6px;text-align:center;font-size:12px;color:#3A3A3A;">Номер заявки</p>
+    <div style="text-align:center;margin:0 0 20px;">${renderBadge(orderLabel, { size: 16 })}</div>
+    ${renderPanel(rows)}
+    ${renderCta('Открыть личный кабинет', `${process.env.NEXTAUTH_URL || 'https://studyassist.ru'}/dashboard`)}
+  `
+
+  return renderLayout({
+    title: `StudyAssist — Заявка ${orderLabel} принята`,
+    preheader: `Заявка ${orderLabel} принята, свяжемся в течение 30 минут`,
+    bodyHtml,
+    footerHtml: `© ${new Date().getFullYear()} StudyAssist.ru — Все права защищены`,
+  })
+}
+
+function buildStatusUpdateEmailHtml(newStatus: string, orderLabel: string, paymentLink?: string | null): string {
+  const statusLabels: Record<string, string> = {
+    new: 'Новая',
+    in_progress: 'В работе',
+    ready_for_review: 'Готова к проверке',
+    awaiting_payment: 'Ожидает оплаты',
+    paid: 'Оплачена',
+    completed: 'Завершена',
+    cancelled: 'Отменена',
+  }
+
+  const statusLabel = statusLabels[newStatus] || newStatus
+  const isPayment = newStatus === 'awaiting_payment' && paymentLink
+  const badge = getStatusBadgeColor(newStatus)
+
+  const bodyHtml = `
+    <p style="margin:0 0 8px;font-family:${FONT_DISPLAY};font-size:13px;line-height:1.5;color:#000080;">Обновление заявки ${orderLabel}</p>
+    <p style="margin:0 0 16px;">Статус вашей заявки изменён:</p>
+    <div style="text-align:center;margin:0 0 8px;">${renderBadge(statusLabel, { bg: badge.bg, color: badge.color })}</div>
+    ${isPayment ? `
+    <p style="margin:24px 0 4px;">Ваша работа готова! Для получения файлов перейдите к оплате:</p>
+    ${renderCta('Оплатить работу', paymentLink!, { bg: '#D97706' })}
+    ` : ''}
+    <p style="margin:24px 0 0;font-size:13px;color:#3A3A3A;text-align:center;">
+      Вы можете отслеживать статус в <a href="${process.env.NEXTAUTH_URL}/dashboard" style="color:#000080;">личном кабинете</a>
+    </p>
+  `
+
+  return renderLayout({
+    title: `StudyAssist — Заявка ${orderLabel}`,
+    preheader: `Статус заявки ${orderLabel} изменён на «${statusLabel}»`,
+    bodyHtml,
+  })
+}
+
+function buildVerificationEmailHtml(name: string, verifyUrl: string): string {
+  const bodyHtml = `
+    <p style="margin:0 0 4px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;">StudyAssist</p>
+    <p style="margin:0 0 20px;font-size:13px;color:#3A3A3A;">Подтверждение email-адреса</p>
+    <p style="margin:0 0 12px;font-weight:bold;">Привет, ${name}!</p>
+    <p style="margin:0 0 8px;">Вы зарегистрировались на StudyAssist.ru. Для завершения регистрации подтвердите ваш email-адрес, нажав на кнопку ниже.</p>
+    ${renderCta('Подтвердить email', verifyUrl)}
+    <p style="margin:0 0 4px;font-size:13px;color:#3A3A3A;text-align:center;">Ссылка действует 24 часа.</p>
+    <p style="margin:0;font-size:12px;color:#3A3A3A;text-align:center;">Если вы не регистрировались на StudyAssist.ru — просто проигнорируйте это письмо.</p>
+    ${renderPanel(`<tr><td style="padding:10px 12px;font-family:${FONT_BODY};font-size:11px;color:#3A3A3A;">Не открывается кнопка? Скопируйте ссылку:<br><a href="${verifyUrl}" style="color:#000080;word-break:break-all;">${verifyUrl}</a></td></tr>`)}
+  `
+
+  return renderLayout({
+    title: 'StudyAssist — Подтверждение email',
+    preheader: 'Подтвердите ваш email-адрес, чтобы завершить регистрацию',
+    bodyHtml,
+    footerHtml: `© ${new Date().getFullYear()} StudyAssist.ru — Все права защищены`,
+  })
+}
+
+function buildPasswordResetEmailHtml(name: string, resetUrl: string): string {
+  const bodyHtml = `
+    <p style="margin:0 0 4px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;">StudyAssist</p>
+    <p style="margin:0 0 20px;font-size:13px;color:#3A3A3A;">Восстановление пароля</p>
+    <p style="margin:0 0 12px;font-weight:bold;">Привет, ${name}!</p>
+    <p style="margin:0 0 8px;">Мы получили запрос на сброс пароля для вашего аккаунта на StudyAssist.ru. Нажмите на кнопку ниже, чтобы создать новый пароль.</p>
+    ${renderCta('Сбросить пароль', resetUrl)}
+    <p style="margin:0 0 4px;font-size:13px;color:#3A3A3A;text-align:center;">Ссылка действует 1 час.</p>
+    <p style="margin:0;font-size:12px;color:#3A3A3A;text-align:center;">Если вы не запрашивали сброс пароля — просто проигнорируйте это письмо. Ваш пароль останется прежним.</p>
+    ${renderPanel(`<tr><td style="padding:10px 12px;font-family:${FONT_BODY};font-size:11px;color:#3A3A3A;">Не открывается кнопка? Скопируйте ссылку:<br><a href="${resetUrl}" style="color:#000080;word-break:break-all;">${resetUrl}</a></td></tr>`)}
+  `
+
+  return renderLayout({
+    title: 'StudyAssist — Сброс пароля',
+    preheader: 'Нажмите, чтобы задать новый пароль. Ссылка действует 1 час',
+    bodyHtml,
+    footerHtml: `© ${new Date().getFullYear()} StudyAssist.ru — Все права защищены`,
+  })
+}
+
+function buildWorkCompletedEmailHtml(orderLabel: string, fileCount: number, dashboardUrl: string): string {
+  const bodyHtml = `
+    <p style="margin:0 0 4px;font-family:${FONT_DISPLAY};font-size:15px;line-height:1.5;color:#000080;text-align:center;">Ваша работа готова!</p>
+    <p style="margin:0 0 20px;font-size:13px;color:#3A3A3A;text-align:center;">Заявка ${orderLabel}</p>
+    <p style="margin:0 0 8px;text-align:center;">Мы завершили работу над вашим заданием.</p>
+    <p style="margin:0 0 8px;text-align:center;color:#3A3A3A;">Файлы готовой работы (${fileCount} шт.) доступны для скачивания в личном кабинете.</p>
+    ${renderCta('Скачать работу', dashboardUrl, { bg: '#16A34A' })}
+    <p style="margin:16px 0 0;font-size:13px;color:#3A3A3A;text-align:center;">Если у вас есть замечания, вы можете запросить доработку прямо из личного кабинета.</p>
+  `
+
+  return renderLayout({
+    title: `StudyAssist — Заявка ${orderLabel} готова`,
+    preheader: `Файлы готовой работы (${fileCount} шт.) доступны в личном кабинете`,
+    bodyHtml,
+  })
+}
+
+function buildRevisionRequestEmailHtml(
+  orderLabel: string,
+  clientName: string,
+  clientEmail: string,
+  note: string,
+  fileCount: number,
+  adminUrl: string
+): string {
+  const rows =
+    renderRow('Клиент', `${clientName} (${clientEmail})`) +
+    renderRow('Замечания', note.replace(/\n/g, '<br>')) +
+    renderRow('Прикреплено файлов', `${fileCount} шт.`)
+
+  const bodyHtml = `
+    <p style="margin:0 0 4px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;">Запрос на доработку</p>
+    <p style="margin:0 0 16px;font-size:13px;color:#3A3A3A;">Заявка ${orderLabel}</p>
+    ${renderPanel(rows)}
+    ${renderCta('Открыть заявку в панели', adminUrl)}
+  `
+
+  return renderLayout({
+    title: `StudyAssist — Доработка ${orderLabel}`,
+    preheader: `${clientName} запросил(а) доработку по заявке ${orderLabel}`,
+    bodyHtml,
+  })
+}
+
+function buildPaymentLinkEmailHtml(orderLabel: string, paymentLink: string, amount: number): string {
+  const bodyHtml = `
+    <p style="margin:0 0 4px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;text-align:center;">Ссылка на оплату</p>
+    <p style="margin:0 0 20px;font-size:13px;color:#3A3A3A;text-align:center;">Заявка ${orderLabel}</p>
+    <p style="margin:0 0 4px;text-align:center;">Ваша работа проверена и готова к передаче.</p>
+    <p style="margin:0 0 8px;text-align:center;color:#3A3A3A;">Стоимость работы:</p>
+    <p style="margin:0 0 8px;text-align:center;font-family:${FONT_DISPLAY};font-size:24px;color:#D97706;">${amount.toLocaleString('ru-RU')} ₽</p>
+    ${renderCta('Оплатить сейчас', paymentLink, { bg: '#D97706' })}
+    <p style="margin:16px 0 0;font-size:12px;color:#3A3A3A;text-align:center;">
+      После оплаты работа будет автоматически доступна в вашем <a href="${process.env.NEXTAUTH_URL}/dashboard" style="color:#000080;">личном кабинете</a>
+    </p>
+  `
+
+  return renderLayout({
+    title: `StudyAssist — Оплата заявки ${orderLabel}`,
+    preheader: `К оплате: ${amount.toLocaleString('ru-RU')} ₽ по заявке ${orderLabel}`,
+    bodyHtml,
+  })
+}
+
+/** Pure HTML builders, exported for offline preview tooling (never calls the transporter). */
+export const emailTemplates = {
+  newOrder: buildNewOrderEmailHtml,
+  orderReceived: buildOrderReceivedEmailHtml,
+  statusUpdate: buildStatusUpdateEmailHtml,
+  verification: buildVerificationEmailHtml,
+  passwordReset: buildPasswordResetEmailHtml,
+  workCompleted: buildWorkCompletedEmailHtml,
+  revisionRequest: buildRevisionRequestEmailHtml,
+  paymentLink: buildPaymentLinkEmailHtml,
+}
+
+// ---------------------------------------------------------------------------
+// Send functions — same exported names/signatures/subjects/recipients as before.
+// ---------------------------------------------------------------------------
+
 export async function sendNewOrderEmail(data: OrderEmailData): Promise<void> {
   const orderLabel = formatOrderId(data.orderId)
   const typeLabel = getOrderTypeLabel(data.orderType)
@@ -79,96 +448,7 @@ export async function sendNewOrderEmail(data: OrderEmailData): Promise<void> {
     }
   }
 
-  const htmlContent = `
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Новая заявка StudyAssist</title>
-</head>
-<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
-    <tr>
-      <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
-          <tr>
-            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
-              <h1 style="color:#fff;margin:0;font-size:24px;font-weight:700;">📋 Новая заявка ${orderLabel}</h1>
-              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;">StudyAssist.ru</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:32px;">
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
-                    <span style="color:#94A3B8;font-size:14px;">Тип работы</span><br>
-                    <span style="color:#F1F5F9;font-size:16px;font-weight:600;">${typeLabel}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
-                    <span style="color:#94A3B8;font-size:14px;">Предмет / Дисциплина</span><br>
-                    <span style="color:#F1F5F9;font-size:16px;">${data.subject}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
-                    <span style="color:#94A3B8;font-size:14px;">Дедлайн</span><br>
-                    <span style="color:#F59E0B;font-size:16px;font-weight:600;">${data.deadline}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
-                    <span style="color:#94A3B8;font-size:14px;">Описание задания</span><br>
-                    <span style="color:#F1F5F9;font-size:15px;line-height:1.6;">${data.description.replace(/\n/g, '<br>')}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
-                    <span style="color:#94A3B8;font-size:14px;">Имя клиента</span><br>
-                    <span style="color:#F1F5F9;font-size:16px;">${data.name}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
-                    <span style="color:#94A3B8;font-size:14px;">Email</span><br>
-                    <a href="mailto:${data.email}" style="color:#6C3EF4;font-size:16px;">${data.email}</a>
-                  </td>
-                </tr>
-                ${data.phone ? `
-                <tr>
-                  <td style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
-                    <span style="color:#94A3B8;font-size:14px;">Телефон</span><br>
-                    <a href="tel:${data.phone}" style="color:#6C3EF4;font-size:16px;">${data.phone}</a>
-                  </td>
-                </tr>
-                ` : ''}
-                <tr>
-                  <td style="padding:12px 0;">
-                    <span style="color:#94A3B8;font-size:14px;">Прикреплённые файлы</span><br>
-                    <span style="color:#F1F5F9;font-size:16px;">${data.files?.length || 0} шт.</span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 32px 32px;text-align:center;">
-              <a href="${process.env.NEXTAUTH_URL}/admin/orders"
-                 style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">
-                Открыть в панели администратора
-              </a>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-  `
+  const htmlContent = buildNewOrderEmailHtml(data)
 
   await transporter.sendMail({
     from: `"StudyAssist" <${process.env.SMTP_USER}>`,
@@ -181,63 +461,8 @@ export async function sendNewOrderEmail(data: OrderEmailData): Promise<void> {
 
 export async function sendOrderReceivedEmail(data: OrderReceivedEmailData): Promise<void> {
   const orderLabel = formatOrderId(data.orderId)
-  const typeLabel = getOrderTypeLabel(data.orderType)
-  const baseUrl = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
 
-  const htmlContent = `
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Заявка принята — StudyAssist</title>
-</head>
-<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
-    <tr>
-      <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
-          <tr>
-            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
-              <div style="display:inline-block;width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:12px;line-height:48px;font-size:24px;margin-bottom:16px;">✅</div>
-              <h1 style="color:#fff;margin:0;font-size:24px;font-weight:700;">Заявка ${orderLabel} принята</h1>
-              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:14px;">StudyAssist.ru</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:40px 32px;text-align:center;">
-              <p style="color:#F1F5F9;font-size:18px;font-weight:600;margin:0 0 12px;">${data.name}, спасибо за обращение! 👋</p>
-              <p style="color:#94A3B8;font-size:15px;line-height:1.6;margin:0 0 24px;">
-                Мы получили вашу заявку и уже передали её менеджеру.
-                Обычно связываемся в течение 30 минут в рабочее время.
-              </p>
-              <div style="display:inline-block;background:rgba(108,62,244,0.2);border:1px solid rgba(108,62,244,0.45);border-radius:10px;padding:14px 22px;margin-bottom:24px;">
-                <p style="margin:0;color:#A78BFA;font-size:13px;">Номер заявки</p>
-                <p style="margin:4px 0 0;color:#E2E8F0;font-size:26px;font-weight:700;">${orderLabel}</p>
-              </div>
-              <table width="100%" cellpadding="0" cellspacing="0" style="text-align:left;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;">
-                <tr><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#94A3B8;font-size:13px;">Тип работы</td><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#F1F5F9;font-size:14px;">${typeLabel}</td></tr>
-                <tr><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#94A3B8;font-size:13px;">Предмет</td><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#F1F5F9;font-size:14px;">${data.subject}</td></tr>
-                <tr><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#94A3B8;font-size:13px;">Дедлайн</td><td style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);color:#FCD34D;font-size:14px;font-weight:700;">${data.deadline}</td></tr>
-              </table>
-              <a href="${baseUrl}/dashboard"
-                 style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:14px 30px;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;margin-top:26px;">
-                Открыть личный кабинет
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td style="background:#0F0F1A;padding:20px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
-              <p style="color:#374151;font-size:12px;margin:0;">© 2026 StudyAssist.ru — Все права защищены</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-  `
+  const htmlContent = buildOrderReceivedEmailHtml(data)
 
   await transporter.sendMail({
     from: `"StudyAssist" <${process.env.SMTP_USER}>`,
@@ -266,47 +491,8 @@ export async function sendStatusUpdateEmail(
   }
 
   const statusLabel = statusLabels[newStatus] || newStatus
-  const isPayment = newStatus === 'awaiting_payment' && paymentLink
 
-  const htmlContent = `
-<!DOCTYPE html>
-<html lang="ru">
-<head><meta charset="UTF-8"><title>Обновление заявки</title></head>
-<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
-    <tr>
-      <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
-          <tr>
-            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
-              <h1 style="color:#fff;margin:0;font-size:24px;">Обновление заявки ${orderLabel}</h1>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:32px;text-align:center;">
-              <p style="color:#94A3B8;font-size:16px;">Статус вашей заявки изменён:</p>
-              <div style="display:inline-block;background:rgba(108,62,244,0.2);border:1px solid #6C3EF4;color:#F1F5F9;padding:12px 24px;border-radius:8px;font-size:18px;font-weight:600;margin:16px 0;">
-                ${statusLabel}
-              </div>
-              ${isPayment ? `
-              <p style="color:#F1F5F9;font-size:16px;margin:24px 0 8px;">Ваша работа готова! Для получения файлов перейдите к оплате:</p>
-              <a href="${paymentLink}"
-                 style="display:inline-block;background:linear-gradient(135deg,#F59E0B,#EF4444);color:#fff;padding:16px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;margin:8px 0;">
-                Оплатить работу
-              </a>
-              ` : ''}
-              <p style="color:#94A3B8;font-size:14px;margin-top:24px;">
-                Вы можете отслеживать статус в <a href="${process.env.NEXTAUTH_URL}/dashboard" style="color:#6C3EF4;">личном кабинете</a>
-              </p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-  `
+  const htmlContent = buildStatusUpdateEmailHtml(newStatus, orderLabel, paymentLink)
 
   await transporter.sendMail({
     from: `"StudyAssist" <${process.env.SMTP_USER}>`,
@@ -324,60 +510,7 @@ export async function sendVerificationEmail(
   const baseUrl = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
   const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${encodeURIComponent(token)}`
 
-  const htmlContent = `
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Подтверждение email — StudyAssist</title>
-</head>
-<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
-    <tr>
-      <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
-          <tr>
-            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
-              <div style="display:inline-block;width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:12px;line-height:48px;font-size:24px;margin-bottom:16px;">🎓</div>
-              <h1 style="color:#fff;margin:0;font-size:24px;font-weight:700;">StudyAssist</h1>
-              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:14px;">Подтверждение email-адреса</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:40px 32px;text-align:center;">
-              <p style="color:#F1F5F9;font-size:18px;font-weight:600;margin:0 0 12px;">Привет, ${name}! 👋</p>
-              <p style="color:#94A3B8;font-size:15px;line-height:1.6;margin:0 0 32px;">
-                Вы зарегистрировались на StudyAssist.ru. Для завершения регистрации подтвердите ваш email-адрес, нажав на кнопку ниже.
-              </p>
-              <a href="${verifyUrl}"
-                 style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:16px 40px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;margin-bottom:32px;">
-                ✅ Подтвердить email
-              </a>
-              <p style="color:#64748B;font-size:13px;margin:0 0 8px;">Ссылка действует 24 часа.</p>
-              <p style="color:#64748B;font-size:12px;margin:0;">
-                Если вы не регистрировались на StudyAssist.ru — просто проигнорируйте это письмо.
-              </p>
-              <div style="margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.08);">
-                <p style="color:#475569;font-size:11px;margin:0;">
-                  Не открывается кнопка? Скопируйте ссылку:<br>
-                  <a href="${verifyUrl}" style="color:#6C3EF4;word-break:break-all;">${verifyUrl}</a>
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td style="background:#0F0F1A;padding:20px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
-              <p style="color:#374151;font-size:12px;margin:0;">© 2025 StudyAssist.ru — Все права защищены</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-  `
+  const htmlContent = buildVerificationEmailHtml(name, verifyUrl)
 
   await transporter.sendMail({
     from: `"StudyAssist" <${process.env.SMTP_USER}>`,
@@ -395,60 +528,7 @@ export async function sendPasswordResetEmail(
   const baseUrl = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
   const resetUrl = `${baseUrl}/auth/reset-password?token=${encodeURIComponent(token)}`
 
-  const htmlContent = `
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Восстановление пароля — StudyAssist</title>
-</head>
-<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
-    <tr>
-      <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
-          <tr>
-            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
-              <div style="display:inline-block;width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:12px;line-height:48px;font-size:24px;margin-bottom:16px;">🎓</div>
-              <h1 style="color:#fff;margin:0;font-size:24px;font-weight:700;">StudyAssist</h1>
-              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;font-size:14px;">Восстановление пароля</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:40px 32px;text-align:center;">
-              <p style="color:#F1F5F9;font-size:18px;font-weight:600;margin:0 0 12px;">Привет, ${name}! 🔐</p>
-              <p style="color:#94A3B8;font-size:15px;line-height:1.6;margin:0 0 32px;">
-                Мы получили запрос на сброс пароля для вашего аккаунта на StudyAssist.ru. Нажмите на кнопку ниже, чтобы создать новый пароль.
-              </p>
-              <a href="${resetUrl}"
-                 style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:16px 40px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;margin-bottom:32px;">
-                🔑 Сбросить пароль
-              </a>
-              <p style="color:#64748B;font-size:13px;margin:0 0 8px;">Ссылка действует 1 час.</p>
-              <p style="color:#64748B;font-size:12px;margin:0;">
-                Если вы не запрашивали сброс пароля — просто проигнорируйте это письмо. Ваш пароль останется прежним.
-              </p>
-              <div style="margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.08);">
-                <p style="color:#475569;font-size:11px;margin:0;">
-                  Не открывается кнопка? Скопируйте ссылку:<br>
-                  <a href="${resetUrl}" style="color:#6C3EF4;word-break:break-all;">${resetUrl}</a>
-                </p>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td style="background:#0F0F1A;padding:20px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
-              <p style="color:#374151;font-size:12px;margin:0;">© 2025 StudyAssist.ru — Все права защищены</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-  `
+  const htmlContent = buildPasswordResetEmailHtml(name, resetUrl)
 
   await transporter.sendMail({
     from: `"StudyAssist" <${process.env.SMTP_USER}>`,
@@ -466,30 +546,7 @@ export async function sendWorkCompletedEmail(
   const orderLabel = formatOrderId(orderId)
   const dashboardUrl = `${process.env.NEXTAUTH_URL || 'https://studyassist.ru'}/dashboard`
 
-  const html = `
-<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Работа готова</title></head>
-<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(16,185,129,0.3);">
-        <tr><td style="background:linear-gradient(135deg,#059669,#10B981);padding:32px;text-align:center;">
-          <h1 style="color:#fff;margin:0;font-size:26px;">🎉 Ваша работа готова!</h1>
-          <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;">Заявка ${orderLabel}</p>
-        </td></tr>
-        <tr><td style="padding:32px;text-align:center;">
-          <p style="color:#F1F5F9;font-size:17px;margin:0 0 12px;">Мы завершили работу над вашим заданием.</p>
-          <p style="color:#94A3B8;font-size:15px;">Файлы готовой работы (${fileCount} шт.) доступны для скачивания в личном кабинете.</p>
-          <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#059669,#10B981);color:#fff;padding:16px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;margin:24px 0;">
-            Скачать работу
-          </a>
-          <p style="color:#64748B;font-size:13px;margin-top:16px;">
-            Если у вас есть замечания, вы можете запросить доработку прямо из личного кабинета.
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body></html>`
+  const html = buildWorkCompletedEmailHtml(orderLabel, fileCount, dashboardUrl)
 
   await transporter.sendMail({
     from: `"StudyAssist" <${process.env.SMTP_USER}>`,
@@ -509,41 +566,7 @@ export async function sendRevisionRequestEmail(
   const orderLabel = formatOrderId(orderId)
   const adminUrl = `${process.env.NEXTAUTH_URL || 'https://studyassist.ru'}/admin/orders`
 
-  const html = `
-<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Запрос на доработку</title></head>
-<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(245,158,11,0.3);">
-        <tr><td style="background:linear-gradient(135deg,#D97706,#F59E0B);padding:32px;text-align:center;">
-          <h1 style="color:#fff;margin:0;font-size:24px;">🔄 Запрос на доработку</h1>
-          <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;">Заявка ${orderLabel}</p>
-        </td></tr>
-        <tr><td style="padding:32px;">
-          <table width="100%" cellpadding="0" cellspacing="0">
-            <tr><td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
-              <span style="color:#94A3B8;font-size:13px;">Клиент</span><br>
-              <span style="color:#F1F5F9;font-size:15px;">${clientName} (${clientEmail})</span>
-            </td></tr>
-            <tr><td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
-              <span style="color:#94A3B8;font-size:13px;">Замечания</span><br>
-              <span style="color:#F1F5F9;font-size:15px;line-height:1.6;">${note.replace(/\n/g, '<br>')}</span>
-            </td></tr>
-            <tr><td style="padding:10px 0;">
-              <span style="color:#94A3B8;font-size:13px;">Прикреплено файлов</span><br>
-              <span style="color:#F1F5F9;font-size:15px;">${fileCount} шт.</span>
-            </td></tr>
-          </table>
-          <div style="text-align:center;margin-top:24px;">
-            <a href="${adminUrl}" style="display:inline-block;background:linear-gradient(135deg,#6C3EF4,#3B82F6);color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">
-              Открыть заявку в панели
-            </a>
-          </div>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body></html>`
+  const html = buildRevisionRequestEmailHtml(orderLabel, clientName, clientEmail, note, fileCount, adminUrl)
 
   const recipients = ['support@studyassist.ru', 'admin@studyassist.ru'].filter(
     (e, i, arr) => arr.indexOf(e) === i && e !== process.env.SMTP_USER
@@ -566,43 +589,7 @@ export async function sendPaymentLinkEmail(
 ): Promise<void> {
   const orderLabel = formatOrderId(orderId)
 
-  const htmlContent = `
-<!DOCTYPE html>
-<html lang="ru">
-<head><meta charset="UTF-8"><title>Ссылка на оплату</title></head>
-<body style="margin:0;padding:0;background:#0F0F1A;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F0F1A;padding:40px 0;">
-    <tr>
-      <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid rgba(108,62,244,0.3);">
-          <tr>
-            <td style="background:linear-gradient(135deg,#6C3EF4,#3B82F6);padding:32px;text-align:center;">
-              <h1 style="color:#fff;margin:0;font-size:24px;">💳 Ссылка на оплату</h1>
-              <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;">Заявка ${orderLabel}</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:32px;text-align:center;">
-              <p style="color:#F1F5F9;font-size:16px;">Ваша работа проверена и готова к передаче.</p>
-              <p style="color:#94A3B8;font-size:15px;">Стоимость работы:</p>
-              <div style="font-size:32px;font-weight:700;color:#F59E0B;margin:16px 0;">${amount.toLocaleString('ru-RU')} ₽</div>
-              <a href="${paymentLink}"
-                 style="display:inline-block;background:linear-gradient(135deg,#F59E0B,#EF4444);color:#fff;padding:16px 40px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;margin:16px 0;">
-                Оплатить сейчас
-              </a>
-              <p style="color:#94A3B8;font-size:13px;margin-top:24px;">
-                После оплаты работа будет автоматически доступна в вашем
-                <a href="${process.env.NEXTAUTH_URL}/dashboard" style="color:#6C3EF4;">личном кабинете</a>
-              </p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-  `
+  const htmlContent = buildPaymentLinkEmailHtml(orderLabel, paymentLink, amount)
 
   await transporter.sendMail({
     from: `"StudyAssist" <${process.env.SMTP_USER}>`,
