@@ -56,11 +56,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Vintage OS type: Press Start 2P (display), Nunito Sans (body), Share Tech Mono (digits)
+        {/* Vintage OS type: Press Start 2P (display), Tiny5 (body), Share Tech Mono (digits)
             (prices/captions); css2 serves Cyrillic automatically where the family has it,
             with JetBrains Mono kept as the Cyrillic fallback for mono text. */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Tiny5&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>

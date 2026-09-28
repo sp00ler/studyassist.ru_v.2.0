@@ -51,7 +51,9 @@
   }
   body {
     @apply bg-desk text-ink;
-    font-family: 'Nunito Sans', system-ui, sans-serif;
+    font-family: 'Tiny5', system-ui, sans-serif;
+    font-synthesis: none; /* Tiny5 has one weight — no smeared fake bold */
+    font-size-adjust: 0.56; /* Tiny5 has a tiny x-height: scale it up to normal reading size */
     font-size: 16px;
     line-height: 1.55;
   }
@@ -396,3 +398,5 @@ html.sa-fine * {
 
 /* Press Start 2P ships one weight: stop Tailwind font-bold/semibold from smearing it */
 .font-display { font-weight: 400 !important; font-synthesis: none; }
+/* keep the display/mono fonts at their authored size (font-size-adjust is inherited) */
+h1, h2, h3, h4, .font-display, .font-mono, .titlebar { font-size-adjust: none; }

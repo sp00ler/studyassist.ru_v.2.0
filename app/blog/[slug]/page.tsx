@@ -134,7 +134,7 @@ export default async function BlogPostPage({ params }: Props) {
                     </div>
                   )}
 
-                  {/* Content — 18px Nunito Sans body, ~70ch measure for readability */}
+                  {/* Content — 18px Tiny5 body, ~70ch measure for readability */}
                   <div
                     className="prose-sa max-w-[70ch]"
                     style={{ color: 'rgb(var(--ink))', fontSize: '18px', lineHeight: 1.7 }}

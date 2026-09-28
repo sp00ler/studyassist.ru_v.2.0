@@ -97,7 +97,7 @@ export function Footer() {
 
         {/* Taskbar-style bottom bar */}
         <div className="bevel-out bg-chrome px-4 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[12px] font-sans text-ink">© <span className="font-mono">2025</span> StudyAssist. Образовательные консультации.</p>
+          <p className="text-[12px] font-sans text-ink">© <span className="font-mono">{new Date().getFullYear()}</span> StudyAssist. Образовательные консультации.</p>
           <p className="text-[12px] font-sans text-ink">Режим работы: <span className="font-mono">9:00 – 23:00</span> МСК</p>
         </div>
       </div>

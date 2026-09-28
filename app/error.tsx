@@ -17,7 +17,7 @@ export default function GlobalError({
   // render even if globals.css or app providers failed to load.
   return (
     <html lang="ru">
-      <body style={{ background: '#008080', color: '#000', fontFamily: "'Nunito Sans', system-ui, sans-serif", margin: 0 }}>
+      <body style={{ background: '#008080', color: '#000', fontFamily: "'Tiny5', system-ui, sans-serif", margin: 0 }}>
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
           <div
             style={{
@@ -61,7 +61,7 @@ export default function GlobalError({
                     color: '#fff',
                     fontWeight: 700,
                     fontSize: 13,
-                    fontFamily: "'Nunito Sans', system-ui, sans-serif",
+                    fontFamily: "'Tiny5', system-ui, sans-serif",
                     border: '1px solid #000',
                     boxShadow: 'inset 1px 1px 0 0 rgba(255,255,255,.45), inset -1px -1px 0 0 rgba(0,0,0,.4)',
                     cursor: 'pointer',
@@ -77,7 +77,7 @@ export default function GlobalError({
                     color: '#000',
                     fontWeight: 700,
                     fontSize: 13,
-                    fontFamily: "'Nunito Sans', system-ui, sans-serif",
+                    fontFamily: "'Tiny5', system-ui, sans-serif",
                     border: '1px solid #000',
                     boxShadow: 'inset 1px 1px 0 0 #fff, inset -1px -1px 0 0 #808080',
                     textDecoration: 'none',

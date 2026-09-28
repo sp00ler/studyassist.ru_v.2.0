@@ -90,8 +90,8 @@ const config: Config = {
       },
       fontFamily: {
         // Vintage OS type: display = Press Start 2P (headings, window titles, buttons),
-        // sans = Nunito Sans (body), mono = Share Tech Mono (digits; Latin-only, so Cyrillic falls back to JetBrains Mono).
-        sans:       ["'Nunito Sans'", 'system-ui', 'sans-serif'],
+        // sans = Tiny5 (body, pixel, single weight), mono = Share Tech Mono (digits; Latin-only, so Cyrillic falls back to JetBrains Mono).
+        sans:       ["'Tiny5'", 'system-ui', 'sans-serif'],
         display:    ["'Press Start 2P'", 'monospace'],
         unbounded:  ['Unbounded', 'sans-serif'],
         pixel:      ["'Press Start 2P'", "'Unbounded'", 'monospace'],
