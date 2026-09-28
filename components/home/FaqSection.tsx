@@ -26,7 +26,7 @@ export function FaqSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-10"
         >
-          <h2 className="font-display text-3xl md:text-4xl font-black text-ink mb-3">
+          <h2 className="font-display text-lg sm:text-2xl leading-snug text-ink mb-3">
             Частые вопросы
           </h2>
           <p className="text-ink/80 text-base md:text-lg">

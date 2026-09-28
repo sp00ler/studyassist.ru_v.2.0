@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
           <div className="w-16 h-16 bevel-out bg-success/15 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-8 h-8 text-success" />
           </div>
-          <h2 className="font-display text-lg font-semibold text-ink mb-3">Письмо отправлено!</h2>
+          <h2 className="font-display text-lg text-ink mb-3">Письмо отправлено!</h2>
           <p className="text-ink-soft text-sm mb-2">
             Если аккаунт с адресом <span className="text-ink font-medium">{email}</span> существует,
             вы получите письмо со ссылкой для сброса пароля.

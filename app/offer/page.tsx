@@ -24,7 +24,7 @@ export default function OfferPage() {
               <span className="truncate">OFFER.TXT — Публичная оферта</span>
             </div>
             <div className="bg-paper p-6 sm:p-10">
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink mb-8">Публичная оферта</h1>
+          <h1 className="font-display text-lg sm:text-2xl leading-snug break-words text-ink mb-8">Публичная оферта</h1>
           <div className="space-y-6 text-ink-soft leading-relaxed">
             <p>Настоящая публичная оферта является официальным предложением ИП StudyAssist заключить договор об оказании образовательных консультационных услуг.</p>
             <h2 className="text-xl font-semibold text-ink">1. Предмет договора</h2>

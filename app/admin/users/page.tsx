@@ -270,10 +270,10 @@ export default function AdminUsersPage() {
           {total > 20 && (
             <div className="flex items-center justify-center gap-3 mt-6">
               <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                className="btn-95 px-4 py-2 min-h-[44px] disabled:opacity-30 text-sm">←</button>
+                className="btn-95 px-4 py-2 min-h-[44px] disabled:opacity-30 text-[12px] font-display">←</button>
               <span className="text-ink-soft text-sm">Страница {page} из {Math.ceil(total / 20)}</span>
               <button onClick={() => setPage(p => p + 1)} disabled={page >= Math.ceil(total / 20)}
-                className="btn-95 px-4 py-2 min-h-[44px] disabled:opacity-30 text-sm">→</button>
+                className="btn-95 px-4 py-2 min-h-[44px] disabled:opacity-30 text-[12px] font-display">→</button>
             </div>
           )}
         </>

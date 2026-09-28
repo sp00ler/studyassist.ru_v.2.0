@@ -17,7 +17,7 @@ export default function GlobalError({
   // render even if globals.css or app providers failed to load.
   return (
     <html lang="ru">
-      <body style={{ background: '#008080', color: '#000', fontFamily: "'Golos Text', system-ui, sans-serif", margin: 0 }}>
+      <body style={{ background: '#008080', color: '#000', fontFamily: "'Nunito Sans', system-ui, sans-serif", margin: 0 }}>
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
           <div
             style={{
@@ -46,7 +46,7 @@ export default function GlobalError({
               <div style={{ fontFamily: "'JetBrains Mono', Consolas, monospace", fontWeight: 700, fontSize: 'clamp(56px,14vw,96px)', lineHeight: 1, color: 'rgba(0,0,128,0.15)', userSelect: 'none', marginBottom: '1.25rem' }}>
                 500
               </div>
-              <h1 style={{ fontFamily: "'Pixelify Sans', 'Unbounded', sans-serif", fontWeight: 700, fontSize: 'clamp(20px,4vw,28px)', margin: '0 0 1rem', color: '#000' }}>
+              <h1 style={{ fontFamily: "'Press Start 2P', system-ui, sans-serif", fontWeight: 400, fontSize: 'clamp(16px,4vw,22px)', lineHeight: 1.4, margin: '0 0 1rem', color: '#000' }}>
                 Что-то пошло не так
               </h1>
               <p style={{ color: '#3A3A3A', fontSize: 16, lineHeight: 1.6, margin: '0 0 2rem', maxWidth: 380, marginLeft: 'auto', marginRight: 'auto' }}>
@@ -61,7 +61,7 @@ export default function GlobalError({
                     color: '#fff',
                     fontWeight: 700,
                     fontSize: 13,
-                    fontFamily: "'Golos Text', system-ui, sans-serif",
+                    fontFamily: "'Nunito Sans', system-ui, sans-serif",
                     border: '1px solid #000',
                     boxShadow: 'inset 1px 1px 0 0 rgba(255,255,255,.45), inset -1px -1px 0 0 rgba(0,0,0,.4)',
                     cursor: 'pointer',
@@ -77,7 +77,7 @@ export default function GlobalError({
                     color: '#000',
                     fontWeight: 700,
                     fontSize: 13,
-                    fontFamily: "'Golos Text', system-ui, sans-serif",
+                    fontFamily: "'Nunito Sans', system-ui, sans-serif",
                     border: '1px solid #000',
                     boxShadow: 'inset 1px 1px 0 0 #fff, inset -1px -1px 0 0 #808080',
                     textDecoration: 'none',

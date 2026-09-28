@@ -43,7 +43,7 @@ export function Navbar() {
           {/* Desktop nav: OS toolbar row */}
           <div className="hidden md:flex items-center gap-1 flex-1 justify-center">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="btn-95 h-9 px-4 text-[13px] font-sans font-semibold">
+              <Link key={link.href} href={link.href} className="btn-95 h-9 px-4 text-[11px] font-display">
                 {link.label}
               </Link>
             ))}
@@ -54,14 +54,14 @@ export function Navbar() {
             {session ? (
               <>
                 <Link href="/dashboard">
-                  <button className="btn-95 h-9 px-4 text-[13px] inline-flex items-center gap-2">
+                  <button className="btn-95 h-9 px-4 text-[11px] font-display inline-flex items-center gap-2">
                     <LayoutDashboard className="w-4 h-4" />
                     Личный кабинет
                   </button>
                 </Link>
                 {session.user.isAdmin && (
                   <Link href="/admin">
-                    <button className="btn-95 h-9 px-3 text-[13px]">Админ</button>
+                    <button className="btn-95 h-9 px-3 text-[11px] font-display">Админ</button>
                   </Link>
                 )}
                 <button
@@ -75,10 +75,10 @@ export function Navbar() {
             ) : (
               <>
                 <Link href="/auth/login">
-                  <button className="btn-95 h-9 px-4 text-[13px] font-semibold">Войти</button>
+                  <button className="btn-95 h-9 px-4 text-[11px] font-display">Войти</button>
                 </Link>
                 <Link href="/#order">
-                  <button className="btn-95-primary h-9 px-5 text-[13px]">Заказать</button>
+                  <button className="btn-95-primary h-9 px-5 text-[11px] font-display">Заказать</button>
                 </Link>
               </>
             )}
@@ -87,7 +87,7 @@ export function Navbar() {
           {/* Mobile: CTA always visible + Start-menu-style burger */}
           <div className="flex md:hidden items-center gap-2">
             <Link href="/#order">
-              <button className="btn-95-primary min-h-[44px] px-4 text-[13px]">Заказать</button>
+              <button className="btn-95-primary min-h-[44px] px-4 text-[11px] font-display">Заказать</button>
             </Link>
             <button
               className="btn-95 min-w-[44px] min-h-[44px] inline-flex items-center justify-center"
@@ -118,7 +118,7 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="btn-95 w-full min-h-[44px] flex items-center px-4 text-[14px] font-sans font-semibold justify-start"
+                  className="btn-95 w-full min-h-[44px] flex items-center px-4 text-[12px] font-display justify-start"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
@@ -128,20 +128,20 @@ export function Navbar() {
                 {session ? (
                   <>
                     <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
-                      <button className="btn-95 w-full min-h-[44px] flex items-center gap-2 px-4 text-[14px] justify-start">
+                      <button className="btn-95 w-full min-h-[44px] flex items-center gap-2 px-4 text-[12px] font-display justify-start">
                         <LayoutDashboard className="w-4 h-4" />
                         Личный кабинет
                       </button>
                     </Link>
                     {session.user.isAdmin && (
                       <Link href="/admin" onClick={() => setMobileOpen(false)}>
-                        <button className="btn-95 w-full min-h-[44px] flex items-center px-4 text-[14px] justify-start">
+                        <button className="btn-95 w-full min-h-[44px] flex items-center px-4 text-[12px] font-display justify-start">
                           Админ
                         </button>
                       </Link>
                     )}
                     <button
-                      className="btn-95 w-full min-h-[44px] flex items-center gap-2 px-4 text-[14px] justify-start"
+                      className="btn-95 w-full min-h-[44px] flex items-center gap-2 px-4 text-[12px] font-display justify-start"
                       onClick={() => {
                         signOut()
                         setMobileOpen(false)
@@ -153,7 +153,7 @@ export function Navbar() {
                   </>
                 ) : (
                   <Link href="/auth/login" onClick={() => setMobileOpen(false)}>
-                    <button className="btn-95 w-full min-h-[44px] flex items-center px-4 text-[14px] justify-start">
+                    <button className="btn-95 w-full min-h-[44px] flex items-center px-4 text-[12px] font-display justify-start">
                       Войти
                     </button>
                   </Link>

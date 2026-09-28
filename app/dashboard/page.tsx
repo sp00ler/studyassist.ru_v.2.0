@@ -213,7 +213,7 @@ export default function DashboardPage() {
               </div>
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="btn-95 h-9 px-3 text-[13px] inline-flex items-center gap-2"
+                className="btn-95 h-9 px-3 text-[11px] font-display inline-flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
                 <span className="hidden sm:inline">Выйти</span>
@@ -242,7 +242,7 @@ export default function DashboardPage() {
                 id={`tab-${tab.id}`}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  'flex items-center gap-2 px-4 h-10 min-h-[44px] text-[13px] font-sans font-semibold border border-b-0 border-chrome-shadow whitespace-nowrap',
+                  'flex items-center gap-2 px-4 h-10 min-h-[44px] text-[11px] font-display border border-b-0 border-chrome-shadow whitespace-nowrap',
                   activeTab === tab.id ? 'bg-paper text-ink relative -mb-px' : 'bg-chrome text-ink-soft hover:text-ink'
                 )}
               >
@@ -387,7 +387,7 @@ export default function DashboardPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{ backgroundColor: '#2AABEE' }}
-                          className="btn-95 flex items-center justify-center gap-2 w-full text-white py-2.5 text-sm font-semibold"
+                          className="btn-95 flex items-center justify-center gap-2 w-full text-white py-2.5 text-[11px] font-display"
                         >
                           <Send className="w-4 h-4" />
                           Открыть в Telegram

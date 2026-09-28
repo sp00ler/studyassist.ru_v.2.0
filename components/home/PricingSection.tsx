@@ -40,7 +40,7 @@ export function PricingSection() {
           transition={{ duration: 0.5 }}
           className="mb-8 sm:mb-10"
         >
-          <h2 className="font-display text-[28px] sm:text-[32px] lg:text-[48px] font-bold leading-[1.1] tracking-[-0.01em] text-paper mb-3">
+          <h2 className="font-display text-[18px] sm:text-[22px] lg:text-[28px] leading-[1.35] text-paper mb-3">
             Прозрачные цены. Никаких скрытых доплат.
           </h2>
           <p className="text-paper text-base leading-[1.55] max-w-xl">
@@ -63,7 +63,7 @@ export function PricingSection() {
               {/* Accent price-tag sticker — the ONE highlighted plan */}
               {plan.hot && (
                 <span
-                  className="absolute -top-3 -right-3 z-10 bg-accent text-ink font-display text-xs font-bold px-3 py-1.5 border border-chrome-shadow rotate-[6deg] shadow-[2px_2px_0_0_rgb(var(--chrome-shadow))]"
+                  className="absolute -top-3 -right-3 z-10 bg-accent text-ink font-display text-xs px-3 py-1.5 border border-chrome-shadow rotate-[6deg] shadow-[2px_2px_0_0_rgb(var(--chrome-shadow))]"
                   aria-hidden="true"
                 >
                   ХИТ

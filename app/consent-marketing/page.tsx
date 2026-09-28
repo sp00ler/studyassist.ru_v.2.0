@@ -24,7 +24,7 @@ export default function ConsentMarketingPage() {
               <span className="truncate">MARKETING.TXT — Согласие на рекламные сообщения</span>
             </div>
             <div className="bg-paper p-6 sm:p-10">
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink mb-2">
+          <h1 className="font-display text-lg sm:text-2xl leading-snug break-words text-ink mb-2">
             Согласие на получение рекламных и информационных сообщений
           </h1>
 

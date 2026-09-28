@@ -102,7 +102,7 @@ export default async function PortfolioPage({
               <div className="bg-paper">
                 {/* Header */}
                 <section className="px-5 sm:px-10 py-10 border-b border-chrome-shadow/30">
-                  <h1 className="font-display font-bold text-[clamp(28px,4.5vw,44px)] leading-[1.15] text-ink mb-4">
+                  <h1 className="font-display text-[clamp(22px,4.5vw,40px)] leading-[1.4] text-ink mb-4">
                     Примеры работ
                   </h1>
                   <p className="text-base text-ink-soft max-w-[560px] leading-[1.7]">
@@ -119,7 +119,7 @@ export default async function PortfolioPage({
                           key={tab.label}
                           href={href}
                           aria-current={active ? 'true' : undefined}
-                          className={`px-4 py-2 text-sm font-bold transition-colors border border-chrome-shadow ${
+                          className={`px-4 py-2 text-[11px] font-display transition-colors border border-chrome-shadow ${
                             active
                               ? 'bg-title text-white'
                               : 'bg-chrome text-ink hover:bg-chrome-light/60'
@@ -167,7 +167,7 @@ export default async function PortfolioPage({
                             {/* Preview text */}
                             {item.previewText && (
                               <div className="bg-chrome/25 border border-chrome-shadow/20 p-3 flex-1">
-                                <p className="text-xs text-ink-soft leading-[1.7] line-clamp-5 font-mono">
+                                <p className="text-xs text-ink-soft leading-[1.7] line-clamp-5 font-sans">
                                   {item.previewText}
                                 </p>
                               </div>
@@ -201,13 +201,13 @@ export default async function PortfolioPage({
 
                 {/* CTA */}
                 <section className="px-5 sm:px-10 py-12 bg-title text-center">
-                  <h2 className="font-display font-bold text-xl sm:text-2xl text-white mb-3">
+                  <h2 className="font-display text-xl sm:text-2xl text-white mb-3">
                     Нужна похожая работа?
                   </h2>
                   <p className="text-sm text-white/80 mb-7">
                     Опишите задачу — подберём специалиста и назовём цену за 30 минут
                   </p>
-                  <Button asChild variant="amber" size="lg">
+                  <Button asChild variant="amber" size="lg" className="h-auto min-h-[44px] py-3 whitespace-normal text-center leading-snug">
                     <Link href="/#order">Оставить заявку — бесплатно</Link>
                   </Button>
                 </section>

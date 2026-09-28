@@ -498,7 +498,7 @@ export function OrderForm() {
               <div className="bevel-out bg-success w-20 h-20 flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="w-10 h-10 text-white" aria-hidden="true" />
               </div>
-              <h3 className="font-display text-2xl md:text-3xl font-black text-ink mb-3">Заявка принята!</h3>
+              <h3 className="font-display text-xl sm:text-2xl leading-snug text-ink mb-3">Заявка принята!</h3>
               <p className="text-ink-soft mb-4">Ваша заявка успешно отправлена</p>
               <div className="inline-block bevel-in bg-paper px-6 py-3 mb-6">
                 <p className="text-ink-soft text-sm">Номер заявки</p>
@@ -527,7 +527,7 @@ export function OrderForm() {
           transition={{ duration: 0.5 }}
           className="text-center mb-10"
         >
-          <h2 className="font-display text-3xl md:text-4xl font-black text-ink mb-3">
+          <h2 className="font-display text-lg sm:text-2xl leading-snug break-words text-ink mb-3">
             Опиши ситуацию — ответим за 30 минут
           </h2>
           <p className="text-ink/80 text-base md:text-lg">Без регистрации. Без предоплаты. Просто напиши — и мы разберёмся.</p>

@@ -81,7 +81,7 @@ export default function AdminPostsPage() {
             key={t.value}
             onClick={() => setTab(t.value as typeof tab)}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all',
+              'flex items-center gap-2 px-4 py-2 text-[11px] font-display transition-all',
               tab === t.value ? 'btn-95-primary' : 'text-ink-soft hover:text-ink'
             )}
           >

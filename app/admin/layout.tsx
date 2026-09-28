@@ -56,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'w-full h-11 min-h-[44px] px-3 flex items-center gap-3 text-[13px] font-sans font-semibold justify-start',
+                  'w-full h-11 min-h-[44px] px-3 flex items-center gap-3 text-[11px] font-display justify-start',
                   isActive ? 'btn-95-primary' : 'btn-95 text-ink-soft hover:text-ink'
                 )}
               >
@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-3 border-t border-chrome-shadow">
           <button
             onClick={() => signOut({ callbackUrl: '/' })}
-            className="btn-95 w-full h-11 min-h-[44px] px-3 flex items-center gap-3 text-[13px] font-sans font-semibold justify-start text-danger hover:bg-danger hover:text-white"
+            className="btn-95 w-full h-11 min-h-[44px] px-3 flex items-center gap-3 text-[11px] font-display justify-start text-danger hover:bg-danger hover:text-white"
           >
             <LogOut className="w-4 h-4" />
             Выйти

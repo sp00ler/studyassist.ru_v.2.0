@@ -150,11 +150,11 @@ export function ChatWidget() {
     return (
       <button
         onClick={openChat}
-        className="btn-95-primary pixel-shadow fixed bottom-6 right-6 z-40 h-14 pl-4 pr-5 inline-flex items-center gap-2 whitespace-nowrap"
+        className="btn-95-primary pixel-shadow fixed bottom-6 right-6 z-40 h-14 pl-4 pr-5 inline-flex items-center gap-2 whitespace-nowrap font-display text-[11px]"
         aria-label="Открыть чат поддержки"
       >
         <MessageCircle className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
-        <span className="font-sans text-[13px] font-bold">Поддержка</span>
+        <span>Поддержка</span>
         {unread > 0 && (
           <span className="bevel-out absolute -top-2 -right-2 min-w-[20px] h-5 px-1 bg-danger text-white text-xs flex items-center justify-center font-bold">
             {unread > 9 ? '9+' : unread}
@@ -228,7 +228,7 @@ export function ChatWidget() {
           <button
             type="submit"
             disabled={submitting || !firstMsg.trim()}
-            className="btn-95-primary py-2.5 text-sm flex items-center justify-center gap-2"
+            className="btn-95-primary py-2.5 text-[11px] font-display flex items-center justify-center gap-2"
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             Начать чат

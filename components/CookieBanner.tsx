@@ -95,13 +95,13 @@ export function CookieBanner() {
         <div className="flex gap-2">
           <button
             onClick={() => accept('all')}
-            className="btn-95-primary flex-1 min-h-[44px] text-xs px-4"
+            className="btn-95-primary flex-1 min-h-[44px] text-[11px] font-display px-4"
           >
             Принять все
           </button>
           <button
             onClick={() => accept('necessary')}
-            className="btn-95 flex-1 min-h-[44px] text-xs px-4"
+            className="btn-95 flex-1 min-h-[44px] text-[11px] font-display px-4"
           >
             Только необходимые
           </button>

@@ -101,7 +101,7 @@ export default async function BlogPage({
               <div className="bg-paper">
                 {/* Header */}
                 <section className="px-5 sm:px-10 py-10 border-b border-chrome-shadow/30">
-                  <h1 className="font-display font-bold text-[clamp(28px,4.5vw,44px)] leading-[1.15] text-ink mb-4">
+                  <h1 className="font-display text-[clamp(22px,4.5vw,40px)] leading-[1.4] text-ink mb-4">
                     Блог и новости
                   </h1>
                   <p className="text-base text-ink-soft max-w-[560px] leading-[1.7]">
@@ -118,7 +118,7 @@ export default async function BlogPage({
                           key={tab.label}
                           href={href}
                           aria-current={active ? 'true' : undefined}
-                          className={`px-4 py-2 text-sm font-bold transition-colors border border-chrome-shadow ${
+                          className={`px-4 py-2 text-[11px] font-display transition-colors border border-chrome-shadow ${
                             active
                               ? 'bg-title text-white'
                               : 'bg-chrome text-ink hover:bg-chrome-light/60'
@@ -157,7 +157,7 @@ export default async function BlogPage({
                               </div>
                             ) : (
                               <div className="aspect-[16/9] bg-chrome/30 border-b border-chrome-shadow/30 flex items-center justify-center">
-                                <span className="font-display font-bold text-title/20 text-4xl">SA</span>
+                                <span className="font-display text-title/20 text-4xl">SA</span>
                               </div>
                             )}
                             <div className="p-4">

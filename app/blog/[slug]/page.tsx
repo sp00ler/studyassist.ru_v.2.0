@@ -118,7 +118,7 @@ export default async function BlogPostPage({ params }: Props) {
                     </span>
                   </div>
 
-                  <h1 className="font-display font-bold text-[clamp(24px,4vw,40px)] leading-[1.2] text-ink mb-6 max-w-[70ch]">
+                  <h1 className="font-display text-[clamp(22px,4vw,40px)] leading-[1.4] text-ink mb-6 max-w-[70ch]">
                     {post.title}
                   </h1>
 
@@ -134,7 +134,7 @@ export default async function BlogPostPage({ params }: Props) {
                     </div>
                   )}
 
-                  {/* Content — 18px Golos body, ~70ch measure for readability */}
+                  {/* Content — 18px Nunito Sans body, ~70ch measure for readability */}
                   <div
                     className="prose-sa max-w-[70ch]"
                     style={{ color: 'rgb(var(--ink))', fontSize: '18px', lineHeight: 1.7 }}
@@ -155,7 +155,7 @@ export default async function BlogPostPage({ params }: Props) {
 
                 {/* CTA */}
                 <div className="px-5 sm:px-10 py-12 bg-title text-center">
-                  <h2 className="font-display font-bold text-xl text-white mb-3">
+                  <h2 className="font-display text-xl text-white mb-3">
                     Нужна помощь с учёбой?
                   </h2>
                   <p className="text-sm text-white/80 mb-7">Оставьте заявку — ответим за 30 минут</p>

@@ -45,12 +45,12 @@ export async function BlogPreviewSection() {
           <div className="p-4 sm:p-8">
             <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
               <div>
-                <h2 className="font-display text-2xl md:text-3xl font-black text-ink mb-2">Полезные материалы</h2>
+                <h2 className="font-display text-lg sm:text-2xl leading-snug text-ink mb-2">Полезные материалы</h2>
                 <p className="text-ink-soft text-sm md:text-base">Советы для студентов, разбор тем, новости сервиса</p>
               </div>
               <Link
                 href="/blog"
-                className="btn-95 flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-bold"
+                className="btn-95 flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 text-[11px] font-display"
               >
                 Все статьи →
               </Link>
@@ -73,7 +73,7 @@ export async function BlogPreviewSection() {
                     </div>
                   ) : (
                     <div className="aspect-[16/9] bg-chrome border-b border-chrome-shadow flex items-center justify-center">
-                      <span className="font-display font-black text-title/20 text-[40px]">SA</span>
+                      <span className="font-display text-title/20 text-[40px]">SA</span>
                     </div>
                   )}
                   <div className="p-5 flex flex-col gap-2">

@@ -47,12 +47,12 @@ export async function PortfolioPreviewSection() {
           <div className="p-4 sm:p-8">
             <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
               <div>
-                <h2 className="font-display text-2xl md:text-3xl font-black text-ink mb-2">Примеры работ</h2>
+                <h2 className="font-display text-lg sm:text-2xl leading-snug text-ink mb-2">Примеры работ</h2>
                 <p className="text-ink-soft text-sm md:text-base">Фрагменты реальных работ — убедитесь в качестве до заказа</p>
               </div>
               <Link
                 href="/portfolio"
-                className="btn-95 flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-bold"
+                className="btn-95 flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 text-[11px] font-display"
               >
                 Все примеры →
               </Link>
@@ -84,7 +84,7 @@ export async function PortfolioPreviewSection() {
 
                   {item.previewText && (
                     <div className="bevel-in bg-chrome/30 p-3 flex-1">
-                      <p className="text-[12.5px] text-ink-soft leading-[1.7] line-clamp-4 font-mono">
+                      <p className="text-[12.5px] text-ink-soft leading-[1.7] line-clamp-4 font-sans">
                         {item.previewText}
                       </p>
                     </div>
@@ -102,7 +102,7 @@ export async function PortfolioPreviewSection() {
             <div className="text-center mt-10">
               <Link
                 href="/portfolio"
-                className="btn-95-primary inline-flex items-center gap-2 px-8 py-3.5 font-sans font-bold text-[13px]"
+                className="btn-95-primary inline-flex items-center gap-2 px-8 py-3.5 font-display text-[11px]"
               >
                 Смотреть все примеры →
               </Link>

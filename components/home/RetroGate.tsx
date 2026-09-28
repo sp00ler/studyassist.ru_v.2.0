@@ -51,7 +51,7 @@ export function RetroGate({ onEnter }: RetroGateProps) {
           style={{ left: '20.6%', top: '21.5%', width: '21.5%', height: '27%' }}
         >
           <span className="absolute inset-0 ring-0 group-hover:ring-4 ring-accent/70 group-focus-visible:ring-4 transition-all duration-150" />
-          <span className="absolute bottom-[10%] left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-[7px] sm:text-[10px] text-paper bg-ink/85 border border-accent/70 px-1.5 py-1 opacity-90 group-hover:opacity-100 group-hover:bg-accent group-hover:text-ink transition-colors animate-pulse group-hover:animate-none">
+          <span className="absolute bottom-[10%] left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-[9px] sm:text-[10px] text-paper bg-ink/85 border border-accent/70 px-1.5 py-1 opacity-90 group-hover:opacity-100 group-hover:bg-accent group-hover:text-ink transition-colors animate-pulse group-hover:animate-none">
             нажми, чтобы войти ▸
           </span>
         </button>

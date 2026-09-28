@@ -22,7 +22,7 @@ export default function NotFound() {
               <div className="font-mono font-bold text-title/15 text-[clamp(64px,16vw,140px)] leading-none select-none mb-4">
                 404
               </div>
-              <h1 className="font-display font-bold text-[clamp(22px,4vw,32px)] leading-[1.2] text-ink mb-4">
+              <h1 className="font-display text-[clamp(20px,4vw,32px)] leading-[1.4] text-ink mb-4">
                 Страница не найдена
               </h1>
               <p className="text-ink-soft text-base mb-9">

@@ -31,7 +31,7 @@ export function HowItWorks() {
           transition={{ duration: 0.5 }}
           className="mb-8 sm:mb-10"
         >
-          <h2 className="font-display text-[28px] sm:text-[32px] lg:text-[48px] font-bold leading-[1.1] tracking-[-0.01em] text-paper mb-3">
+          <h2 className="font-display text-[18px] sm:text-[22px] lg:text-[28px] leading-[1.35] text-paper mb-3">
             Три шага — и работа готова
           </h2>
         </motion.div>
@@ -76,7 +76,7 @@ export function HowItWorks() {
                     Шаг {i + 1} из {steps.length}
                   </span>
                   <div className="w-11 h-11 flex items-center justify-center bevel-out bg-chrome mt-3 mb-4">
-                    <span className="font-display text-lg font-bold text-title">
+                    <span className="font-display text-lg text-title">
                       {step.number}
                     </span>
                   </div>

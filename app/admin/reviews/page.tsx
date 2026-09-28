@@ -144,7 +144,7 @@ export default function AdminReviewsPage() {
             key={v}
             onClick={() => setFilter(v)}
             className={cn(
-              'px-4 py-2 text-sm font-medium transition-all',
+              'px-4 py-2 text-[11px] font-display transition-all',
               filter === v ? 'btn-95-primary' : 'text-ink-soft hover:text-ink'
             )}
           >

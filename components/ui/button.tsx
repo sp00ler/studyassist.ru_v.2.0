@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap font-display text-[11px] leading-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
@@ -13,20 +13,20 @@ const buttonVariants = cva(
         // ghost -> flat with hover bevel, destructive -> danger fill.
         default: 'btn-95-primary',
         destructive:
-          'bg-danger text-white font-bold border border-chrome-shadow shadow-[inset_1px_1px_0_0_#fff,inset_-1px_-1px_0_0_#808080] hover:bg-danger/90 active:shadow-[inset_-1px_-1px_0_0_#fff,inset_1px_1px_0_0_#808080]',
+          'bg-danger text-white border border-chrome-shadow shadow-[inset_1px_1px_0_0_#fff,inset_-1px_-1px_0_0_#808080] hover:bg-danger/90 active:shadow-[inset_-1px_-1px_0_0_#fff,inset_1px_1px_0_0_#808080]',
         outline: 'btn-95',
         secondary: 'btn-95',
         ghost:
           'bg-transparent text-ink border border-transparent hover:bg-chrome hover:border-chrome-shadow hover:shadow-[inset_1px_1px_0_0_#fff,inset_-1px_-1px_0_0_#808080]',
-        link: 'text-title underline-offset-4 hover:underline',
+        link: 'font-sans text-sm font-semibold text-title underline-offset-4 hover:underline',
         amber:
-          'bg-accent text-ink font-bold border border-chrome-shadow shadow-[inset_1px_1px_0_0_#fff,inset_-1px_-1px_0_0_#808080] hover:bg-accent/80 active:shadow-[inset_-1px_-1px_0_0_#fff,inset_1px_1px_0_0_#808080]',
+          'bg-accent text-ink border border-chrome-shadow shadow-[inset_1px_1px_0_0_#fff,inset_-1px_-1px_0_0_#808080] hover:bg-accent/80 active:shadow-[inset_-1px_-1px_0_0_#fff,inset_1px_1px_0_0_#808080]',
       },
       size: {
         default: 'h-10 px-6 py-2',
-        sm: 'h-9 px-4 text-xs',
-        lg: 'h-12 px-8 text-base',
-        xl: 'h-14 px-10 text-base',
+        sm: 'h-9 px-4 text-[10px]',
+        lg: 'h-12 px-8 text-[12px]',
+        xl: 'h-14 px-10 text-[12px]',
         icon: 'h-10 w-10',
       },
     },

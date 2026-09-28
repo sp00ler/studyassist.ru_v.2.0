@@ -103,7 +103,7 @@ export default function EditPostPage() {
               <button
                 type="button"
                 onClick={() => set('published', !form.published)}
-                className={`btn-95 flex items-center gap-2 px-4 py-2 text-sm font-medium w-full justify-center ${
+                className={`btn-95 flex items-center gap-2 px-4 py-2 text-[11px] font-display w-full justify-center ${
                   form.published ? 'bg-success/15 text-success' : 'text-ink-soft'
                 }`}
               >

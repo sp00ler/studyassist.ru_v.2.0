@@ -151,7 +151,7 @@ export default function ContactsPage() {
                   <ArrowLeft className="w-4 h-4" />
                   На главную
                 </Link>
-                <h1 className="font-display font-bold text-[clamp(26px,4vw,40px)] leading-[1.15] text-ink mb-3">
+                <h1 className="font-display text-[clamp(22px,4vw,40px)] leading-[1.4] text-ink mb-3">
                   Контакты
                 </h1>
                 <p className="text-ink-soft mb-8">Свяжитесь с нами любым удобным способом — ответим в течение 30 минут.</p>

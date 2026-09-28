@@ -24,7 +24,7 @@ export default function PrivacyPage() {
               <span className="truncate">PRIVACY.TXT — Политика конфиденциальности</span>
             </div>
             <div className="bg-paper p-6 sm:p-10">
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink mb-2">Политика конфиденциальности</h1>
+          <h1 className="font-display text-lg sm:text-2xl leading-snug break-words text-ink mb-2">Политика конфиденциальности</h1>
           <p className="font-mono text-ink-soft text-sm mb-10">сервиса StudyAssist.ru · Редакция от 30.03.2026</p>
 
           <div className="space-y-6 text-ink-soft leading-relaxed">

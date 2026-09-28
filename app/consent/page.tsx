@@ -24,7 +24,7 @@ export default function ConsentPage() {
               <span className="truncate">CONSENT.TXT — Согласие на обработку данных</span>
             </div>
             <div className="bg-paper p-6 sm:p-10">
-          <h1 className="font-display font-bold text-2xl sm:text-3xl text-ink mb-2">Согласие на обработку персональных данных</h1>
+          <h1 className="font-display text-lg sm:text-2xl leading-snug break-words text-ink mb-2">Согласие на обработку персональных данных</h1>
 
           <div className="space-y-6 text-ink-soft leading-relaxed mt-10">
             <p>

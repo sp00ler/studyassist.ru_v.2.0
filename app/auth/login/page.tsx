@@ -203,7 +203,7 @@ function LoginPage() {
           onClick={() => handleOAuth('vk')}
           disabled={!!oauthLoading}
           style={{ backgroundColor: '#0077FF' }}
-          className="btn-95 w-full flex items-center justify-center gap-3 h-11 text-white font-medium text-sm disabled:opacity-50"
+          className="btn-95 w-full flex items-center justify-center gap-3 h-11 text-white font-display text-[11px] disabled:opacity-50"
         >
           {oauthLoading === 'vk' ? <Loader2 className="w-4 h-4 animate-spin" /> : <VKIcon />}
           Войти через ВКонтакте
@@ -213,7 +213,7 @@ function LoginPage() {
           onClick={() => handleOAuth('mailru')}
           disabled={!!oauthLoading}
           style={{ backgroundColor: '#005FF9' }}
-          className="btn-95 w-full flex items-center justify-center gap-3 h-11 text-white font-medium text-sm disabled:opacity-50"
+          className="btn-95 w-full flex items-center justify-center gap-3 h-11 text-white font-display text-[11px] disabled:opacity-50"
         >
           {oauthLoading === 'mailru' ? <Loader2 className="w-4 h-4 animate-spin" /> : <MailRuIcon />}
           Войти через Mail.ru
@@ -223,7 +223,7 @@ function LoginPage() {
           onClick={() => handleOAuth('yandex')}
           disabled={!!oauthLoading}
           style={{ backgroundColor: '#FC3F1D' }}
-          className="btn-95 w-full flex items-center justify-center gap-3 h-11 text-white font-medium text-sm disabled:opacity-50"
+          className="btn-95 w-full flex items-center justify-center gap-3 h-11 text-white font-display text-[11px] disabled:opacity-50"
         >
           {oauthLoading === 'yandex' ? <Loader2 className="w-4 h-4 animate-spin" /> : <YandexIcon />}
           Войти через Яндекс

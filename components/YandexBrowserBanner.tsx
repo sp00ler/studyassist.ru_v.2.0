@@ -59,7 +59,7 @@ export function YandexBrowserBanner() {
           target="_blank"
           rel="noopener noreferrer"
           onClick={dismiss}
-          className="btn-95 whitespace-nowrap text-xs font-semibold px-3 py-1"
+          className="btn-95 whitespace-nowrap text-[11px] font-display px-3 py-1"
         >
           Скачать
         </a>

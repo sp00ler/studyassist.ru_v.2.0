@@ -42,10 +42,10 @@ export function ContactsFloat() {
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? 'Закрыть контакты' : 'Показать способы связи'}
         aria-expanded={open}
-        className="btn-95 pixel-shadow h-12 pl-3 pr-4 inline-flex items-center gap-2 whitespace-nowrap font-bold"
+        className="btn-95 pixel-shadow h-12 pl-3 pr-4 inline-flex items-center gap-2 whitespace-nowrap font-display text-[11px]"
       >
         {open ? <X className="w-5 h-5 flex-shrink-0" aria-hidden="true" /> : <Contact className="w-5 h-5 flex-shrink-0" aria-hidden="true" />}
-        <span className="font-sans text-[13px]">{open ? 'Закрыть' : 'Контакты'}</span>
+        <span>{open ? 'Закрыть' : 'Контакты'}</span>
       </button>
     </div>
   )

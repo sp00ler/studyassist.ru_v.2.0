@@ -79,7 +79,7 @@ export function ServicePage({
                 {/* Hero */}
                 <section className="px-5 sm:px-10 pt-10 pb-8 border-b border-chrome-shadow/30">
                   <div className="max-w-[720px]">
-                    <h1 className="font-display font-bold leading-[1.15] text-[clamp(28px,4.5vw,48px)] text-ink mb-5">
+                    <h1 className="font-display leading-[1.4] text-[clamp(20px,4.5vw,40px)] break-words text-ink mb-5">
                       {h1}
                     </h1>
                     <p className="text-[17px] text-ink-soft leading-[1.7] mb-8">{tagline}</p>
@@ -118,7 +118,7 @@ export function ServicePage({
 
                 {/* What's included */}
                 <section className="px-5 sm:px-10 py-10 border-b border-chrome-shadow/30">
-                  <h2 className="font-display font-bold text-xl sm:text-2xl text-ink mb-6">Что входит в работу</h2>
+                  <h2 className="font-display text-xl sm:text-2xl text-ink mb-6">Что входит в работу</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {included.map((item) => (
                       <div key={item} className="flex items-start gap-3 bg-chrome/20 border border-chrome-shadow/30 p-3">
@@ -131,7 +131,7 @@ export function ServicePage({
 
                 {/* Guarantees */}
                 <section className="px-5 sm:px-10 py-10 bg-chrome/25 border-b border-chrome-shadow/30">
-                  <h2 className="font-display font-bold text-xl sm:text-2xl text-ink mb-6">Наши обязательства</h2>
+                  <h2 className="font-display text-xl sm:text-2xl text-ink mb-6">Наши обязательства</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {guarantees.map(({ icon: Icon, title, text }) => (
                       <div key={title} className="window">
@@ -149,7 +149,7 @@ export function ServicePage({
 
                 {/* Process */}
                 <section className="px-5 sm:px-10 py-10 border-b border-chrome-shadow/30">
-                  <h2 className="font-display font-bold text-xl sm:text-2xl text-ink mb-6">Как мы работаем</h2>
+                  <h2 className="font-display text-xl sm:text-2xl text-ink mb-6">Как мы работаем</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {steps.map((s) => (
                       <div key={s.n}>
@@ -172,14 +172,14 @@ export function ServicePage({
                   <p className="text-white/80 text-sm mb-7">
                     Точную цену называем после изучения задачи — до копейки, без скрытых доплат
                   </p>
-                  <Button asChild variant="amber" size="lg">
+                  <Button asChild variant="amber" size="lg" className="h-auto min-h-[44px] py-3 whitespace-normal text-center leading-snug">
                     <Link href="/#order">Оставить заявку — бесплатно</Link>
                   </Button>
                 </section>
 
                 {/* FAQ */}
                 <section className="px-5 sm:px-10 py-10">
-                  <h2 className="font-display font-bold text-xl sm:text-2xl text-ink mb-6">Частые вопросы</h2>
+                  <h2 className="font-display text-xl sm:text-2xl text-ink mb-6">Частые вопросы</h2>
                   <Accordion type="single" collapsible className="max-w-[760px]">
                     {faq.map(({ q, a }) => (
                       <AccordionItem key={q} value={q}>
@@ -195,7 +195,7 @@ export function ServicePage({
                   <div className="window">
                     <div className="bg-paper p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                       <div>
-                        <h2 className="font-display font-bold text-xl text-ink mb-2">Готовы начать?</h2>
+                        <h2 className="font-display text-xl text-ink mb-2">Готовы начать?</h2>
                         <p className="text-ink-soft text-sm">Опишите задачу — ответим за 30 минут и согласуем детали</p>
                       </div>
                       <Button asChild size="lg" className="flex-shrink-0">

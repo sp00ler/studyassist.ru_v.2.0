@@ -115,8 +115,8 @@ body::after {
   }
 
   .section-heading {
-    @apply font-display text-[32px] md:text-[44px] lg:text-[56px] font-black
-           tracking-[-0.02em] leading-[1.05] mb-4;
+    @apply font-display text-[16px] sm:text-[20px] md:text-[24px] lg:text-[28px]
+           leading-[1.35] mb-4 break-words;
   }
 
   .section-sub {
@@ -325,15 +325,17 @@ body::after {
 }
 .prose-sa h1, .prose-sa h2, .prose-sa h3, .prose-sa h4 {
   font-family: 'Press Start 2P', monospace;
-  font-weight: 900;
+  font-weight: 400;
   color: rgb(var(--ink));
   margin-top: 2em;
   margin-bottom: 0.6em;
-  line-height: 1.2;
-  letter-spacing: -0.5px;
+  line-height: 1.4;
+  word-break: break-word;
 }
-.prose-sa h2 { font-size: 1.5rem; }
-.prose-sa h3 { font-size: 1.2rem; }
+.prose-sa h1 { font-size: clamp(18px, 4vw, 26px); }
+.prose-sa h2 { font-size: clamp(16px, 3.2vw, 22px); }
+.prose-sa h3 { font-size: clamp(15px, 2.6vw, 18px); }
+.prose-sa h4 { font-size: clamp(14px, 2.2vw, 16px); }
 .prose-sa p { margin-bottom: 1.4em; }
 .prose-sa a { color: rgb(var(--title)); text-decoration: underline; text-underline-offset: 3px; }
 .prose-sa a:hover { color: rgb(var(--title-alt)); }
