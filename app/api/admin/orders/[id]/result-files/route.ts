@@ -6,37 +6,29 @@ import { sendWorkCompletedEmail } from '@/lib/email'
 import { sendWorkCompletedNotification } from '@/lib/telegram'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
-import os from 'os'
+import { randomUUID } from 'crypto'
+import { resolvePrivateUploadPath } from '@/lib/private-file-storage'
+
+const MAX_FILES_PER_REQUEST = 10
+const MAX_SINGLE_FILE_SIZE = 30 * 1024 * 1024
+const MAX_TOTAL_SIZE = 50 * 1024 * 1024
+const ALLOWED_EXTENSIONS = new Set(['.pdf', '.doc', '.docx', '.txt', '.zip', '.jpg', '.jpeg', '.png', '.rar', '.7z'])
 
 export const maxDuration = 60
 export const dynamic = 'force-dynamic'
 
 async function saveFile(file: File, orderId: string): Promise<string> {
-  const bytes = await file.arrayBuffer()
-  const buffer = Buffer.from(bytes)
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-  const timestamp = Date.now()
-  const filename = `${timestamp}_${safeName}`
+  const extension = path.extname(file.name).toLowerCase()
+  const baseName = path.basename(file.name, path.extname(file.name))
+  const safeName = baseName.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 80) || 'file'
+  const filename = `${randomUUID()}_${safeName}${extension}`
+  const relativePath = `results/${orderId}/${filename}`
+  const destination = resolvePrivateUploadPath(relativePath)
+  if (!destination) throw new Error('Invalid result file path')
 
-  // Try RESULT_DIR env, then public/uploads/results, fallback to /tmp
-  if (process.env.RESULT_DIR) {
-    const dir = path.join(process.env.RESULT_DIR, orderId)
-    await mkdir(dir, { recursive: true })
-    await writeFile(path.join(dir, filename), buffer)
-    return `/api/files/results/${orderId}/${filename}`
-  }
-
-  const publicDir = path.join(process.cwd(), 'public', 'uploads', 'results', orderId)
-  try {
-    await mkdir(publicDir, { recursive: true })
-    await writeFile(path.join(publicDir, filename), buffer)
-    return `/api/files/results/${orderId}/${filename}`
-  } catch {
-    const tmpDir = path.join(os.tmpdir(), 'studyassist-results', orderId)
-    await mkdir(tmpDir, { recursive: true })
-    await writeFile(path.join(tmpDir, filename), buffer)
-    return `/api/files/results/${orderId}/${filename}`
-  }
+  await mkdir(path.dirname(destination), { recursive: true })
+  await writeFile(destination, Buffer.from(await file.arrayBuffer()), { flag: 'wx' })
+  return `/api/files/${relativePath}`
 }
 
 export async function POST(
@@ -60,18 +52,27 @@ export async function POST(
 
     const formData = await req.formData()
     const files = formData.getAll('files') as File[]
+    const selectedFiles = files.filter((file) => file instanceof File && file.size > 0)
 
-    if (!files || files.length === 0) {
+    if (selectedFiles.length === 0) {
       return NextResponse.json({ error: 'Файлы не переданы' }, { status: 400 })
+    }
+    if (selectedFiles.length > MAX_FILES_PER_REQUEST) {
+      return NextResponse.json({ error: `Можно загрузить не более ${MAX_FILES_PER_REQUEST} файлов за раз` }, { status: 400 })
+    }
+    const invalidFile = selectedFiles.find((file) => !ALLOWED_EXTENSIONS.has(path.extname(file.name).toLowerCase()))
+    if (invalidFile) {
+      return NextResponse.json({ error: `Тип файла "${invalidFile.name}" не поддерживается` }, { status: 400 })
+    }
+    if (selectedFiles.some((file) => file.size > MAX_SINGLE_FILE_SIZE) || selectedFiles.reduce((size, file) => size + file.size, 0) > MAX_TOTAL_SIZE) {
+      return NextResponse.json({ error: 'Размер файлов превышает допустимый предел' }, { status: 413 })
     }
 
     // Save files
     const savedPaths: string[] = []
-    for (const file of files) {
-      if (file instanceof File && file.size > 0) {
-        const filePath = await saveFile(file, params.id)
-        savedPaths.push(filePath)
-      }
+    for (const file of selectedFiles) {
+      const filePath = await saveFile(file, params.id)
+      savedPaths.push(filePath)
     }
 
     if (savedPaths.length === 0) {

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useSession } from 'next-auth/react'
 import {
   Upload, X, CheckCircle, Loader2, ChevronRight, ChevronLeft, File,
   Info, TrendingUp, AlertCircle, ClipboardList,
@@ -195,6 +196,7 @@ function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockPro
 
 export function OrderForm() {
   const { toast } = useToast()
+  const { status: authStatus } = useSession()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -253,11 +255,20 @@ export function OrderForm() {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     setDragOver(false)
+    if (authStatus !== 'authenticated') {
+      toast({ title: 'Войдите, чтобы прикрепить файлы', description: 'Заявку можно отправить без файлов.' })
+      return
+    }
     const droppedFiles = Array.from(e.dataTransfer.files)
     setFiles((prev) => [...prev, ...droppedFiles].slice(0, 10))
-  }, [])
+  }, [authStatus, toast])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (authStatus !== 'authenticated') {
+      toast({ title: 'Войдите, чтобы прикрепить файлы', description: 'Заявку можно отправить без файлов.' })
+      e.target.value = ''
+      return
+    }
     const selected = Array.from(e.target.files || [])
     setFiles((prev) => [...prev, ...selected].slice(0, 10))
   }
@@ -284,8 +295,6 @@ export function OrderForm() {
       const allData = { ...formData, ...data }
       let uploadedFiles: string[] = []
 
-      const tempId = `temp_${Date.now()}`
-
       if (files.length > 0) {
         try {
           const parseUploadError = async (res: Response): Promise<string> => {
@@ -301,7 +310,7 @@ export function OrderForm() {
 
           const uploadBatch = async (batchFiles: File[]): Promise<{ files: string[]; skipped: string[]; error?: string }> => {
             const fd = new FormData()
-            fd.append('orderId', tempId)
+            fd.append('uploadId', crypto.randomUUID())
             batchFiles.forEach((f) => fd.append('files', f))
             const uploadRes = await fetch('/api/upload', { method: 'POST', body: fd })
             if (!uploadRes.ok) {
@@ -317,7 +326,7 @@ export function OrderForm() {
           const chunkUploadFile = async (file: File): Promise<{ files: string[]; skipped: string[]; error?: string }> => {
             const CHUNK_SIZE = 256 * 1024
             const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
-            const uploadId = `${tempId}_${file.name}_${file.size}_${Date.now()}`
+            const uploadId = crypto.randomUUID()
 
             for (let index = 0; index < totalChunks; index++) {
               const start = index * CHUNK_SIZE
@@ -325,7 +334,6 @@ export function OrderForm() {
               const chunk = file.slice(start, end)
 
               const fd = new FormData()
-              fd.append('orderId', tempId)
               fd.append('uploadId', uploadId)
               fd.append('fileName', file.name)
               fd.append('chunkIndex', String(index))
@@ -687,11 +695,16 @@ export function OrderForm() {
                     <p className="text-ink-soft text-sm">
                       Перетащите файлы сюда или <span className="text-title font-semibold">выберите файлы</span>
                     </p>
-                    <p className="text-ink-soft/70 text-xs mt-1">PDF, DOC, DOCX, TXT, ZIP, JPG, PNG — до 50МБ</p>
+                    <p className="text-ink-soft/70 text-xs mt-1">
+                      {authStatus === 'authenticated'
+                        ? 'PDF, DOC, DOCX, TXT, ZIP, JPG, PNG — до 50МБ'
+                        : 'Войдите, чтобы прикрепить файлы. Заявку можно отправить без них.'}
+                    </p>
                     <input
                       id="file-input"
                       type="file"
                       multiple
+                      disabled={authStatus !== 'authenticated'}
                       accept=".pdf,.doc,.docx,.txt,.zip,.jpg,.jpeg,.png,.rar"
                       onChange={handleFileChange}
                       className="sr-only"

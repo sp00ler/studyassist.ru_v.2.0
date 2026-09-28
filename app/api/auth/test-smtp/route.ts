@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { requireSuperAdmin } from '@/lib/roles'
 import nodemailer from 'nodemailer'
 
 export async function GET(_req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.isAdmin) {
-    return NextResponse.json({ error: 'Только для администраторов' }, { status: 403 })
-  }
+  const { error } = await requireSuperAdmin()
+  if (error) return error
 
   const config = {
     host: process.env.SMTP_HOST || 'smtp.beget.com',
     port: parseInt(process.env.SMTP_PORT || '465'),
     secure: true,
-    user: process.env.SMTP_USER || '(не задан)',
     passSet: !!(process.env.SMTP_PASS),
   }
 
@@ -32,9 +28,8 @@ export async function GET(_req: NextRequest) {
 
     await transport.verify()
 
-    return NextResponse.json({ ok: true, config, message: 'SMTP соединение успешно' })
+    return NextResponse.json({ ok: true, message: 'SMTP соединение успешно' })
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : String(error)
-    return NextResponse.json({ ok: false, config, error: msg }, { status: 200 })
+    return NextResponse.json({ ok: false, config: { host: config.host, port: config.port, passSet: config.passSet }, error: 'Не удалось проверить SMTP соединение' }, { status: 200 })
   }
 }

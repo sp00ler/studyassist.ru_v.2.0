@@ -3,6 +3,16 @@ import type Mail from 'nodemailer/lib/mailer'
 import path from 'path'
 import { resolveStoredFileAbsolutePath } from '@/lib/file-storage'
 
+function e(str: string | undefined | null): string {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.beget.com',
   port: parseInt(process.env.SMTP_PORT || '465'),
@@ -263,14 +273,14 @@ function buildNewOrderEmailHtml(data: OrderEmailData): string {
   const typeLabel = getOrderTypeLabel(data.orderType)
 
   const rows =
-    renderRow('Тип работы', typeLabel) +
-    renderRow('Предмет / Дисциплина', data.subject) +
-    renderRow('Дедлайн', data.deadline, { valueColor: '#D97706', bold: true }) +
-    renderRow('Описание задания', data.description.replace(/\n/g, '<br>')) +
-    renderRow('Имя клиента', data.name) +
-    renderRow('Email', `<a href="mailto:${data.email}" style="color:#000080;">${data.email}</a>`) +
+    renderRow('Тип работы', e(typeLabel)) +
+    renderRow('Предмет / Дисциплина', e(data.subject)) +
+    renderRow('Дедлайн', e(data.deadline), { valueColor: '#D97706', bold: true }) +
+    renderRow('Описание задания', e(data.description).replace(/\n/g, '<br>')) +
+    renderRow('Имя клиента', e(data.name)) +
+    renderRow('Email', `<a href="mailto:${e(data.email)}" style="color:#000080;">${e(data.email)}</a>`) +
     (data.phone
-      ? renderRow('Телефон', `<a href="tel:${data.phone}" style="color:#000080;">${data.phone}</a>`)
+      ? renderRow('Телефон', `<a href="tel:${e(data.phone)}" style="color:#000080;">${e(data.phone)}</a>`)
       : '') +
     renderRow('Прикреплённые файлы', `${data.files?.length || 0} шт.`)
 
@@ -299,7 +309,7 @@ function buildOrderReceivedEmailHtml(data: OrderReceivedEmailData): string {
     renderRow('Дедлайн', data.deadline, { valueColor: '#D97706', bold: true })
 
   const bodyHtml = `
-    <p style="margin:0 0 12px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;">${data.name}, спасибо за обращение!</p>
+    <p style="margin:0 0 12px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;">${e(data.name)}, спасибо за обращение!</p>
     <p style="margin:0 0 20px;">Мы получили вашу заявку и уже передали её менеджеру. Обычно связываемся в течение 30 минут в рабочее время.</p>
     <p style="margin:0 0 6px;text-align:center;font-size:12px;color:#3A3A3A;">Номер заявки</p>
     <div style="text-align:center;margin:0 0 20px;">${renderBadge(orderLabel, { size: 16 })}</div>
@@ -356,7 +366,7 @@ function buildVerificationEmailHtml(name: string, verifyUrl: string): string {
   const bodyHtml = `
     <p style="margin:0 0 4px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;">StudyAssist</p>
     <p style="margin:0 0 20px;font-size:13px;color:#3A3A3A;">Подтверждение email-адреса</p>
-    <p style="margin:0 0 12px;font-weight:bold;">Привет, ${name}!</p>
+    <p style="margin:0 0 12px;font-weight:bold;">Привет, ${e(name)}!</p>
     <p style="margin:0 0 8px;">Вы зарегистрировались на StudyAssist.ru. Для завершения регистрации подтвердите ваш email-адрес, нажав на кнопку ниже.</p>
     ${renderCta('Подтвердить email', verifyUrl)}
     <p style="margin:0 0 4px;font-size:13px;color:#3A3A3A;text-align:center;">Ссылка действует 24 часа.</p>
