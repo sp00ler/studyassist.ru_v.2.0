@@ -163,7 +163,7 @@ export function ServicesSection() {
                       className="pointer-events-none absolute inset-y-0 left-0 z-0 w-0 transition-[width] duration-[620ms] ease-[steps(14,end)] group-hover:w-full group-focus-within:w-full motion-reduce:duration-0 motion-reduce:transition-none"
                       style={{
                         backgroundImage:
-                          'repeating-linear-gradient(90deg, rgb(var(--title-alt)) 0 3px, rgb(var(--title)) 3px 10px)',
+                          'repeating-linear-gradient(90deg, rgb(var(--title)) 0 12px, rgb(var(--chrome-shadow)) 12px 14px)',
                       }}
                     />
 

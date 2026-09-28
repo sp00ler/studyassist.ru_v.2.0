@@ -190,7 +190,7 @@ export function ReviewsSection() {
                   <motion.div key={active.id}
                     initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}>
-                    <div className="text-accent font-mono text-[14px] tracking-[3px] mb-3" aria-label={`Оценка: ${active.rating} из 5`}>
+                    <div className="text-title font-mono text-[16px] tracking-[3px] mb-3" aria-label={`Оценка: ${active.rating} из 5`}>
                       {'★'.repeat(active.rating)}{'☆'.repeat(5 - active.rating)}
                     </div>
                     <div className="bevel-in bg-paper p-4 sm:p-5 max-w-xl">
