@@ -26,21 +26,19 @@ interface Service {
   ghost?: boolean
 }
 
-// Featured item: highest-value service, rendered as the big "open folder"
-// tile in the explorer layout below.
-const FEATURED: Service = {
-  icon: GraduationCap,
-  title: 'ВКР и дипломы',
-  desc: 'Полный цикл: план → текст → презентация',
-  price: 'от 15 000₽',
-  unit: 'за работу',
-  href: '/diplom',
-  cta: 'Заявка',
-}
-
-// Remaining services, rendered as Explorer "Details view" rows. Items with
-// a dedicated route keep that href; the rest fall back to the order form.
+// All services render as identical Explorer "Details view" rows (including
+// the former "featured" tile — it is just the first row now). Items with a
+// dedicated route keep that href; the rest fall back to the order form.
 const services: Service[] = [
+  {
+    icon: GraduationCap,
+    title: 'ВКР и дипломы',
+    desc: 'Полный цикл: план → текст → презентация',
+    price: 'от 15 000₽',
+    unit: 'за работу',
+    href: '/diplom',
+    cta: 'Заявка',
+  },
   {
     icon: FileText,
     title: 'Рефераты и эссе',
@@ -141,73 +139,71 @@ export function ServicesSection() {
           </div>
 
           <div className="bg-paper p-3 sm:p-5 lg:p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] gap-4 lg:gap-6">
-              {/* Featured folder tile */}
-              <Link
-                href={FEATURED.href}
-                className="group relative flex flex-col bevel-out bg-chrome p-6 transition-colors hover:bg-chrome-light/40"
-              >
-                <FEATURED.icon
-                  className="w-10 h-10 text-title mb-4"
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                />
-                <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft mb-1">
-                  Рекомендуем
-                </span>
-                <h3 className="font-display text-xl font-bold text-ink mb-2 leading-[1.15]">
-                  {FEATURED.title}
-                </h3>
-                <p className="text-sm text-ink-soft leading-relaxed mb-6 flex-1">
-                  {FEATURED.desc}
-                </p>
-                <div className="flex items-end justify-between gap-3 flex-wrap">
-                  <div>
-                    <div className="font-mono text-2xl font-bold text-title leading-none">
-                      {FEATURED.price}
-                    </div>
-                    <div className="text-xs text-ink-soft mt-1">{FEATURED.unit}</div>
-                  </div>
-                  <span className="btn-95-primary px-5 py-2 text-sm">{FEATURED.cta}</span>
-                </div>
-              </Link>
+            {/* Explorer "Details" list — every service is an identical row.
+                Idle: name only. Hover/focus: a Win95 segmented bar fills the
+                row (steps() timing = chunky), then the full row content
+                (icon, name, price, description, Заявка) appears in white on
+                top of the filled navy bar. Row height is reserved so nothing
+                jumps between states; leaving/blurring resets via CSS. */}
+            <ul className="bevel-in bg-white divide-y divide-chrome-dark/40">
+              {services.map(svc => (
+                <li key={svc.title}>
+                  <div
+                    tabIndex={0}
+                    className={`group relative min-h-[64px] sm:min-h-[72px] outline-none focus-visible:z-10 ${
+                      svc.ghost ? 'border-l-2 border-dashed border-chrome-dark' : ''
+                    }`}
+                  >
+                    {/* Segmented fill bar — steps() timing makes the width
+                        transition jump in chunks, Win95-progress-bar style.
+                        Stripe texture uses hard color stops (same technique
+                        as .dither), not a decorative blend gradient. */}
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-y-0 left-0 z-0 w-0 transition-[width] duration-[620ms] ease-[steps(14,end)] group-hover:w-full group-focus-within:w-full motion-reduce:duration-0 motion-reduce:transition-none"
+                      style={{
+                        backgroundImage:
+                          'repeating-linear-gradient(90deg, rgb(var(--title-alt)) 0 3px, rgb(var(--title)) 3px 10px)',
+                      }}
+                    />
 
-              {/* Explorer "Details" list of remaining services */}
-              <ul className="bevel-in bg-white divide-y divide-chrome-dark/40">
-                {services.map(svc => (
-                  <li key={svc.title}>
-                    <Link
-                      href={svc.href}
-                      className={`group flex items-center gap-3 px-3 sm:px-4 py-3 min-h-[44px] hover:bg-chrome/50 focus-visible:bg-chrome/50 transition-colors ${
-                        svc.ghost ? 'border-l-2 border-dashed border-chrome-dark' : ''
-                      }`}
-                    >
+                    {/* Idle layer: name only */}
+                    <span className="absolute inset-0 z-10 flex items-center px-3 sm:px-4 font-display text-[10px] sm:text-[11px] leading-[1.4] text-ink transition-opacity duration-150 group-hover:opacity-0 group-focus-within:opacity-0 motion-reduce:transition-none">
+                      <span className="truncate">{svc.title}</span>
+                    </span>
+
+                    {/* Revealed layer: icon, name, price, desc, Заявка —
+                        appears once the bar has finished filling. */}
+                    <span className="pointer-events-none absolute inset-0 z-10 flex items-center gap-3 px-3 sm:px-4 opacity-0 transition-opacity delay-[560ms] duration-150 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 motion-reduce:delay-0 motion-reduce:transition-none">
                       <svc.icon
-                        className="w-5 h-5 text-title flex-shrink-0"
+                        className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-white"
                         strokeWidth={1.75}
                         aria-hidden="true"
                       />
                       <span className="min-w-0 flex-1">
                         <span className="flex items-baseline justify-between gap-3">
-                          <span className="font-bold text-[14px] text-ink truncate">
+                          <span className="truncate font-display text-[10px] sm:text-[11px] text-white">
                             {svc.title}
                           </span>
-                          <span className="font-mono text-[13px] text-ink-soft flex-shrink-0">
+                          <span className="flex-shrink-0 font-mono text-[11px] sm:text-[13px] text-white">
                             {svc.price}
                           </span>
                         </span>
-                        <span className="block text-[12.5px] text-ink-soft truncate">
+                        <span className="mt-1 hidden truncate text-[12.5px] text-white/85 sm:block">
                           {svc.desc}
                         </span>
                       </span>
-                      <span className="btn-95 hidden sm:inline-flex text-[11px] px-2.5 py-1.5 flex-shrink-0">
+                      <Link
+                        href={svc.href}
+                        className="btn-95 relative z-20 flex-shrink-0 whitespace-nowrap px-2 py-1 text-[10px] sm:px-2.5 sm:py-1.5 sm:text-[11px]"
+                      >
                         {svc.cta}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                      </Link>
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </motion.div>
       </div>
