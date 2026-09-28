@@ -13,12 +13,14 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
+  const [errorCode, setErrorCode] = useState<string | null>(null)
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
     setLoading(true)
     setError('')
+    setErrorCode(null)
     try {
       const res = await fetch('/api/auth/forgot-password', {
         method: 'POST',
@@ -30,6 +32,7 @@ export default function ForgotPasswordPage() {
       } else {
         const data = await res.json()
         setError(data.error || 'Ошибка отправки письма')
+        setErrorCode(data.code || null)
       }
     } catch {
       setError('Ошибка сети. Попробуйте позже.')
@@ -51,11 +54,11 @@ export default function ForgotPasswordPage() {
           </div>
           <h2 className="font-display text-lg text-ink mb-3">Письмо отправлено!</h2>
           <p className="text-ink-soft text-sm mb-2">
-            Если аккаунт с адресом <span className="text-ink font-medium">{email}</span> существует,
-            вы получите письмо со ссылкой для сброса пароля.
+            Письмо со ссылкой отправлено на <span className="text-ink font-medium">{email}</span>.
+            Проверьте «Входящие» и «Спам».
           </p>
           <p className="text-ink-soft text-xs mb-8">
-            Ссылка действительна 1 час. Проверьте папку «Спам».
+            Ссылка действительна 1 час.
           </p>
           <Link href="/auth/login">
             <Button variant="outline" className="w-full">
@@ -81,8 +84,22 @@ export default function ForgotPasswordPage() {
           </div>
 
           {error && (
-            <div className="bg-danger/10 border border-danger px-4 py-3">
+            <div className="bg-danger/10 border border-danger px-4 py-3" role="alert">
               <p className="text-danger text-sm">{error}</p>
+              {errorCode === 'NOT_FOUND' && (
+                <p className="text-sm mt-2">
+                  <Link href="/auth/register" className="text-title hover:text-title-alt transition-colors font-medium">
+                    Зарегистрироваться
+                  </Link>
+                </p>
+              )}
+              {errorCode === 'OAUTH_ONLY' && (
+                <p className="text-sm mt-2">
+                  <Link href="/auth/login" className="text-title hover:text-title-alt transition-colors font-medium">
+                    Перейти на страницу входа
+                  </Link>
+                </p>
+              )}
             </div>
           )}
 
