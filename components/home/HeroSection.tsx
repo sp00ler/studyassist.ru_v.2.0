@@ -119,11 +119,11 @@ export function HeroSection() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="#order"
-                className="btn-95-primary min-h-[44px] px-8 text-[14px] font-bold inline-flex items-center"
+                className="btn-95-primary min-h-[44px] px-8 font-display text-[11px] inline-flex items-center"
               >
                 Оставить заявку
               </Link>
-              <Link href="#how-it-works" className="btn-95 min-h-[44px] px-8 text-[14px] font-semibold inline-flex items-center">
+              <Link href="#how-it-works" className="btn-95 min-h-[44px] px-8 font-display text-[11px] inline-flex items-center">
                 Как это работает
               </Link>
             </div>
@@ -151,7 +151,7 @@ export function HeroSection() {
               ))}
               <Link
                 href="#order"
-                className="btn-95-primary min-h-[44px] px-4 text-[13px] font-bold inline-flex items-center justify-center mt-1"
+                className="btn-95-primary min-h-[44px] px-4 font-display text-[11px] inline-flex items-center justify-center mt-1"
               >
                 Написать сейчас →
               </Link>
