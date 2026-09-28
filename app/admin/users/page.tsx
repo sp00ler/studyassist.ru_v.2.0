@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Users, Shield, Edit2, X, Save, Search, Trash2 } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import { Loader2, Users, Shield, ShieldAlert, Edit2, X, Save, Search, Trash2 } from 'lucide-react'
 import { formatDate, formatDateTime } from '@/lib/utils'
 import { countryFlag, countryName, parseOs, parseBrowser } from '@/lib/geo'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,7 @@ interface User {
   phone: string | null
   telegramId: string | null
   isAdmin: boolean
+  isSuperAdmin: boolean
   provider: string | null
   createdAt: string
   lastLoginAt: string | null
@@ -26,7 +28,7 @@ interface User {
   _count: { orders: number }
 }
 
-function EditUserModal({ user, onClose, onSaved, onDeleted }: { user: User; onClose: () => void; onSaved: (u: User) => void; onDeleted: (id: string) => void }) {
+function EditUserModal({ user, viewerIsSuperAdmin, viewerId, onClose, onSaved, onDeleted }: { user: User; viewerIsSuperAdmin: boolean; viewerId: string | undefined; onClose: () => void; onSaved: (u: User) => void; onDeleted: (id: string) => void }) {
   const [name, setName] = useState(user.name || '')
   const [phone, setPhone] = useState(user.phone || '')
   const [telegramId, setTelegramId] = useState(user.telegramId || '')
@@ -36,8 +38,13 @@ function EditUserModal({ user, onClose, onSaved, onDeleted }: { user: User; onCl
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const isSelf = user.id === viewerId
+  // Права и удаление доступны только главному администратору,
+  // и не могут применяться к себе или к другому главному администратору.
+  const canManageAccess = viewerIsSuperAdmin && !isSelf && !user.isSuperAdmin
+
   const deleteUser = async () => {
-    if (!confirm(`Удалить пользователя ${user.email}?\nБудут удалены все его заявки и платежи. Это действие необратимо.`)) return
+    if (!confirm(`Удалить пользователя ${user.email}?\nБудут удалены все его заявки. Если есть платежи — удаление будет отклонено. Это действие необратимо.`)) return
     setDeleteLoading(true)
     try {
       const res = await fetch(`/api/admin/users/${user.id}`, { method: 'DELETE' })
@@ -82,7 +89,12 @@ function EditUserModal({ user, onClose, onSaved, onDeleted }: { user: User; onCl
           </div>
           <div>
             <Label className="text-ink-soft text-xs">Email</Label>
-            <Input value={email} onChange={e => setEmail(e.target.value)} className="mt-1" />
+            <Input
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="mt-1"
+              disabled={user.isSuperAdmin || (user.isAdmin && !viewerIsSuperAdmin)}
+            />
           </div>
           <div>
             <Label className="text-ink-soft text-xs">Телефон</Label>
@@ -92,23 +104,32 @@ function EditUserModal({ user, onClose, onSaved, onDeleted }: { user: User; onCl
             <Label className="text-ink-soft text-xs">Telegram ID</Label>
             <Input value={telegramId} onChange={e => setTelegramId(e.target.value)} className="mt-1" placeholder="123456789" />
           </div>
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="isAdmin"
-              checked={isAdmin}
-              onChange={e => setIsAdmin(e.target.checked)}
-              className="w-4 h-4 field-95 accent-title"
-            />
-            <Label htmlFor="isAdmin" className="text-ink text-sm cursor-pointer">Администратор</Label>
-          </div>
+          {viewerIsSuperAdmin && (
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isAdmin"
+                checked={isAdmin}
+                onChange={e => setIsAdmin(e.target.checked)}
+                disabled={!canManageAccess}
+                className="w-4 h-4 field-95 accent-title disabled:opacity-40"
+              />
+              <Label htmlFor="isAdmin" className={`text-ink text-sm ${canManageAccess ? 'cursor-pointer' : 'opacity-40'}`}>
+                Администратор
+                {isSelf && <span className="text-ink-soft text-xs ml-1">(нельзя менять себе)</span>}
+                {user.isSuperAdmin && <span className="text-ink-soft text-xs ml-1">(главный админ)</span>}
+              </Label>
+            </div>
+          )}
           {error && <p className="text-danger text-sm">{error}</p>}
         </div>
         <div className="flex gap-2 p-5 border-t border-chrome-dark bg-paper">
-          <Button variant="destructive" onClick={deleteUser} disabled={deleteLoading}
-            className="px-3">
-            {deleteLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-          </Button>
+          {viewerIsSuperAdmin && (
+            <Button variant="destructive" onClick={deleteUser} disabled={deleteLoading || isSelf || user.isSuperAdmin}
+              className="px-3" title={isSelf ? 'Нельзя удалить себя' : user.isSuperAdmin ? 'Нельзя удалить главного администратора' : 'Удалить'}>
+              {deleteLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+            </Button>
+          )}
           <Button variant="outline" onClick={onClose} className="flex-1">Отмена</Button>
           <Button onClick={save} disabled={loading} className="flex-1">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4 mr-1" />Сохранить</>}
@@ -120,6 +141,9 @@ function EditUserModal({ user, onClose, onSaved, onDeleted }: { user: User; onCl
 }
 
 export default function AdminUsersPage() {
+  const { data: session } = useSession()
+  const viewerIsSuperAdmin = !!session?.user?.isSuperAdmin
+  const viewerId = session?.user?.id
   const [users, setUsers] = useState<User[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -236,7 +260,11 @@ export default function AdminUsersPage() {
                       </td>
                       <td className="px-4 py-3 text-ink font-mono">{user._count.orders}</td>
                       <td className="px-4 py-3">
-                        {user.isAdmin ? (
+                        {user.isSuperAdmin ? (
+                          <span className="flex items-center gap-1 text-warning text-xs font-medium">
+                            <ShieldAlert className="w-3.5 h-3.5" /> Главный админ
+                          </span>
+                        ) : user.isAdmin ? (
                           <span className="flex items-center gap-1 text-title text-xs font-medium">
                             <Shield className="w-3.5 h-3.5" /> Администратор
                           </span>
@@ -283,6 +311,8 @@ export default function AdminUsersPage() {
       {editUser && (
         <EditUserModal
           user={editUser}
+          viewerIsSuperAdmin={viewerIsSuperAdmin}
+          viewerId={viewerId}
           onClose={() => setEditUser(null)}
           onSaved={updated => setUsers(prev => prev.map(u => u.id === updated.id ? updated : u))}
           onDeleted={id => { setUsers(prev => prev.filter(u => u.id !== id)); setTotal(t => t - 1) }}

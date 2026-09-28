@@ -4,6 +4,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import type { Adapter, AdapterUser } from 'next-auth/adapters'
+import { isSuperAdminEmail } from '@/lib/roles'
 
 // PrismaAdapter ожидает поля: emailVerified DateTime?, image String?
 // У нас: emailVerified Boolean, avatar String? (вместо image)
@@ -158,6 +159,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           image: user.avatar,
           isAdmin: user.isAdmin,
+          isSuperAdmin: user.isAdmin && isSuperAdminEmail(user.email),
           phone: user.phone,
         }
       },
@@ -170,6 +172,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.isAdmin = (user as { isAdmin?: boolean }).isAdmin ?? false
+        token.isSuperAdmin = (user as { isSuperAdmin?: boolean }).isSuperAdmin ?? (token.isAdmin && isSuperAdminEmail(user.email))
         token.phone = (user as { phone?: string | null }).phone ?? null
       }
       // При OAuth входе обновляем данные из БД
@@ -180,6 +183,7 @@ export const authOptions: NextAuthOptions = {
         if (dbUser) {
           token.id = dbUser.id
           token.isAdmin = dbUser.isAdmin
+          token.isSuperAdmin = dbUser.isAdmin && isSuperAdminEmail(dbUser.email)
           token.phone = dbUser.phone
         }
       }
@@ -189,6 +193,7 @@ export const authOptions: NextAuthOptions = {
       if (token) {
         session.user.id = token.id
         session.user.isAdmin = token.isAdmin
+        session.user.isSuperAdmin = token.isSuperAdmin
         session.user.phone = token.phone
       }
       return session

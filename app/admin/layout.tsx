@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { LayoutDashboard, Package, Star, Users, LogOut, BookOpen, FolderOpen } from 'lucide-react'
+import { LayoutDashboard, Package, Star, Users, LogOut, BookOpen, FolderOpen, Wallet } from 'lucide-react'
 import { PageLoader } from '@/components/ui/page-loader'
 import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
@@ -37,6 +37,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!session?.user?.isAdmin) return null
 
+  const navItems = session.user.isSuperAdmin
+    ? [...adminNav, { href: '/admin/payments', label: 'Платежи', icon: Wallet }]
+    : adminNav
+
   return (
     <div className="min-h-screen bg-desk dither flex">
       {/* Sidebar */}
@@ -49,7 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex-1 p-3 space-y-1">
-          {adminNav.map((item) => {
+          {navItems.map((item) => {
             const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
             return (
               <Link
@@ -86,7 +90,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             Study<span className="text-title">Assist</span>
           </Link>
           <div className="flex gap-1 overflow-x-auto">
-            {adminNav.map((item) => {
+            {navItems.map((item) => {
               const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
               return (
                 <Link key={item.href} href={item.href}
