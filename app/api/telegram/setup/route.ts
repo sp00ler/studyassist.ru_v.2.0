@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { requireSuperAdmin } from '@/lib/roles'
 import TelegramBot from 'node-telegram-bot-api'
 
 // GET /api/telegram/setup — регистрирует webhook у Telegram (только для админов)
 export async function GET(_req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.isAdmin) {
-    return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
-  }
+  const { error } = await requireSuperAdmin()
+  if (error) return error
 
   const token = process.env.TELEGRAM_BOT_TOKEN
   if (!token) {
@@ -36,10 +33,8 @@ export async function GET(_req: NextRequest) {
 
 // DELETE /api/telegram/setup — удаляет webhook (переключение в polling для отладки)
 export async function DELETE(_req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.isAdmin) {
-    return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
-  }
+  const { error } = await requireSuperAdmin()
+  if (error) return error
 
   const token = process.env.TELEGRAM_BOT_TOKEN
   if (!token) return NextResponse.json({ error: 'Нет токена' }, { status: 500 })
