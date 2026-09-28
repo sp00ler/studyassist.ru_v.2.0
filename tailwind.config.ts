@@ -89,13 +89,13 @@ const config: Config = {
         full: '0px',
       },
       fontFamily: {
-        // Vintage OS type: display = Pixelify Sans (headings/labels only),
-        // sans = Golos Text (body), mono = JetBrains Mono (unchanged value).
-        sans:       ["'Golos Text'", 'system-ui', 'sans-serif'],
-        display:    ["'Pixelify Sans'", "'Unbounded'", 'sans-serif'],
+        // Vintage OS type: display = Press Start 2P (headings, window titles, buttons),
+        // sans = Nunito Sans (body), mono = Share Tech Mono (digits; Latin-only, so Cyrillic falls back to JetBrains Mono).
+        sans:       ["'Nunito Sans'", 'system-ui', 'sans-serif'],
+        display:    ["'Press Start 2P'", 'monospace'],
         unbounded:  ['Unbounded', 'sans-serif'],
         pixel:      ["'Press Start 2P'", "'Unbounded'", 'monospace'],
-        mono:       ["'JetBrains Mono'", 'Consolas', 'monospace'],
+        mono:       ["'Share Tech Mono'", "'JetBrains Mono'", 'Consolas', 'monospace'],
         jakarta:    ["'Plus Jakarta Sans'", 'system-ui', 'sans-serif'],
       },
       backgroundImage: {

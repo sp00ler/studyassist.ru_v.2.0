@@ -56,11 +56,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Vintage OS type: Pixelify Sans (display), Golos Text (body), JetBrains Mono
-            (prices/system captions). css2 serves Cyrillic subsets automatically for
-            families that support them (Pixelify Sans + Golos Text both do). */}
+        {/* Vintage OS type: Press Start 2P (display), Nunito Sans (body), Share Tech Mono (digits)
+            (prices/captions); css2 serves Cyrillic automatically where the family has it,
+            with JetBrains Mono kept as the Cyrillic fallback for mono text. */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>

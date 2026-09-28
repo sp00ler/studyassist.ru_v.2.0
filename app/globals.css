@@ -51,7 +51,7 @@
   }
   body {
     @apply bg-desk text-ink;
-    font-family: 'Golos Text', system-ui, sans-serif;
+    font-family: 'Nunito Sans', system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.55;
   }
@@ -59,8 +59,10 @@
     scroll-behavior: smooth;
   }
   h1, h2, h3, h4 {
-    font-family: 'Pixelify Sans', 'Unbounded', sans-serif;
-    line-height: 1.15;
+    font-family: 'Press Start 2P', monospace;
+    font-weight: 400;
+    font-synthesis: none; /* Press Start 2P has one weight — never fake-bold it */
+    line-height: 1.35;
   }
 }
 
@@ -176,9 +178,9 @@ body::after {
     padding: 0 6px 0 8px;
     background: linear-gradient(90deg, rgb(var(--title)), rgb(var(--title-alt)));
     color: #fff;
-    font-family: 'Golos Text', system-ui, sans-serif;
-    font-weight: 700;
-    font-size: 13px;
+    font-family: 'Press Start 2P', monospace;
+    font-weight: 400;
+    font-size: 10px;
     line-height: 1;
   }
 
@@ -322,7 +324,7 @@ body::after {
   line-height: 1.8;
 }
 .prose-sa h1, .prose-sa h2, .prose-sa h3, .prose-sa h4 {
-  font-family: var(--font-display, 'Unbounded'), sans-serif;
+  font-family: 'Press Start 2P', monospace;
   font-weight: 900;
   color: rgb(var(--ink));
   margin-top: 2em;
@@ -389,3 +391,6 @@ html.sa-fine * {
 
 /* Selection */
 ::selection { background: rgb(var(--title)); color: #fff; }
+
+/* Press Start 2P ships one weight: stop Tailwind font-bold/semibold from smearing it */
+.font-display { font-weight: 400 !important; font-synthesis: none; }
