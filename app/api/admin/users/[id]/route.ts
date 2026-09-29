@@ -75,6 +75,7 @@ export async function PATCH(
         telegramId: telegramId || null,
         isAdmin: isAdmin ?? undefined,
       },
+      select: { id: true, name: true, email: true, phone: true, telegramId: true, isAdmin: true },
     })
 
     return NextResponse.json({ user })
