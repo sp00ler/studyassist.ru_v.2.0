@@ -2,7 +2,8 @@ import re, math, sys
 import sympy as sp
 from sympy import Rational as R, Matrix, symbols, Function, exp, sin, cos, sqrt, pi, simplify, dsolve, Eq, diff, solve, binomial
 
-TS = open(r'E:\ideas\studyassist_2.6.9\lib\problem-topics.ts', encoding='utf-8').read()
+import pathlib
+TS = (pathlib.Path(__file__).resolve().parents[2] / 'lib' / 'problem-topics.ts').read_text(encoding='utf-8')
 ok = 0
 def check(name, cond):
     global ok
