@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
 import { calculateEstimate, type PriceEstimate, type WorkType } from '@/lib/pricing'
+import { revealFrom } from '@/components/home/reveal'
 
 // ─── Zod schemas ──────────────────────────────────────────────────────────────
 
@@ -529,7 +530,7 @@ export function OrderForm() {
     <section id="order" className="bg-desk dither py-16 sm:py-24">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={revealFrom({ opacity: 0, y: 20 })}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
@@ -587,7 +588,7 @@ export function OrderForm() {
             {step === 1 && (
               <motion.form
                 key="step1"
-                initial={{ opacity: 0, x: 20 }}
+                initial={revealFrom({ opacity: 0, x: 20 })}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
@@ -650,7 +651,7 @@ export function OrderForm() {
             {step === 2 && (
               <motion.form
                 key="step2"
-                initial={{ opacity: 0, x: 20 }}
+                initial={revealFrom({ opacity: 0, x: 20 })}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
@@ -754,7 +755,7 @@ export function OrderForm() {
             {step === 3 && (
               <motion.form
                 key="step3"
-                initial={{ opacity: 0, x: 20 }}
+                initial={revealFrom({ opacity: 0, x: 20 })}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
