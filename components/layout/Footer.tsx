@@ -34,10 +34,12 @@ export function Footer() {
               {[
                 { href: '/kursovaya', label: 'Курсовые работы' },
                 { href: '/diplom', label: 'Дипломы (ВКР)' },
-                { href: '/referat', label: 'Рефераты и эссе' },
-                { href: '/#services', label: 'Лабораторные' },
-                { href: '/#services', label: 'Презентации' },
-                { href: '/#services', label: 'Отчёты по практике' },
+                { href: '/referat', label: 'Рефераты' },
+                { href: '/esse', label: 'Эссе' },
+                { href: '/laboratornaya', label: 'Лабораторные' },
+                { href: '/prezentatsiya', label: 'Презентации' },
+                { href: '/otchet-po-praktike', label: 'Отчёты по практике' },
+                { href: '/tseny', label: 'Цены' },
               ].map((item) => (
                 <li key={item.label}>
                   <Link href={item.href} className="text-ink-soft hover:text-title text-[13px] transition-colors">
