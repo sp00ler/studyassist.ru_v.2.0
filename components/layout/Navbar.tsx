@@ -9,9 +9,10 @@ import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react'
 
 const navLinks = [
   { href: '/#services', label: 'Услуги' },
-  { href: '/#pricing', label: 'Цены' },
+  { href: '/tseny', label: 'Цены' },
   { href: '/portfolio', label: 'Примеры работ' },
   { href: '/blog', label: 'Блог' },
+  { href: '/gid', label: 'Гайды' },
   { href: '/#reviews', label: 'Отзывы' },
 ]
 
@@ -47,8 +48,8 @@ export function Navbar() {
             Study<span className="text-title">Assist</span>
           </Link>
 
-          {/* Desktop nav: OS toolbar row */}
-          <div className="hidden md:flex items-center gap-1 flex-1 justify-center">
+          {/* Desktop nav: OS toolbar row — from lg only; 6 pixel-font buttons don't fit at md */}
+          <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} className="btn-95 h-9 px-4 text-[11px] font-display">
                 {link.label}
@@ -57,7 +58,7 @@ export function Navbar() {
           </div>
 
           {/* Desktop actions */}
-          <div className="hidden md:flex items-center gap-2 shrink-0">
+          <div className="hidden lg:flex items-center gap-2 shrink-0">
             {session ? (
               <>
                 <Link href="/dashboard">
@@ -92,7 +93,7 @@ export function Navbar() {
           </div>
 
           {/* Mobile: CTA always visible + Start-menu-style burger */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-2">
             <Link href={orderHref}>
               <button className="btn-95-primary min-h-[44px] px-4 text-[11px] font-display">Заказать</button>
             </Link>
@@ -118,7 +119,7 @@ export function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.15 }}
-            className="md:hidden bg-chrome border-t border-chrome-shadow overflow-hidden"
+            className="lg:hidden bg-chrome border-t border-chrome-shadow overflow-hidden"
           >
             <div className="px-3 py-3 space-y-1.5">
               {navLinks.map((link) => (
