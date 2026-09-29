@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import TelegramBot from 'node-telegram-bot-api'
 import path from 'path'
 import { resolveStoredFileAbsolutePath } from '@/lib/file-storage'
@@ -241,10 +242,11 @@ export async function sendRevisionRequestNotification(
   })
 }
 
-export async function setWebhook(webhookUrl: string): Promise<void> {
-  const tgBot = getBot()
-  if (!tgBot) return
-  await tgBot.setWebHook(webhookUrl)
+// Секрет для заголовка X-Telegram-Bot-Api-Secret-Token. Выводится из токена бота,
+// чтобы не заводить отдельную переменную окружения; меняется вместе с токеном.
+export function telegramWebhookSecret(): string | null {
+  const token = process.env.TELEGRAM_BOT_TOKEN
+  return token ? crypto.createHmac('sha256', token).update('telegram-webhook').digest('hex') : null
 }
 
 // ─── Онлайн-чат поддержки ────────────────────────────────────────────────────

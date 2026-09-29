@@ -1,5 +1,4 @@
 import { YooCheckout, ICreatePayment } from '@a2seven/yoo-checkout'
-import crypto from 'crypto'
 
 function getYooCheckout(): YooCheckout {
   const shopId = process.env.YUKASSA_SHOP_ID
@@ -72,26 +71,4 @@ export async function getPaymentStatus(paymentId: string): Promise<string> {
   return payment.status
 }
 
-export function verifyWebhookSignature(
-  body: string,
-  signature: string | null
-): boolean {
-  if (!signature) return false
-  const secretKey = process.env.YUKASSA_SECRET_KEY
-  if (!secretKey) return false
-
-  // YuKassa использует HMAC-SHA256 для webhook подписи
-  const hmac = crypto.createHmac('sha256', secretKey)
-  hmac.update(body)
-  const expectedSignature = hmac.digest('hex')
-
-  // Безопасное сравнение
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(signature, 'hex'),
-      Buffer.from(expectedSignature, 'hex')
-    )
-  } catch {
-    return false
-  }
-}
+// Подписи у уведомлений ЮKassa нет — подлинность проверяется запросом статуса (см. app/api/payments/webhook).

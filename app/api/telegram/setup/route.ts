@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireSuperAdmin } from '@/lib/roles'
 import TelegramBot from 'node-telegram-bot-api'
+import { telegramWebhookSecret } from '@/lib/telegram'
 
 // GET /api/telegram/setup — регистрирует webhook у Telegram (только для админов)
 export async function GET(_req: NextRequest) {
@@ -16,7 +17,7 @@ export async function GET(_req: NextRequest) {
   const webhookUrl = `${baseUrl}/api/telegram/webhook`
 
   const bot = new TelegramBot(token, { polling: false })
-  await bot.setWebHook(webhookUrl)
+  await bot.setWebHook(webhookUrl, { secret_token: telegramWebhookSecret()! })
 
   await bot.setMyCommands([
     { command: 'start', description: 'Главное меню / привязка аккаунта' },

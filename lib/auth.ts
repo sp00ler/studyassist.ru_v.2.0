@@ -186,6 +186,14 @@ export const authOptions: NextAuthOptions = {
           token.isSuperAdmin = dbUser.isAdmin && isSuperAdminEmail(dbUser.email)
           token.phone = dbUser.phone
         }
+      } else if (!user && token.id) {
+        // Права берём из БД на каждый запрос: разжалованный/удалённый админ теряет доступ сразу, а не после перелогина.
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id },
+          select: { email: true, isAdmin: true },
+        })
+        token.isAdmin = dbUser?.isAdmin ?? false
+        token.isSuperAdmin = !!dbUser?.isAdmin && isSuperAdminEmail(dbUser.email)
       }
       return token
     },
