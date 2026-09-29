@@ -14,12 +14,12 @@ import { ChevronRight } from 'lucide-react'
 export const metadata: Metadata = {
   title: 'Цены на помощь со студенческими работами | StudyAssist',
   description:
-    'Цены на помощь с курсовой, дипломом, рефератом, эссе, лабораторной, презентацией и отчётом по практике: от 1 000 ₽. От чего зависит итоговая стоимость.',
+    'Цены на помощь с курсовой, дипломом, рефератом, чертежами, решением задач, контрольной, лабораторной и презентацией: от 550 ₽. От чего зависит итоговая стоимость.',
   alternates: { canonical: '/tseny' },
   openGraph: {
     title: 'Цены на помощь со студенческими работами | StudyAssist',
     description:
-      'Цены на помощь с курсовой, дипломом, рефератом, эссе, лабораторной, презентацией и отчётом по практике: от 1 000 ₽. От чего зависит итоговая стоимость.',
+      'Цены на помощь с курсовой, дипломом, рефератом, чертежами, решением задач, контрольной, лабораторной и презентацией: от 550 ₽. От чего зависит итоговая стоимость.',
     url: 'https://studyassist.ru/tseny',
   },
 }
@@ -28,10 +28,13 @@ interface PriceRow { name: string; price: string; href?: string }
 
 // Prices mirror the home page pricing block ("от" — final cost is quoted per task).
 const rows: PriceRow[] = [
+  { name: 'Решение задачи',   price: 'от 550 ₽ за задачу', href: '/reshenie-zadach' },
+  { name: 'Контрольная работа', price: 'от 750 ₽', href: '/kontrolnaya' },
   { name: 'Реферат',          price: 'от 1 000 ₽',  href: '/referat' },
   { name: 'Эссе',             price: 'от 1 000 ₽',  href: '/esse' },
   { name: 'Лабораторная',     price: 'от 1 000 ₽',  href: '/laboratornaya' },
   { name: 'Презентация',      price: 'от 1 200 ₽',  href: '/prezentatsiya' },
+  { name: 'Чертёж',           price: 'от 3 000 ₽',  href: '/chertezhi' },
   { name: 'Курсовая',         price: 'от 3 500 ₽',  href: '/kursovaya' },
   { name: 'Отчёт по практике', price: 'от 5 000 ₽', href: '/otchet-po-praktike' },
   { name: 'УИР',              price: 'от 7 000 ₽' },
@@ -124,7 +127,7 @@ export default function TsenyPage() {
                       Цены на помощь со студенческими работами
                     </h1>
                     <p className="text-[17px] text-ink-soft leading-[1.7] mb-8">
-                      Консультации, помощь в подготовке и оформление работ: от 1 000 ₽ за реферат до 15 000 ₽ за ВКР. Итоговую стоимость называем после изучения задачи — без скрытых доплат и предоплаты.
+                      Консультации, помощь в подготовке и оформление работ: от 550 ₽ за задачу до 15 000 ₽ за ВКР. Итоговую стоимость называем после изучения задачи — без скрытых доплат и предоплаты.
                     </p>
                     <Button asChild size="lg">
                       <Link href="/?go=order">
