@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { faqs } from '@/components/home/faq-data'
+import { revealFrom } from '@/components/home/reveal'
 
 // Re-exported for convenience; app/page.tsx imports straight from
 // '@/components/home/faq-data' instead (a 'use client' module's value
@@ -20,7 +21,7 @@ export function FaqSection() {
     <section id="faq" className="bg-desk dither py-16 sm:py-24">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={revealFrom({ opacity: 0, y: 20 })}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
@@ -35,7 +36,7 @@ export function FaqSection() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={revealFrom({ opacity: 0 })}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.15 }}

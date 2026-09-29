@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { revealFrom } from '@/components/home/reveal'
 
 const steps = [
   {
@@ -25,7 +26,7 @@ export function HowItWorks() {
     <div id="how-it-works" className="bg-desk dither py-16 sm:py-20 lg:py-24">
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={revealFrom({ opacity: 0, y: 20 })}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
@@ -37,7 +38,7 @@ export function HowItWorks() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={revealFrom({ opacity: 0, y: 24 })}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -66,7 +67,7 @@ export function HowItWorks() {
               {steps.map((step, i) => (
                 <motion.li
                   key={step.number}
-                  initial={{ opacity: 0, y: 24 }}
+                  initial={revealFrom({ opacity: 0, y: 24 })}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.12 }}

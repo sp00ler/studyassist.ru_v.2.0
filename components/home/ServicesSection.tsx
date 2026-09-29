@@ -14,6 +14,7 @@ import {
   FolderOpen,
   type LucideIcon,
 } from 'lucide-react'
+import { revealFrom } from '@/components/home/reveal'
 
 interface Service {
   icon: LucideIcon
@@ -110,7 +111,7 @@ export function ServicesSection() {
     <section id="services" className="bg-desk dither py-16 sm:py-20 lg:py-24">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={revealFrom({ opacity: 0, y: 20 })}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
@@ -125,7 +126,7 @@ export function ServicesSection() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={revealFrom({ opacity: 0, y: 24 })}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}

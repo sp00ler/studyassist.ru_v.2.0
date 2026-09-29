@@ -8,6 +8,7 @@ import { Send, Loader2, Star } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
+import { revealFrom } from '@/components/home/reveal'
 
 interface Review {
   id: string
@@ -115,7 +116,7 @@ export function ReviewsSection() {
   return (
     <div id="reviews" className="bg-desk dither py-16 sm:py-20 lg:py-24">
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+        <motion.div initial={revealFrom({ opacity: 0, y: 20 })} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.5 }} className="mb-8 sm:mb-10">
           <h2 className="font-display text-[22px] sm:text-[26px] lg:text-[32px] leading-[1.35] tracking-[-0.01em] text-paper mb-3">
             Что говорят студенты
@@ -124,7 +125,7 @@ export function ReviewsSection() {
         </motion.div>
 
         {/* ICQ-style messenger window: contact list + conversation view */}
-        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+        <motion.div initial={revealFrom({ opacity: 0, y: 24 })} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}
           className="window pixel-shadow mb-10 sm:mb-14 flex flex-col max-h-[calc(100dvh-260px)] min-h-[420px] overflow-hidden">
           <div className="titlebar shrink-0">
@@ -188,7 +189,7 @@ export function ReviewsSection() {
               <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6">
                 <AnimatePresence mode="wait">
                   <motion.div key={active.id}
-                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                    initial={revealFrom({ opacity: 0, y: 8 })} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}>
                     <div className="text-title font-mono text-[16px] tracking-[3px] mb-3" aria-label={`Оценка: ${active.rating} из 5`}>
                       {'★'.repeat(active.rating)}{'☆'.repeat(5 - active.rating)}
@@ -216,7 +217,7 @@ export function ReviewsSection() {
         </motion.div>
 
         {/* Notepad-style review submission window */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+        <motion.div initial={revealFrom({ opacity: 0, y: 20 })} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.5 }} className="max-w-xl mx-auto">
           <div className="window pixel-shadow">
             <div className="titlebar">

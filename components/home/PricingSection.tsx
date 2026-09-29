@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { revealFrom } from '@/components/home/reveal'
 
 const plans = [
   {
@@ -34,7 +35,7 @@ export function PricingSection() {
     <section id="pricing" className="bg-desk dither py-16 sm:py-20 lg:py-24">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={revealFrom({ opacity: 0, y: 20 })}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
@@ -52,7 +53,7 @@ export function PricingSection() {
           {plans.map((plan, i) => (
             <motion.div
               key={plan.label}
-              initial={{ opacity: 0, y: 30 }}
+              initial={revealFrom({ opacity: 0, y: 30 })}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.1 }}
@@ -103,7 +104,7 @@ export function PricingSection() {
         </div>
 
         <motion.p
-          initial={{ opacity: 0 }}
+          initial={revealFrom({ opacity: 0 })}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
