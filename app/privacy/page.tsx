@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer'
 export const metadata: Metadata = {
   title: 'Политика конфиденциальности — StudyAssist',
   description: 'Политика конфиденциальности StudyAssist: как мы собираем, храним и защищаем персональные данные пользователей.',
+  alternates: { canonical: '/privacy' },
 }
 
 export default function PrivacyPage() {
