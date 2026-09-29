@@ -99,6 +99,13 @@ export default function OtchetPoPraktikePage() {
         'Оформление по ГОСТ и требованиям вуза',
         'Бесплатные правки по замечаниям руководителя',
       ]}
+      sections={{
+        title: 'Полезные материалы',
+        links: [
+          { href: '/gid/kak-napisat-otchet-po-praktike', label: 'Как написать отчёт по практике: структура и образец' },
+          { href: '/gid/dnevnik-praktiki', label: 'Дневник практики: как заполнить, образец записей' },
+        ],
+      }}
       faq={faq}
       jsonLd={jsonLd}
     />
