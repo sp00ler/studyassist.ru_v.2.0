@@ -18,19 +18,24 @@ export interface ServicePageProps {
   tagline: string
   price: string
   volume: string
-  uniqueness: string
+  // Omitted where antiplagiarism is meaningless (drawings, solved problems).
+  uniqueness?: string
   deadline: string
   included: string[]
   faq: ServiceFAQ[]
   jsonLd: object
+  // Optional hub block: links to sub-pages (e.g. /reshenie-zadach/<razdel>).
+  sections?: { title: string; links: { href: string; label: string }[] }
 }
 
 export function ServicePage({
   h1, tagline, price, volume, uniqueness, deadline,
-  included, faq, jsonLd,
+  included, faq, jsonLd, sections,
 }: ServicePageProps) {
   const guarantees = [
-    { icon: Star,          title: 'Уникальность',      text: `Антиплагиат ${uniqueness} — проверяем перед сдачей` },
+    uniqueness
+      ? { icon: Star,      title: 'Уникальность',      text: `Антиплагиат ${uniqueness} — проверяем перед сдачей` }
+      : { icon: Star,      title: 'Оформление',        text: 'По требованиям вашей методички и кафедры' },
     { icon: Clock,         title: 'Срок',               text: `Срочные работы от ${deadline}, плановые — по договорённости` },
     { icon: ShieldCheck,   title: 'Бесплатные правки',  text: 'Дорабатываем до принятия преподавателем' },
     { icon: MessageCircle, title: 'Поддержка',          text: 'Ответ за 30 минут, работаем 09:00–23:00' },
@@ -103,7 +108,9 @@ export function ServicePage({
                     {[
                       { value: price,      label: 'Начальная цена' },
                       { value: volume,     label: 'Объём работы' },
-                      { value: uniqueness, label: 'Уникальность' },
+                      uniqueness
+                        ? { value: uniqueness, label: 'Уникальность' }
+                        : { value: `от ${deadline}`, label: 'Срок' },
                       { value: '≤ 30 мин', label: 'Время ответа' },
                     ].map((s) => (
                       <div key={s.label} className="text-center sm:text-left">
@@ -128,6 +135,21 @@ export function ServicePage({
                     ))}
                   </div>
                 </section>
+
+                {sections && (
+                  <section className="px-5 sm:px-10 py-10 border-b border-chrome-shadow/30">
+                    <h2 className="font-display text-xl sm:text-2xl text-ink mb-6">{sections.title}</h2>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {sections.links.map(({ href, label }) => (
+                        <li key={href}>
+                          <Link href={href} className="block bg-chrome/20 border border-chrome-shadow/30 p-3 text-sm text-ink hover:text-accent transition-colors">
+                            {label} →
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
 
                 {/* Guarantees */}
                 <section className="px-5 sm:px-10 py-10 bg-chrome/25 border-b border-chrome-shadow/30">
