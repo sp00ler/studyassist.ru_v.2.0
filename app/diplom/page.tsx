@@ -2,12 +2,12 @@ import type { Metadata } from 'next'
 import { ServicePage, type ServiceFAQ } from '@/components/service/ServicePage'
 
 export const metadata: Metadata = {
-  title: 'Дипломная работа на заказ (ВКР) — от 15 000 ₽ | StudyAssist',
+  title: 'Помощь с дипломной работой (ВКР) — от 15 000 ₽ | StudyAssist',
   description:
     'Помощь в подготовке дипломной работы (ВКР): план, текст, презентация. Уникальность от 85%, сопровождение до защиты. Оплата после согласования.',
   alternates: { canonical: '/diplom' },
   openGraph: {
-    title: 'Дипломная работа (ВКР) на заказ — от 15 000 ₽ | StudyAssist',
+    title: 'Помощь с дипломной работой (ВКР) — от 15 000 ₽ | StudyAssist',
     description:
       'Помощь в подготовке дипломной работы (ВКР): план, текст, презентация. Уникальность от 85%, сопровождение до защиты. Оплата после согласования.',
     url: 'https://studyassist.ru/diplom',
@@ -47,7 +47,7 @@ const jsonLd = {
     {
       '@type': 'Service',
       '@id': 'https://studyassist.ru/diplom/#service',
-      name: 'Дипломная работа (ВКР) на заказ',
+      name: 'Помощь с дипломной работой (ВКР)',
       description: 'Помощь в подготовке дипломной работы (ВКР) под ключ профильным специалистом. Полный пакет: план, текст, презентация, доклад. Уникальность от 85%, сопровождение до защиты.',
       provider: { '@type': 'Organization', name: 'StudyAssist', url: 'https://studyassist.ru' },
       offers: {
@@ -81,7 +81,7 @@ export default function DiplomPage() {
   return (
     <ServicePage
       slug="diplom"
-      h1="Дипломная работа (ВКР) на заказ — от 15 000 ₽"
+      h1="Помощь с дипломной работой (ВКР) — от 15 000 ₽"
       tagline="Профильный специалист поможет подготовить ВКР под ключ: от структуры и плана до презентации и доклада для защиты. Уникальность от 85%, сопровождение до успешной защиты."
       price="15 000 ₽"
       volume="60–100+ стр."

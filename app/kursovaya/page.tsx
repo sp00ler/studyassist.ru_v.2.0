@@ -2,12 +2,12 @@ import type { Metadata } from 'next'
 import { ServicePage, type ServiceFAQ } from '@/components/service/ServicePage'
 
 export const metadata: Metadata = {
-  title: 'Курсовая работа на заказ — от 3 500 ₽ | StudyAssist',
+  title: 'Помощь с курсовой работой — от 3 500 ₽, срок от 2 дней | StudyAssist',
   description:
     'Помощь в подготовке курсовой работы: оформление по ГОСТ, уникальность от 80%, правки бесплатно. Ответ за 30 минут. Без предоплаты.',
   alternates: { canonical: '/kursovaya' },
   openGraph: {
-    title: 'Курсовая работа на заказ — от 3 500 ₽ | StudyAssist',
+    title: 'Помощь с курсовой работой — от 3 500 ₽, срок от 2 дней | StudyAssist',
     description:
       'Помощь в подготовке курсовой работы: оформление по ГОСТ, уникальность от 80%, правки бесплатно. Ответ за 30 минут. Без предоплаты.',
     url: 'https://studyassist.ru/kursovaya',
@@ -47,7 +47,7 @@ const jsonLd = {
     {
       '@type': 'Service',
       '@id': 'https://studyassist.ru/kursovaya/#service',
-      name: 'Курсовая работа на заказ',
+      name: 'Помощь с курсовой работой',
       description: 'Помощь в подготовке курсовой работы профильным специалистом. Оформление по ГОСТ, уникальность от 80%, бесплатные правки.',
       provider: { '@type': 'Organization', name: 'StudyAssist', url: 'https://studyassist.ru' },
       offers: {
@@ -81,7 +81,7 @@ export default function KursovayaPage() {
   return (
     <ServicePage
       slug="kursovaya"
-      h1="Курсовая работа на заказ — от 3 500 ₽"
+      h1="Помощь с курсовой работой — от 3 500 ₽"
       tagline="Профильный специалист поможет подготовить курсовую по вашим требованиям и методичке: план, структура, оформление по ГОСТ, уникальность от 80%. Бесплатные правки до принятия преподавателем."
       price="3 500 ₽"
       volume="25–50 стр."

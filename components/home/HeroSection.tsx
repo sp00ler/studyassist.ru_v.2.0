@@ -108,7 +108,7 @@ export function HeroSection() {
                 className="block font-sans font-normal mt-2 sm:mt-3 max-w-[46ch]"
                 style={{ fontSize: 'clamp(16px, 2.2vw, 26px)', lineHeight: 1.4 }}
               >
-                Курсовая, диплом, реферат{' '}— разберёмся и подготовим работу вместе.
+                Помощь с курсовой, дипломом, рефератом{' '}— разберёмся и подготовим работу вместе.
               </span>
             </h1>
 

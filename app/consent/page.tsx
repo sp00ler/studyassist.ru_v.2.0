@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer'
 export const metadata: Metadata = {
   title: 'Согласие на обработку персональных данных — StudyAssist',
   description: 'Форма согласия на обработку персональных данных пользователей сервиса StudyAssist.',
+  alternates: { canonical: '/consent' },
 }
 
 export default function ConsentPage() {
