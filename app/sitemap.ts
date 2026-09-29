@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 import { problemTopics } from '@/lib/problem-topics'
+import { guides } from '@/lib/guides'
 
 const BASE_URL = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
 
@@ -25,6 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/esse`,                lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE_URL}/tseny`,               lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE_URL}/portfolio`,           lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${BASE_URL}/gid`,               lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE_URL}/blog`,                lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE_URL}/contacts`,            lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/privacy`,             lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
@@ -49,5 +51,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  return [...staticPages, ...problemPages, ...postPages]
+  const guidePages: MetadataRoute.Sitemap = guides.map(g => ({
+    url: `${BASE_URL}/gid/${g.slug}`,
+    lastModified: new Date(g.updated),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }))
+
+  return [...staticPages, ...problemPages, ...guidePages, ...postPages]
 }

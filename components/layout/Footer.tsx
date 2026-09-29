@@ -63,6 +63,7 @@ export function Footer() {
                 { href: '/#how-it-works', label: 'Как это работает' },
                 { href: '/#pricing', label: 'Цены' },
                 { href: '/#reviews', label: 'Отзывы' },
+                { href: '/gid', label: 'Гайды' },
                 { href: orderHref, label: 'Оставить заявку' },
               ].map((item) => (
                 <li key={item.href}>
