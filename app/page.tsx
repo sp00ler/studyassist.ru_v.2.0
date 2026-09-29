@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
+import { cookies } from 'next/headers'
 import { HomeExperience } from '@/components/home/HomeExperience'
+import { GATE_SEEN_COOKIE } from '@/components/home/gate-cookie'
 import { PortfolioPreviewSection } from '@/components/home/PortfolioPreviewSection'
 import { BlogPreviewSection } from '@/components/home/BlogPreviewSection'
 import { faqs } from '@/components/home/faq-data'
@@ -96,7 +98,8 @@ export default function HomePage({
   // user on the RetroGate — dashboard "Новая заявка", "На сайт", service
   // pages, etc.) skip the gate and open straight on the site view.
   const go = searchParams.go
-  const initialPhase = go === 'order' || go === 'site' ? 'site' : 'gate'
+  const gateSeen = cookies().get(GATE_SEEN_COOKIE)?.value === '1'
+  const initialPhase = go === 'order' || go === 'site' || gateSeen ? 'site' : 'gate'
   const initialScrollTarget = go === 'order' ? 'order' : undefined
 
   return (

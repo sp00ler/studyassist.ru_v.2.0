@@ -15,6 +15,7 @@ import { PricingSection } from '@/components/home/PricingSection'
 import { ReviewsSection } from '@/components/home/ReviewsSection'
 import { OrderForm } from '@/components/home/OrderForm'
 import { FaqSection } from '@/components/home/FaqSection'
+import { GATE_SEEN_COOKIE } from '@/components/home/gate-cookie'
 import type { ReactNode } from 'react'
 
 // The monitor screen's center in room-scene.png, as % of the image — the zoom
@@ -41,6 +42,19 @@ export function HomeExperience({
 }: HomeExperienceProps) {
   const [phase, setPhase] = useState<Phase>(initialPhase)
 
+  // The gate covers the viewport; don't let the site underneath scroll meanwhile.
+  useEffect(() => {
+    if (phase === 'site') return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [phase])
+
+  const enter = () => {
+    document.cookie = `${GATE_SEEN_COOKIE}=1; max-age=31536000; path=/; samesite=lax`
+    setPhase('entering')
+  }
+
   useEffect(() => {
     if (initialPhase !== 'site' || initialScrollTarget !== 'order') return
     // BrowserChrome's inner container is already laid out by the time this
@@ -63,7 +77,7 @@ export function HomeExperience({
         // animate() already reads as "gone" by the time this unmounts, so a
         // plain conditional render is correct, not a downgrade.
         <motion.div
-          className="fixed inset-0 z-20"
+          className="fixed inset-0 z-[60]"
           style={{ transformOrigin: MONITOR_ORIGIN }}
           initial={{ scale: 1, opacity: 1 }}
           animate={
@@ -76,16 +90,13 @@ export function HomeExperience({
             if (phase === 'entering') setPhase('site')
           }}
         >
-          <RetroGate onEnter={() => setPhase('entering')} />
+          <RetroGate onEnter={enter} />
         </motion.div>
       )}
 
-      {phase === 'site' && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.45 }}
-        >
+      {/* SEO: the site is always rendered (and server-rendered), the gate only
+          sits on top of it — crawlers and no-JS clients get the full page. */}
+      <div>
           <BrowserChrome onHome={() => setPhase('gate')}>
             <UrgencyBar />
             <Navbar />
@@ -103,8 +114,7 @@ export function HomeExperience({
             </main>
             <Footer />
           </BrowserChrome>
-        </motion.div>
-      )}
+      </div>
     </>
   )
 }
