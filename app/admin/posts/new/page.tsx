@@ -11,6 +11,7 @@ import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast'
 import Link from 'next/link'
 import { RichTextEditor } from '@/components/admin/RichTextEditor'
+import { CoverImageField } from '@/components/admin/CoverImageField'
 
 export default function NewPostPage() {
   const router = useRouter()
@@ -122,15 +123,7 @@ export default function NewPostPage() {
             />
           </div>
 
-          <div>
-            <Label htmlFor="coverImage" className="mb-2 block">URL обложки (необязательно)</Label>
-            <Input
-              id="coverImage"
-              value={form.coverImage}
-              onChange={(e) => set('coverImage', e.target.value)}
-              placeholder="https://..."
-            />
-          </div>
+          <CoverImageField value={form.coverImage} onChange={(url) => set('coverImage', url)} />
         </div>
 
         {/* WYSIWYG Content editor */}
