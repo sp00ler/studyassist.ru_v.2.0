@@ -99,16 +99,28 @@ export default function GuidesHubPage() {
 
                 <section className="px-5 sm:px-10 py-10 border-b border-chrome-shadow/30">
                   <h2 className="font-display text-xl sm:text-2xl text-ink mb-6">Бесплатные инструменты</h2>
-                  <Link href="/spisok-literatury-po-gostu" className="window block group max-w-[520px]">
-                    <div className="bg-paper p-5">
-                      <h3 className="font-bold text-base text-title group-hover:text-accent transition-colors leading-snug mb-2">
-                        Список литературы по ГОСТу онлайн
-                      </h3>
-                      <p className="text-sm text-ink-soft leading-[1.7]">
-                        Генератор описаний по ГОСТ Р 7.0.100-2018: книги, статьи, сайты, законы, диссертации. Бесплатно и без регистрации.
-                      </p>
-                    </div>
-                  </Link>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <Link href="/spisok-literatury-po-gostu" className="window block group">
+                      <div className="bg-paper p-5 h-full">
+                        <h3 className="font-bold text-base text-title group-hover:text-accent transition-colors leading-snug mb-2">
+                          Список литературы по ГОСТу онлайн
+                        </h3>
+                        <p className="text-sm text-ink-soft leading-[1.7]">
+                          Генератор описаний по ГОСТ Р 7.0.100-2018: книги, статьи, сайты, законы, диссертации. Бесплатно и без регистрации.
+                        </p>
+                      </div>
+                    </Link>
+                    <Link href="/proverka-oformleniya" className="window block group">
+                      <div className="bg-paper p-5 h-full">
+                        <h3 className="font-bold text-base text-title group-hover:text-accent transition-colors leading-snug mb-2">
+                          Проверка оформления работы
+                        </h3>
+                        <p className="text-sm text-ink-soft leading-[1.7]">
+                          Загрузите .docx и впишите требования методички: поля, шрифт, интервалы, отступы, пустые строки, нумерация. Файл не покидает браузер.
+                        </p>
+                      </div>
+                    </Link>
+                  </div>
                 </section>
 
                 <section className="px-5 sm:px-10 py-10 bg-chrome/25">

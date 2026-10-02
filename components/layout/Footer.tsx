@@ -65,6 +65,7 @@ export function Footer() {
                 { href: '/#reviews', label: 'Отзывы' },
                 { href: '/gid', label: 'Гайды' },
                 { href: '/spisok-literatury-po-gostu', label: 'Список литературы по ГОСТу' },
+                { href: '/proverka-oformleniya', label: 'Проверка оформления' },
                 { href: orderHref, label: 'Оставить заявку' },
               ].map((item) => (
                 <li key={item.href}>
