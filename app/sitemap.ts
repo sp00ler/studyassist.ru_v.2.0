@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 import { problemTopics } from '@/lib/problem-topics'
 import { guides } from '@/lib/guides'
+import { matrixPages } from '@/lib/matrix-pages'
 
 const BASE_URL = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
 
@@ -60,5 +61,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  return [...staticPages, ...problemPages, ...guidePages, ...postPages]
+  const calculatorPages: MetadataRoute.Sitemap = matrixPages.map(m => ({
+    url: `${BASE_URL}/kalkulyator/${m.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }))
+
+  return [...staticPages, ...calculatorPages, ...problemPages, ...guidePages, ...postPages]
 }

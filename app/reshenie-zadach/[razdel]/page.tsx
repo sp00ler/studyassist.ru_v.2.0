@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/accordion'
 import { CheckCircle2, ChevronRight } from 'lucide-react'
 import { problemTopics, getProblemTopic } from '@/lib/problem-topics'
+import { matrixPages } from '@/lib/matrix-pages'
 
 interface PageProps {
   params: { razdel: string }
@@ -188,6 +189,20 @@ export default function ProblemTopicPage({ params }: PageProps) {
                     ))}
                   </ul>
                 </section>
+
+                {topic.slug === 'lineynaya-algebra' && (
+                  <section className="px-5 sm:px-10 py-10 border-b border-chrome-shadow/30">
+                    <h2 className="font-display text-xl sm:text-2xl text-ink mb-3">Бесплатные калькуляторы с решением по шагам</h2>
+                    <p className="text-sm text-ink-soft leading-[1.7] mb-4 max-w-[72ch]">Проверьте свой ответ: калькуляторы показывают каждый шаг метода Гаусса и считают в точных дробях.</p>
+                    <ul className="flex flex-wrap gap-3">
+                      {matrixPages.map((m) => (
+                        <li key={m.slug}>
+                          <Link href={`/kalkulyator/${m.slug}`} className="btn-95 font-display text-[11px] h-10 px-4 inline-flex items-center">{m.short}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
 
                 {/* Price CTA */}
                 <section className="px-5 sm:px-10 py-12 bg-title text-center border-b border-chrome-shadow/30">
