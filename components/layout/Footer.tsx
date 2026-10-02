@@ -66,6 +66,7 @@ export function Footer() {
                 { href: '/gid', label: 'Гайды' },
                 { href: '/spisok-literatury-po-gostu', label: 'Список литературы по ГОСТу' },
                 { href: '/proverka-oformleniya', label: 'Проверка оформления' },
+                { href: '/kalkulyator/opredelitel-matritsy', label: 'Калькуляторы матриц' },
                 { href: orderHref, label: 'Оставить заявку' },
               ].map((item) => (
                 <li key={item.href}>

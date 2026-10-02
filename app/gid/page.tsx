@@ -110,6 +110,16 @@ export default function GuidesHubPage() {
                         </p>
                       </div>
                     </Link>
+                    <Link href="/kalkulyator/opredelitel-matritsy" className="window block group">
+                      <div className="bg-paper p-5 h-full">
+                        <h3 className="font-bold text-base text-title group-hover:text-accent transition-colors leading-snug mb-2">
+                          Калькуляторы матриц с решением по шагам
+                        </h3>
+                        <p className="text-sm text-ink-soft leading-[1.7]">
+                          Определитель, обратная матрица, ранг и решение систем методом Гаусса — каждый шаг и точные дроби.
+                        </p>
+                      </div>
+                    </Link>
                     <Link href="/proverka-oformleniya" className="window block group">
                       <div className="bg-paper p-5 h-full">
                         <h3 className="font-bold text-base text-title group-hover:text-accent transition-colors leading-snug mb-2">
