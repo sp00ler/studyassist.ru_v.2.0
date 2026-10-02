@@ -35,6 +35,19 @@ export function RichTextEditor({ value, onChange, placeholder }: Props) {
       attributes: {
         class: 'prose-sa outline-none min-h-[320px] px-1',
       },
+      // Pasted HTML source (plain text that is markup, optionally wrapped in a
+      // ```html fence) is inserted as formatted content instead of literal tags.
+      handlePaste(view, event) {
+        if (event.clipboardData?.types.includes('text/html')) return false
+        const text = (event.clipboardData?.getData('text/plain') ?? '')
+          .trim()
+          .replace(/^```html\s*/i, '')
+          .replace(/```$/, '')
+          .trim()
+        if (!/^<[a-z][\s\S]*>$/i.test(text)) return false
+        editor?.commands.insertContent(text)
+        return true
+      },
     },
     onUpdate({ editor }) {
       onChange(editor.getHTML())
