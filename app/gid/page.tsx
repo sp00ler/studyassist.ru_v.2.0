@@ -5,9 +5,9 @@ import { Footer } from '@/components/layout/Footer'
 import { ChevronRight } from 'lucide-react'
 import { guides } from '@/lib/guides'
 
-const TITLE = 'Гайды для студентов: отчёт и дневник практики | StudyAssist'
+const TITLE = 'Гайды для студентов: практика, ВКР, оформление | StudyAssist'
 const DESCRIPTION =
-  'Практические руководства для студентов вузов и колледжей: как написать отчёт по практике, заполнить дневник, оформить работу по ГОСТ. С образцами и шаблонами Word.'
+  'Практические руководства для студентов вузов и колледжей: как написать отчёт по практике, заполнить дневник, подготовить ВКР с разработкой информационной системы, оформить работу по ГОСТ. С образцами и шаблонами Word.'
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -116,6 +116,10 @@ export default function GuidesHubPage() {
                     Нужна помощь с отчётом по практике? Смотрите страницу{' '}
                     <Link href="/otchet-po-praktike" className="text-title hover:text-accent transition-colors underline">
                       «Помощь с отчётом по практике»
+                    </Link>
+                    . С выпускной работой —{' '}
+                    <Link href="/diplom" className="text-title hover:text-accent transition-colors underline">
+                      «Помощь с ВКР»
                     </Link>
                     .
                   </p>
