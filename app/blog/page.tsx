@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { prisma } from '@/lib/prisma'
+import { fileNotes } from '@/lib/blog-files'
 
 export const metadata: Metadata = {
   title: 'Блог и новости — StudyAssist',
@@ -55,7 +56,7 @@ export default async function BlogPage({
     ? searchParams.type
     : undefined
 
-  const posts = await prisma.post.findMany({
+  const dbPosts = await prisma.post.findMany({
     where: { published: true, ...(type ? { type } : {}) },
     orderBy: { publishedAt: 'desc' },
     select: {
@@ -63,6 +64,13 @@ export default async function BlogPage({
       excerpt: true, coverImage: true, publishedAt: true, createdAt: true,
     },
   }).catch(() => []) // ponytail: DB down → empty state instead of 500
+
+  const dbSlugs = new Set(dbPosts.map(p => p.slug))
+  const notes = type === 'news' ? [] : fileNotes()
+    .filter(n => !dbSlugs.has(n.slug))
+    .map(n => ({ ...n, id: `file-${n.slug}`, createdAt: n.publishedAt }))
+  const posts = [...dbPosts, ...notes]
+    .sort((a, b) => (b.publishedAt ?? b.createdAt).getTime() - (a.publishedAt ?? a.createdAt).getTime())
 
   const tabs = [
     { key: undefined, label: 'Все' },

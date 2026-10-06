@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { problemTopics } from '@/lib/problem-topics'
 import { guides } from '@/lib/guides'
 import { matrixPages } from '@/lib/matrix-pages'
+import { fileNotes } from '@/lib/blog-files'
 
 const BASE_URL = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
 
@@ -47,6 +48,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
+  const dbSlugs = new Set(posts.map(p => p.slug))
+  const notePages: MetadataRoute.Sitemap = fileNotes()
+    .filter(n => !dbSlugs.has(n.slug))
+    .map(n => ({
+      url: `${BASE_URL}/blog/${n.slug}`,
+      lastModified: n.publishedAt,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }))
+
   const problemPages: MetadataRoute.Sitemap = problemTopics.map(t => ({
     url: `${BASE_URL}/reshenie-zadach/${t.slug}`,
     lastModified: new Date(),
@@ -68,5 +79,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  return [...staticPages, ...calculatorPages, ...problemPages, ...guidePages, ...postPages]
+  return [...staticPages, ...calculatorPages, ...problemPages, ...guidePages, ...postPages, ...notePages]
 }
