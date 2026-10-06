@@ -6,17 +6,23 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { Button } from '@/components/ui/button'
 import { prisma } from '@/lib/prisma'
+import { fileNote } from '@/lib/blog-files'
 
 interface Props {
   params: { slug: string }
 }
 
+// DB post wins over a file note with the same slug.
+async function getPost(slug: string) {
+  const post = await prisma.post.findUnique({ where: { slug } }).catch(() => null)
+  if (post?.published) return post
+  const note = fileNote(slug)
+  return note && { ...note, createdAt: note.publishedAt }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
-    select: { title: true, excerpt: true, coverImage: true, published: true },
-  })
-  if (!post || !post.published) return {}
+  const post = await getPost(params.slug)
+  if (!post) return {}
   const title = `${post.title} — StudyAssist`
   return {
     title,
@@ -43,11 +49,8 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
-  })
-
-  if (!post || !post.published) notFound()
+  const post = await getPost(params.slug)
+  if (!post) notFound()
 
   const jsonLd = {
     '@context': 'https://schema.org',
