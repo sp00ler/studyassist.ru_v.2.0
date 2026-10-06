@@ -5,6 +5,9 @@ import { guides } from '@/lib/guides'
 import { matrixPages } from '@/lib/matrix-pages'
 import { fileNotes } from '@/lib/blog-files'
 
+// Rebuilt hourly so scheduled notes and new admin posts get in without a redeploy.
+export const revalidate = 3600
+
 const BASE_URL = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

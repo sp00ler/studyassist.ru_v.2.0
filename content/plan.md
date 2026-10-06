@@ -9,7 +9,7 @@
 <!--
 title: Как написать введение курсовой: структура и пример
 excerpt: 1–2 предложения, до 160 символов — это meta description и текст карточки
-date: 2026-10-13
+date: 2026-10-14T06:30:00+03:00
 cover: /covers/kak-napisat-vvedenie-kursovoy.webp
 -->
 <p>Первый абзац сразу отвечает на вопрос из заголовка.</p>
@@ -18,7 +18,7 @@ cover: /covers/kak-napisat-vvedenie-kursovoy.webp
 ```
 
 - `slug` — латиницей, через дефис, как запрос в Яндексе (`kak-napisat-vvedenie-kursovoy`).
-- `date` в будущем — заметка скрыта до этого дня (PR можно слить заранее).
+- `date` — ближайшая среда, 06:30 МСК, всегда с `+03:00`. До этого момента заметка скрыта; в 06:30 она появляется на сайте, и `scripts/crosspost.js` (cron на сервере) публикует её в Telegram-канал и VK-сообщество.
 - `cover` — необязательно. Файл `public/covers/<slug>.webp`, 1200×675, делает владелец.
 - Теги в теле: `p, h2, h3, ul, ol, li, strong, em, a, table, thead, tbody, tr, th, td, blockquote`. Без `h1`, `script`, `style`, `img`.
 
