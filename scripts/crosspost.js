@@ -73,8 +73,10 @@ function readItems(sub, re, parse) {
     try { names = fs.readdirSync(path.join(root, sub)) } catch { continue }
     for (const n of names) {
       if (!re.test(n) || byName.has(n)) continue
-      const item = parse(fs.readFileSync(path.join(root, sub, n), 'utf8'))
-      if (item) byName.set(n, { ...item, key: `${sub}/${n}` })
+      const file = path.join(root, sub, n)
+      const item = parse(fs.readFileSync(file, 'utf8'))
+      const poster = file.replace(/\.\w+$/, '.png')
+      if (item) byName.set(n, { ...item, key: `${sub}/${n}`, poster: fs.existsSync(poster) ? poster : '' })
     }
   }
   return Array.from(byName.values())
@@ -83,10 +85,10 @@ function readItems(sub, re, parse) {
 function allItems(base) {
   const notes = readItems('content/blog', /^[a-z0-9-]+\.html$/, parseHeader).map((n) => {
     const url = `${base}/blog/${path.basename(n.key, '.html')}`
-    return { key: n.key, date: n.date, url, text: `${n.title}\n\n${n.excerpt}`, bold: n.title }
+    return { key: n.key, date: n.date, url, text: `${n.title}\n\n${n.excerpt}`, bold: n.title, poster: n.poster }
   })
   const social = readItems('content/social', /^\d{4}-\d{2}-\d{2}\.txt$/, parseSocial).map((s) => ({
-    key: s.key, date: s.date, url: s.link ? base + s.link : '', text: s.text,
+    key: s.key, date: s.date, url: s.link ? base + s.link : '', text: s.text, poster: s.poster,
   }))
   return [...notes, ...social]
 }
@@ -103,24 +105,57 @@ async function sendTelegram(chat, html) {
   if (!data.ok) throw new Error(data.description)
 }
 
+const pngBlob = (file) => new Blob([fs.readFileSync(file)], { type: 'image/png' })
+
+// Telegram photo captions are limited to 1024 chars: a longer post goes as photo + separate message.
 async function postTelegram(item) {
+  const chat = process.env.TELEGRAM_CHANNEL_ID
   let html = esc(item.text)
   if (item.bold) html = html.replace(esc(item.bold), `<b>${esc(item.bold)}</b>`)
-  await sendTelegram(process.env.TELEGRAM_CHANNEL_ID, item.url ? `${html}\n\n${item.url}` : html)
+  if (item.url) html += `\n\n${item.url}`
+  if (!item.poster) return sendTelegram(chat, html)
+
+  const form = new FormData()
+  form.append('chat_id', chat)
+  form.append('photo', pngBlob(item.poster), 'poster.png')
+  const fits = html.length <= 1024
+  if (fits) {
+    form.append('caption', html)
+    form.append('parse_mode', 'HTML')
+  }
+  const res = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendPhoto`, { method: 'POST', body: form })
+  const data = await res.json()
+  if (!data.ok) throw new Error(data.description)
+  if (!fits) await sendTelegram(chat, html)
+}
+
+async function vk(method, params) {
+  const body = new URLSearchParams({ ...params, access_token: process.env.VK_WALL_TOKEN, v: '5.199' })
+  const res = await fetch(`https://api.vk.com/method/${method}`, { method: 'POST', body })
+  const data = await res.json()
+  if (data.error) throw new Error(`${method}: ${data.error.error_msg}`)
+  return data.response
+}
+
+// Wall photo: get upload URL → upload the file → save → attach as photo<owner>_<id>.
+async function vkWallPhoto(file) {
+  const group_id = process.env.VK_GROUP_ID
+  const { upload_url } = await vk('photos.getWallUploadServer', { group_id })
+  const form = new FormData()
+  form.append('photo', pngBlob(file), 'poster.png')
+  const up = await (await fetch(upload_url, { method: 'POST', body: form })).json()
+  const [photo] = await vk('photos.saveWallPhoto', { group_id, server: up.server, photo: up.photo, hash: up.hash })
+  return `photo${photo.owner_id}_${photo.id}`
 }
 
 async function postVk(item) {
-  const params = {
+  const attachments = item.poster ? await vkWallPhoto(item.poster) : item.url
+  await vk('wall.post', {
     owner_id: `-${process.env.VK_GROUP_ID}`,
     from_group: '1',
     message: item.url ? `${item.text}\n\n${item.url}` : item.text,
-    access_token: process.env.VK_WALL_TOKEN,
-    v: '5.199',
-  }
-  if (item.url) params.attachments = item.url
-  const res = await fetch('https://api.vk.com/method/wall.post', { method: 'POST', body: new URLSearchParams(params) })
-  const data = await res.json()
-  if (data.error) throw new Error(data.error.error_msg)
+    ...(attachments ? { attachments } : {}),
+  })
 }
 
 // Public repo: unauthenticated GitHub API (60 req/h) is enough for one call per 10 min.
