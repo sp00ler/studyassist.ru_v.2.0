@@ -71,3 +71,18 @@ describe('content/blog', () => {
     }
   })
 })
+
+describe('scripts/render-posters', () => {
+  it('renders the example poster to a 1080px PNG with the bundled fonts', () => {
+    const fs = require('fs')
+    const os = require('os')
+    const path = require('path')
+    const { render } = require('../scripts/render-posters')
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'poster-'))
+    const svg = path.join(dir, 'p.svg')
+    fs.copyFileSync(path.join(__dirname, '..', 'content', 'poster-example.svg'), svg)
+    const png: Buffer = fs.readFileSync(render(svg))
+    expect(png.subarray(1, 4).toString()).toBe('PNG')
+    expect(png.readUInt32BE(16)).toBe(1080) // IHDR width
+  })
+})
