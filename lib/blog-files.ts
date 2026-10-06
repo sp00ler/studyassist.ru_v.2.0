@@ -1,4 +1,6 @@
-// Blog notes stored as files in content/blog/<slug>.html, shown alongside DB posts.
+// Blog notes stored as files, shown alongside DB posts. Read from content/blog in the repo
+// and from the sibling clone ../studyassist-blog (branch blog-content), which the server
+// pulls every 10 min (scripts/blog-auto.sh) — so a new note needs no rebuild or deploy.
 // File format: a header comment with "key: value" lines, then the HTML body.
 //
 //   <!--
@@ -24,7 +26,11 @@ export interface FileNote {
   publishedAt: Date
 }
 
-const DIR = path.join(process.cwd(), 'content', 'blog')
+// ponytail: fixed sibling path matches the server layout (/var/www/studyassist + /var/www/studyassist-blog).
+const DIRS = [
+  path.join(process.cwd(), 'content', 'blog'),
+  path.join(process.cwd(), '..', 'studyassist-blog', 'content', 'blog'),
+]
 const SLUG_RE = /^[a-z0-9-]+$/
 
 export function parseNote(slug: string, raw: string): FileNote | null {
@@ -51,16 +57,22 @@ export function parseNote(slug: string, raw: string): FileNote | null {
 // ponytail: reads the dir on every request; fine for dozens of notes, cache if it grows to hundreds.
 // Notes dated in the future stay hidden until that day (lets a PR be merged ahead of time).
 export function fileNotes(now = new Date()): FileNote[] {
-  let names: string[]
-  try {
-    names = readdirSync(DIR)
-  } catch {
-    return []
+  const bySlug = new Map<string, FileNote>()
+  for (const dir of DIRS) {
+    let names: string[]
+    try {
+      names = readdirSync(dir)
+    } catch {
+      continue
+    }
+    for (const n of names) {
+      const slug = n.slice(0, -5)
+      if (!n.endsWith('.html') || !SLUG_RE.test(slug) || bySlug.has(slug)) continue
+      const note = parseNote(slug, readFileSync(path.join(dir, n), 'utf8'))
+      if (note && note.publishedAt <= now) bySlug.set(slug, note)
+    }
   }
-  return names
-    .filter((n) => n.endsWith('.html') && SLUG_RE.test(n.slice(0, -5)))
-    .map((n) => parseNote(n.slice(0, -5), readFileSync(path.join(DIR, n), 'utf8')))
-    .filter((n): n is FileNote => n !== null && n.publishedAt <= now)
+  return Array.from(bySlug.values())
 }
 
 export function fileNote(slug: string): FileNote | null {

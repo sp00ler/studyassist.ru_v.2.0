@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button'
 import { prisma } from '@/lib/prisma'
 import { fileNote } from '@/lib/blog-files'
 
+// Re-render at least every 10 min so a note scheduled for 06:30 appears on time.
+export const revalidate = 600
+
 interface Props {
   params: { slug: string }
 }
