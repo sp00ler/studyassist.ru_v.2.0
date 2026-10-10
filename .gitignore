@@ -43,7 +43,6 @@ next-env.d.ts
 # prisma
 /prisma/migrations/*
 !/prisma/migrations/.gitkeep
-package-lock.json
 
 # deploy script (contains server root address)
 /scripts/vylozhit.ps1
