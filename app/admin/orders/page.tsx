@@ -37,12 +37,23 @@ function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreat
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [warning, setWarning] = useState('')
+  const [created, setCreated] = useState(false)
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
   const submit = async () => {
     if (!form.type || !form.subject || !form.deadline) {
       setError('Заполните тип работы, предмет и дедлайн')
+      return
+    }
+    const clientEmail = form.clientEmail.trim()
+    if (!clientEmail) {
+      setError('Email клиента обязателен для уведомлений и счёта')
+      return
+    }
+    if (clientEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)) {
+      setError('Укажите корректный email клиента')
       return
     }
     setLoading(true)
@@ -55,8 +66,24 @@ function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreat
       })
       const d = await res.json()
       if (!res.ok) { setError(d.error || 'Ошибка'); return }
+      const statuses = d.notifications || {}
+      const channelLabels: Record<string, string> = {
+        adminEmail: 'почта администратора',
+        clientEmail: 'почта клиента',
+        telegram: 'Telegram',
+      }
+      const failed = Object.entries(statuses)
+        .filter(([, status]) => status === 'failed' || status === 'skipped')
+        .map(([channel, status]) => `${channelLabels[channel] || channel}: ${status === 'failed' ? 'ошибка отправки' : 'не подключён'}`)
+      setCreated(true)
       onCreated()
-      onClose()
+      if (failed.length) {
+        setWarning(`Заявка создана, но есть проблемы с доставкой уведомлений (${failed.join(', ')}). Проверьте настройки доставки.`)
+      } else {
+        onClose()
+      }
+    } catch {
+      setError('Не удалось получить результат. Проверьте список заявок перед повторной отправкой.')
     } finally {
       setLoading(false)
     }
@@ -127,22 +154,23 @@ function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreat
               placeholder="Подробности..." />
           </div>
           <div className="border-t border-chrome-dark pt-4">
-            <p className="text-ink-soft text-xs mb-3">Данные клиента (необязательно)</p>
+            <p className="text-ink-soft text-xs mb-3">Email клиента обязателен для уведомлений и счёта</p>
             <div className="space-y-3">
               <Input value={form.clientName} onChange={e => set('clientName', e.target.value)}
-                placeholder="Имя клиента" />
+                placeholder="Имя клиента" aria-label="Имя клиента" />
               <Input value={form.clientEmail} onChange={e => set('clientEmail', e.target.value)}
-                placeholder="Email" type="email" />
+                placeholder="Email клиента *" type="email" aria-label="Email клиента" required />
               <Input value={form.clientPhone} onChange={e => set('clientPhone', e.target.value)}
                 placeholder="Телефон" />
             </div>
           </div>
           {error && <p className="text-danger text-sm">{error}</p>}
+          {warning && <p role="alert" className="text-warning text-sm">{warning}</p>}
         </div>
         <div className="flex gap-3 p-5 border-t border-chrome-dark bg-paper">
-          <Button variant="outline" onClick={onClose} className="flex-1">Отмена</Button>
-          <Button onClick={submit} disabled={loading} className="flex-1">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Создать заявку'}
+          <Button variant="outline" onClick={onClose} className="flex-1">{created ? 'Закрыть' : 'Отмена'}</Button>
+          <Button onClick={submit} disabled={loading || created} className="flex-1">
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : created ? 'Заявка создана' : 'Создать заявку'}
           </Button>
         </div>
       </div>
@@ -356,7 +384,7 @@ export default function AdminOrdersPage() {
       {showCreate && (
         <CreateOrderModal
           onClose={() => setShowCreate(false)}
-          onCreated={() => { fetchOrders(); setShowCreate(false) }}
+          onCreated={() => { fetchOrders() }}
         />
       )}
     </div>

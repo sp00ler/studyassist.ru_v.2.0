@@ -78,10 +78,10 @@ export async function POST(req: NextRequest) {
     const order = await prisma.order.create({
       data: {
         userId: session?.user?.id || null,
-        // Для гостей сохраняем контакты прямо в заявке
-        clientName: session?.user?.id ? null : data.name,
-        clientEmail: session?.user?.id ? null : data.email,
-        clientPhone: session?.user?.id ? null : (data.phone || null),
+        // Сохраняем выбранные клиентом контакты для последующих уведомлений.
+        clientName: data.name,
+        clientEmail: data.email,
+        clientPhone: data.phone || null,
         type: data.type,
         subject: data.subject,
         deadline: new Date(data.deadline),
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
 
     const deadlineFormatted = format(new Date(data.deadline), 'dd.MM.yyyy', { locale: ru })
 
-    // Отправляем уведомления асинхронно, не блокируем ответ
+    // Дожидаемся независимых отправок до завершения HTTP-запроса.
     const notificationData = {
       orderId: order.id,
       orderType: data.type,
@@ -106,17 +106,16 @@ export async function POST(req: NextRequest) {
       filesCount: data.files?.length || 0,
     }
 
-    Promise.allSettled([
+    const results = await Promise.allSettled([
       sendNewOrderEmail({ ...notificationData, files: data.files }),
       sendOrderReceivedEmail(notificationData),
       sendNewOrderNotification({ ...notificationData, files: data.files }),
-    ]).then((results) => {
-      const labels = ['admin-email', 'client-email', 'telegram']
-      results.forEach((r, i) => {
-        if (r.status === 'rejected') {
-          console.error(`Notification ${labels[i]} failed:`, r.reason)
-        }
-      })
+    ])
+    const labels = ['admin-email', 'client-email', 'telegram']
+    results.forEach((r, i) => {
+      if (r.status === 'rejected') {
+        console.error(`Notification ${labels[i]} failed:`, r.reason)
+      }
     })
 
     // Log pricing estimate for analytics / admin review (not stored in DB, no migration needed)

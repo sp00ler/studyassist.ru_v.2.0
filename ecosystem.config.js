@@ -19,5 +19,17 @@ module.exports = {
       log_file: '/var/log/studyassist/combined.log',
       time: true,
     },
+    {
+      name: 'studyassist-support-poll',
+      script: 'scripts/support-poll.js',
+      cwd: '/var/www/studyassist',
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      env: { NODE_ENV: 'production' },
+      error_file: '/var/log/studyassist/support-poll-error.log',
+      out_file: '/var/log/studyassist/support-poll-out.log',
+      time: true,
+    },
   ],
 }

@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       order.id,
       parseFloat(order.price.toString()),
       description,
-      session.user.email
+      order.clientEmail || order.user?.email || session.user.email
     )
 
     // Сохраняем платёж в БД
