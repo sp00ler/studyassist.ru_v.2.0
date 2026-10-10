@@ -6,6 +6,7 @@ import { ru } from 'date-fns/locale'
 import { sendNewOrderEmail, sendStatusUpdateEmail, sendPaymentLinkEmail, sendWorkCompletedEmail } from '@/lib/email'
 import { sendNewOrderNotification, sendStatusUpdateNotification, sendPaymentLinkNotification, sendWorkCompletedNotification } from '@/lib/telegram'
 import { createPayment } from '@/lib/yukassa'
+import { persistOrderPayment } from '@/lib/persist-order-payment'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import os from 'os'
@@ -990,7 +991,7 @@ async function handleAdminGeneratePayment(bot: TelegramBot, chatId: string, orde
     return
   }
 
-  const receiptEmail = order.user?.email || order.clientEmail
+  const receiptEmail = order.clientEmail || order.user?.email
   if (!receiptEmail) {
     await bot.sendMessage(chatId, '⚠️ У клиента нет email — невозможно выставить счёт.')
     return
@@ -1015,27 +1016,41 @@ async function handleAdminGeneratePayment(bot: TelegramBot, chatId: string, orde
     const description = `${typeLabels[order.type] || order.type}: ${order.subject}`
     const payment = await createPayment(orderId, amount, description, receiptEmail)
 
-    await prisma.order.update({
-      where: { id: orderId },
-      data: { paymentLink: payment.confirmationUrl, paymentId: payment.id, status: 'awaiting_payment' },
+    await persistOrderPayment({
+      orderId,
+      userId: order.userId,
+      amount,
+      yukassaId: payment.id,
+      orderData: { paymentLink: payment.confirmationUrl, paymentId: payment.id, status: 'awaiting_payment' },
     })
 
     const clientTelegramId = order.user?.telegramId
-    Promise.allSettled([
+    const notificationResults = await Promise.allSettled([
       sendPaymentLinkEmail(receiptEmail, orderId, payment.confirmationUrl, amount),
       clientTelegramId
         ? sendPaymentLinkNotification(clientTelegramId, orderId, payment.confirmationUrl, amount)
         : Promise.resolve(),
-    ]).catch(console.error)
+    ])
+    notificationResults.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        console.error(`Payment notification ${index === 0 ? 'email' : 'telegram'} failed:`, result.reason)
+      }
+    })
+    const emailStatus = notificationResults[0].status === 'fulfilled' ? 'принято SMTP-сервисом' : 'ошибка'
+    const telegramStatus = notificationResults[1].status === 'rejected'
+      ? 'ошибка'
+      : notificationResults[1].value
+        ? 'принято Telegram'
+        : 'пропущено'
 
     await bot.deleteMessage(chatId, statusMsg.message_id).catch(() => {})
     await bot.sendMessage(chatId,
-      `✅ *Счёт выставлен!*\n\n` +
-      `💰 Сумма: *${amount.toLocaleString('ru-RU')} ₽*\n` +
-      `📧 Уведомление → ${receiptEmail}\n\n` +
+      `✅ Счёт выставлен!\n\n` +
+      `💰 Сумма: ${amount.toLocaleString('ru-RU')} ₽\n` +
+      `📧 Email (${receiptEmail}) → ${emailStatus}\n` +
+      `📲 Telegram → ${telegramStatus}\n\n` +
       `🔗 Ссылка оплаты:\n${payment.confirmationUrl}`,
       {
-        parse_mode: 'Markdown',
         reply_markup: { inline_keyboard: [[{ text: '📋 К заявке', callback_data: `admin:order:${orderId}` }]] },
       }
     )
