@@ -4,6 +4,7 @@
 const path = require('path')
 const fs = require('fs')
 const http = require('http')
+const crypto = require('crypto')
 const TelegramBot = require('node-telegram-bot-api')
 
 function loadEnv(filePath) {
@@ -27,41 +28,36 @@ function loadEnv(filePath) {
   }
 }
 
-loadEnv(path.join(__dirname, '..', '.env'))
-
-const token = process.env.SUPPORT_BOT_TOKEN
-if (!token) {
-  console.error('[support-poll] SUPPORT_BOT_TOKEN not set — exit')
-  process.exit(1)
-}
-
-const bot = new TelegramBot(token, { polling: false })
+let bot
+let secret
 let offset = 0
 
-function forwardToWebhook(update) {
-  return new Promise((resolve) => {
+function forwardToWebhook(update, webhookSecret = secret) {
+  return new Promise((resolve, reject) => {
     const body = JSON.stringify(update)
     const req = http.request(
       {
-        hostname: 'localhost',
+        hostname: '127.0.0.1',
         port: 3000,
-        path: '/api/telegram/webhook',
+        path: '/api/telegram/support',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Content-Length': Buffer.byteLength(body),
+          'X-Telegram-Bot-Api-Secret-Token': webhookSecret,
         },
       },
       (res) => {
         console.log('[support-poll] update_id=%d → status %d', update.update_id, res.statusCode)
         res.resume()
-        resolve()
+        if (res.statusCode >= 200 && res.statusCode < 300) resolve()
+        else reject(new Error(`Support handler HTTP ${res.statusCode}`))
       }
     )
     req.on('error', (err) => {
-      console.error('[support-poll] forward error:', err.message)
-      resolve()
+      reject(err)
     })
+    req.setTimeout(15000, () => req.destroy(new Error('Support handler timeout')))
     req.write(body)
     req.end()
   })
@@ -80,13 +76,17 @@ async function ensureNoWebhook() {
   }
 }
 
+async function pollOnce(client = bot, forward = forwardToWebhook) {
+  const updates = await client.getUpdates({ offset, limit: 10, timeout: 25 })
+  for (const update of updates) {
+    await forward(update)
+    offset = update.update_id + 1
+  }
+}
+
 async function poll() {
   try {
-    const updates = await bot.getUpdates({ offset, limit: 10, timeout: 25 })
-    for (const update of updates) {
-      offset = update.update_id + 1
-      await forwardToWebhook(update)
-    }
+    await pollOnce()
   } catch (err) {
     const msg = err.message || ''
     if (msg.includes('Conflict') || msg.includes('webhook')) {
@@ -100,9 +100,20 @@ async function poll() {
 }
 
 async function main() {
-  console.log('[support-poll] starting — forwarding to http://localhost:3000/api/telegram/webhook')
+  loadEnv(path.join(__dirname, '..', '.env'))
+  const token = process.env.SUPPORT_BOT_TOKEN
+  if (!token) {
+    console.error('[support-poll] SUPPORT_BOT_TOKEN not set — exit')
+    process.exitCode = 1
+    return
+  }
+  bot = new TelegramBot(token, { polling: false })
+  secret = crypto.createHmac('sha256', token).update('telegram-webhook').digest('hex')
+  console.log('[support-poll] starting — forwarding to http://127.0.0.1:3000/api/telegram/support')
   await ensureNoWebhook()
   poll()
 }
 
-main()
+if (require.main === module) main()
+
+module.exports = { forwardToWebhook, pollOnce }

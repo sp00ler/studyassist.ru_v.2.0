@@ -51,6 +51,10 @@ function formatOrderId(id: string): string {
   return `#${hash}`
 }
 
+function escapeTelegramHtml(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
 export async function sendNewOrderNotification(data: {
   orderId: string
   orderType: string
@@ -62,12 +66,12 @@ export async function sendNewOrderNotification(data: {
   phone?: string | null
   filesCount: number
   files?: string[]
-}): Promise<void> {
+}): Promise<boolean> {
   const tgBot = getBot()
   const chatId = process.env.TELEGRAM_CHAT_ID
   if (!tgBot || !chatId) {
     console.warn('[telegram:orders] TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID не заданы, уведомление пропущено')
-    return
+    return false
   }
 
   // При первом вызове логируем имя бота — для диагностики в pm2 logs
@@ -82,21 +86,21 @@ export async function sendNewOrderNotification(data: {
 
   const orderLabel = formatOrderId(data.orderId)
   const typeLabel = getOrderTypeLabel(data.orderType)
-  const adminUrl = `${process.env.NEXTAUTH_URL}/admin/orders`
+  const adminUrl = `${process.env.NEXTAUTH_URL || 'https://studyassist.ru'}/admin/orders`
 
   // Персональные данные клиента не передаются в Telegram (трансграничная передача).
   // Полные данные доступны только в защищённой admin-панели.
   const message = `
-📋 *Новая заявка ${orderLabel}*
+📋 <b>Новая заявка ${orderLabel}</b>
 
-📚 *Тип:* ${typeLabel}
-📖 *Предмет:* ${data.subject}
-⏰ *Дедлайн:* ${data.deadline}
-📎 *Файлов:* ${data.filesCount} шт.
+📚 <b>Тип:</b> ${escapeTelegramHtml(typeLabel)}
+📖 <b>Предмет:</b> ${escapeTelegramHtml(data.subject)}
+⏰ <b>Дедлайн:</b> ${escapeTelegramHtml(data.deadline)}
+📎 <b>Файлов:</b> ${data.filesCount} шт.
   `.trim()
 
   await tgBot.sendMessage(chatId, message, {
-    parse_mode: 'Markdown',
+    parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard: [
         [
@@ -121,6 +125,7 @@ export async function sendNewOrderNotification(data: {
       }
     }
   }
+  return true
 }
 
 export async function sendStatusUpdateNotification(
@@ -174,9 +179,9 @@ export async function sendPaymentLinkNotification(
   orderId: string,
   paymentLink: string,
   amount: number
-): Promise<void> {
+): Promise<boolean> {
   const tgBot = getBot()
-  if (!tgBot || !telegramId) return
+  if (!tgBot || !telegramId) return false
 
   const orderLabel = formatOrderId(orderId)
   const message = `💳 *Ссылка на оплату — ${orderLabel}*\n\nСтоимость работы: *${amount.toLocaleString('ru-RU')} ₽*`
@@ -186,10 +191,11 @@ export async function sendPaymentLinkNotification(
     reply_markup: {
       inline_keyboard: [
         [{ text: `💳 Оплатить ${amount.toLocaleString('ru-RU')} ₽`, url: paymentLink }],
-        [{ text: '📂 Личный кабинет', url: `${process.env.NEXTAUTH_URL}/dashboard` }],
+        [{ text: '📂 Личный кабинет', url: `${process.env.NEXTAUTH_URL || 'https://studyassist.ru'}/dashboard` }],
       ],
     },
   })
+  return true
 }
 
 export async function sendWorkCompletedNotification(

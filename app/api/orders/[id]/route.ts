@@ -63,15 +63,19 @@ export async function PATCH(
     }
 
     const updateData: Record<string, unknown> = {}
+    let invoice: { url: string; amount: number; email: string } | null = null
     if (status) updateData.status = status
     if (price !== undefined) updateData.price = price
     if (adminNote !== undefined) updateData.adminNote = adminNote
 
     // Генерируем ссылку оплаты через YuKassa
-    if (generatePaymentLink && price) {
+    if (generatePaymentLink) {
+      const amount = Number(price)
+      if (!Number.isFinite(amount) || amount <= 0) {
+        return NextResponse.json({ error: 'Укажите положительную стоимость работы' }, { status: 400 })
+      }
       // Email: из аккаунта пользователя или из контактов гостя
-      const receiptEmail = order.user?.email || order.clientEmail || null
-      const notifyEmail = receiptEmail
+      const receiptEmail = order.clientEmail || order.user?.email || null
 
       if (!receiptEmail) {
         return NextResponse.json({ error: 'Нет email для выставления счёта' }, { status: 400 })
@@ -91,7 +95,7 @@ export async function PATCH(
 
       const payment = await createPayment(
         order.id,
-        parseFloat(price),
+        amount,
         description,
         receiptEmail
       )
@@ -100,15 +104,7 @@ export async function PATCH(
       updateData.paymentId = payment.id
       updateData.status = 'awaiting_payment'
 
-      // Уведомления об оплате
-      if (notifyEmail) {
-        Promise.allSettled([
-          sendPaymentLinkEmail(notifyEmail, order.id, payment.confirmationUrl, parseFloat(price)),
-          order.user?.telegramId
-            ? sendPaymentLinkNotification(order.user.telegramId, order.id, payment.confirmationUrl, parseFloat(price))
-            : Promise.resolve(),
-        ]).catch(console.error)
-      }
+      invoice = { url: payment.confirmationUrl, amount, email: receiptEmail }
     }
 
     const updatedOrder = await prisma.order.update({
@@ -116,19 +112,42 @@ export async function PATCH(
       data: updateData,
     })
 
+    // Сначала сохраняем счёт, затем ждём результата каждого независимого канала.
+    let notifications: { email: string; telegram: string } | undefined
+    if (invoice) {
+      const results = await Promise.allSettled([
+        sendPaymentLinkEmail(invoice.email, order.id, invoice.url, invoice.amount),
+        order.user?.telegramId
+          ? sendPaymentLinkNotification(order.user.telegramId, order.id, invoice.url, invoice.amount)
+          : Promise.resolve(false),
+      ])
+      notifications = {
+        email: results[0].status === 'fulfilled' ? 'sent' : 'failed',
+        telegram: results[1].status === 'rejected' ? 'failed' : results[1].value ? 'sent' : 'skipped',
+      }
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          console.error(`Payment notification ${index === 0 ? 'email' : 'telegram'} failed:`, result.reason)
+        }
+      })
+    }
+
     // Уведомление об изменении статуса (и для пользователей, и для гостевых заявок)
-    const notifyEmail = order.user?.email || order.clientEmail
+    const notifyEmail = order.clientEmail || order.user?.email
     const effectivePaymentLink = (updateData.paymentLink as string | undefined) || order.paymentLink || undefined
-    if (status && notifyEmail && status !== order.status) {
-      Promise.allSettled([
+    if (!invoice && status && notifyEmail && status !== order.status) {
+      const results = await Promise.allSettled([
         sendStatusUpdateEmail(notifyEmail, order.id, status, effectivePaymentLink),
         order.user?.telegramId
           ? sendStatusUpdateNotification(order.user.telegramId, order.id, status, effectivePaymentLink)
           : Promise.resolve(),
-      ]).catch(console.error)
+      ])
+      results.forEach((result) => {
+        if (result.status === 'rejected') console.error('Status notification failed:', result.reason)
+      })
     }
 
-    return NextResponse.json({ order: updatedOrder })
+    return NextResponse.json({ order: updatedOrder, notifications })
   } catch (error) {
     console.error('Update order error:', error)
     return NextResponse.json({ error: 'Ошибка обновления заявки' }, { status: 500 })

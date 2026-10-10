@@ -304,9 +304,9 @@ function buildOrderReceivedEmailHtml(data: OrderReceivedEmailData): string {
   const typeLabel = getOrderTypeLabel(data.orderType)
 
   const rows =
-    renderRow('Тип работы', typeLabel) +
-    renderRow('Предмет', data.subject) +
-    renderRow('Дедлайн', data.deadline, { valueColor: '#D97706', bold: true })
+    renderRow('Тип работы', e(typeLabel)) +
+    renderRow('Предмет', e(data.subject)) +
+    renderRow('Дедлайн', e(data.deadline), { valueColor: '#D97706', bold: true })
 
   const bodyHtml = `
     <p style="margin:0 0 12px;font-family:${FONT_DISPLAY};font-size:14px;line-height:1.5;color:#000080;">${e(data.name)}, спасибо за обращение!</p>
@@ -506,8 +506,8 @@ export async function sendNewOrderEmail(data: OrderEmailData): Promise<void> {
   const htmlContent = buildNewOrderEmailHtml(data)
 
   await transporter.sendMail({
-    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
-    to: process.env.SMTP_USER,
+    from: `"StudyAssist" <${process.env.SMTP_USER || 'support@studyassist.ru'}>`,
+    to: process.env.SMTP_USER || 'support@studyassist.ru',
     subject: `📋 Новая заявка ${orderLabel} — ${typeLabel} (${data.subject})`,
     html: htmlContent,
     attachments,
@@ -520,7 +520,7 @@ export async function sendOrderReceivedEmail(data: OrderReceivedEmailData): Prom
   const htmlContent = buildOrderReceivedEmailHtml(data)
 
   await transporter.sendMail({
-    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
+    from: `"StudyAssist" <${process.env.SMTP_USER || 'support@studyassist.ru'}>`,
     to: data.email,
     subject: `✅ Заявка ${orderLabel} принята — StudyAssist`,
     html: htmlContent,
@@ -646,10 +646,13 @@ export async function sendPaymentLinkEmail(
 
   const htmlContent = buildPaymentLinkEmailHtml(orderLabel, paymentLink, amount)
 
-  await transporter.sendMail({
-    from: `"StudyAssist" <${process.env.SMTP_USER}>`,
+  const result = await transporter.sendMail({
+    from: `"StudyAssist" <${process.env.SMTP_USER || 'support@studyassist.ru'}>`,
     to,
     subject: `Ссылка на оплату заявки ${orderLabel} — ${amount.toLocaleString('ru-RU')} ₽`,
     html: htmlContent,
   })
+  if (!result.accepted?.length) {
+    throw new Error('SMTP did not accept the payment notification recipient')
+  }
 }

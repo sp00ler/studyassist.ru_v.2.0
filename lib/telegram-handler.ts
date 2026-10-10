@@ -74,6 +74,7 @@ function cleanSessions() {
 // ─── Главный обработчик апдейтов ────────────────────────────────────────────
 
 export async function handleUpdate(update: TelegramBot.Update): Promise<void> {
+  if (await handleSupportUpdate(update)) return
   const bot = makeBot()
   if (!bot) return
   cleanSessions()
@@ -93,19 +94,26 @@ export async function handleUpdate(update: TelegramBot.Update): Promise<void> {
 
 // ─── Реплай оператора в группе поддержки → сохраняем в чат-сессию ──────────
 
-async function handleSupportGroupReply(msg: TelegramBot.Message): Promise<void> {
+export async function handleSupportUpdate(update: TelegramBot.Update): Promise<boolean> {
+  const msg = update.message
+  if (!msg) return false
+  const supportChatId = process.env.SUPPORT_CHAT_ID || process.env.TELEGRAM_CHAT_ID
+  if (!supportChatId || String(msg.chat.id) !== supportChatId) return false
+  if (msg.from?.is_bot || !msg.reply_to_message?.from?.is_bot) return false
   const replyText = msg.reply_to_message?.text || ''
-  const sessionMatch = /\[session:([^\]]+)\]/.exec(replyText)
-  if (!sessionMatch || !msg.text?.trim()) return
+  const sessionMatch = /\[session:([^\]\r\n]+)\]\s*$/.exec(replyText)
+  if (!sessionMatch || !msg.text?.trim()) return false
 
   const sessionId = sessionMatch[1]
-  try {
-    await prisma.chatMessage.create({
-      data: { sessionId, text: msg.text.trim(), fromAdmin: true },
-    })
-  } catch (err) {
-    console.error('Support reply save error:', err)
-  }
+  const session = await prisma.chatSession.findUnique({ where: { id: sessionId }, select: { id: true } })
+  if (!session) return true // Deleted sessions must not block the getUpdates queue.
+  const messageId = `telegram-support:${msg.chat.id}:${msg.message_id}`
+  await prisma.chatMessage.upsert({
+    where: { id: messageId },
+    create: { id: messageId, sessionId, text: msg.text.trim(), fromAdmin: true },
+    update: {},
+  })
+  return true
 }
 
 async function handleMessage(bot: TelegramBot, msg: TelegramBot.Message) {
@@ -114,9 +122,6 @@ async function handleMessage(bot: TelegramBot, msg: TelegramBot.Message) {
 
   // ─── Сообщения из группы/супергруппы — только реплаи поддержки ─────────────
   if (msg.chat.type === 'group' || msg.chat.type === 'supergroup') {
-    if (msg.reply_to_message?.text) {
-      await handleSupportGroupReply(msg)
-    }
     return
   }
 

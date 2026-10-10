@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { MessageCircle, X, Send, Loader2, ChevronDown } from 'lucide-react'
+import { chatPollingCursor, mergeChatMessages } from '@/lib/chat-messages'
 
 interface ChatMsg {
   id: string
@@ -74,8 +75,8 @@ export function ChatWidget() {
       )
       const data = await res.json()
       if (data.messages?.length > 0) {
-        sinceRef.current = data.messages[data.messages.length - 1].createdAt
-        setMessages(prev => [...prev, ...data.messages])
+        sinceRef.current = chatPollingCursor(sinceRef.current, data.messages, 'poll')
+        setMessages(prev => mergeChatMessages(prev, data.messages))
         // Если чат свёрнут — показываем счётчик непрочитанных
         if (view !== 'chat') {
           setUnread(u => u + data.messages.filter((m: ChatMsg) => m.fromAdmin).length)
@@ -137,8 +138,8 @@ export function ChatWidget() {
       })
       const data = await res.json()
       if (res.ok && data.message) {
-        setMessages(prev => [...prev, data.message])
-        sinceRef.current = data.message.createdAt
+        setMessages(prev => mergeChatMessages(prev, [data.message]))
+        sinceRef.current = chatPollingCursor(sinceRef.current, [data.message], 'send')
       }
     } catch {}
     setSending(false)

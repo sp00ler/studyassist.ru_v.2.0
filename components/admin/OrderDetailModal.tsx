@@ -130,8 +130,20 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
       if (res.ok) {
         const data = await res.json()
         onUpdate(data.order)
-        alert(`Ссылка оплаты создана и отправлена клиенту: ${data.order.paymentLink}`)
+        const deliveryLabels: Record<string, string> = {
+          sent: 'принято сервисом отправки',
+          failed: 'ошибка отправки',
+          skipped: 'не подключён',
+        }
+        const email = deliveryLabels[data.notifications?.email] || 'отправка не подтверждена'
+        const telegram = deliveryLabels[data.notifications?.telegram] || 'отправка не подтверждена'
+        alert(`Ссылка оплаты создана: ${data.order.paymentLink}\nEmail: ${email}\nTelegram: ${telegram}`)
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Ошибка создания ссылки оплаты')
       }
+    } catch {
+      alert('Не удалось получить результат. Проверьте заявку перед повторным созданием счёта.')
     } finally {
       setPaymentLoading(false)
     }
@@ -277,10 +289,10 @@ export function OrderDetailModal({ order, open, onClose, onUpdate, onDelete }: O
                 {!order.user && <span className="ml-1 text-ink-soft">(гость)</span>}
               </p>
               <div className="space-y-1 text-sm">
-                <p className="text-ink">{order.user?.name || order.clientName || 'Без имени'}</p>
-                <p className="text-ink-soft">{order.user?.email || order.clientEmail}</p>
+                <p className="text-ink">{order.clientName || order.user?.name || 'Без имени'}</p>
+                <p className="text-ink-soft">{order.clientEmail || order.user?.email}</p>
                 {(order.user?.phone || order.clientPhone) && (
-                  <p className="text-ink-soft">{order.user?.phone || order.clientPhone}</p>
+                  <p className="text-ink-soft">{order.clientPhone || order.user?.phone}</p>
                 )}
                 {order.user?.telegramId && (
                   <p className="text-ink-soft">Telegram ID: {order.user.telegramId}</p>
