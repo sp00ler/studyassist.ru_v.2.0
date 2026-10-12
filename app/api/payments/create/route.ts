@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { prisma } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
 import { createPayment } from '@/lib/yukassa'
+import { persistOrderPayment } from '@/lib/persist-order-payment'
 
 export async function POST(req: NextRequest) {
   try {
@@ -57,24 +58,13 @@ export async function POST(req: NextRequest) {
     )
 
     // Сохраняем платёж в БД
-    await Promise.all([
-      prisma.payment.create({
-        data: {
-          orderId: order.id,
-          userId: session.user.id,
-          amount: order.price,
-          status: 'pending',
-          yukassaId: payment.id,
-        },
-      }),
-      prisma.order.update({
-        where: { id: order.id },
-        data: {
-          paymentLink: payment.confirmationUrl,
-          paymentId: payment.id,
-        },
-      }),
-    ])
+    await persistOrderPayment({
+      orderId: order.id,
+      userId: session.user.id,
+      amount: order.price,
+      yukassaId: payment.id,
+      orderData: { paymentLink: payment.confirmationUrl, paymentId: payment.id },
+    })
 
     return NextResponse.json({ paymentUrl: payment.confirmationUrl })
   } catch (error) {

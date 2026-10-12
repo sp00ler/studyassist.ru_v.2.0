@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth'
 import { sendStatusUpdateEmail, sendPaymentLinkEmail } from '@/lib/email'
 import { sendStatusUpdateNotification, sendPaymentLinkNotification } from '@/lib/telegram'
 import { createPayment } from '@/lib/yukassa'
+import { persistOrderPayment } from '@/lib/persist-order-payment'
 
 export async function GET(
   _req: NextRequest,
@@ -107,10 +108,20 @@ export async function PATCH(
       invoice = { url: payment.confirmationUrl, amount, email: receiptEmail }
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: params.id },
-      data: updateData,
-    })
+    const updatedOrder = invoice
+      ? (await persistOrderPayment({
+          orderId: order.id,
+          userId: order.userId,
+          amount: invoice.amount,
+          yukassaId: updateData.paymentId as string,
+          orderData: {
+            ...updateData,
+            paymentLink: invoice.url,
+            paymentId: updateData.paymentId as string,
+            status: 'awaiting_payment',
+          },
+        })).order
+      : await prisma.order.update({ where: { id: params.id }, data: updateData })
 
     // Сначала сохраняем счёт, затем ждём результата каждого независимого канала.
     let notifications: { email: string; telegram: string } | undefined
