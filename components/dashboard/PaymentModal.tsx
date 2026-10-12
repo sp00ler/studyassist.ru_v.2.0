@@ -75,6 +75,18 @@ export function PaymentModal({ open, onClose, orderId, amount, existingPaymentLi
           <div className="text-ink-soft text-sm space-y-2">
             <p>После нажатия кнопки вы перейдёте на защищённую страницу оплаты ЮKassa.</p>
             <p>Принимаем: банковские карты, СБП, электронные кошельки.</p>
+            <p>
+              Хотите оплатить частями («Долями») или в кредит / рассрочку от Т-Банка?{' '}
+              <a
+                href="https://t.me/studyAssist_support"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:no-underline"
+              >
+                Напишите в поддержку
+              </a>{' '}
+              — пришлём отдельную ссылку.
+            </p>
           </div>
 
           {error && (

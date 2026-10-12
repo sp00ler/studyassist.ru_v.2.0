@@ -114,6 +114,8 @@ export function PricingSection() {
           <Link href="#order" className="underline underline-offset-2 hover:no-underline">
             Узнать точную стоимость →
           </Link>
+          <br />
+          Оплатить можно частями — через «Долями» или в кредит / рассрочку от Т-Банка. Ссылку на оплату пришлёт менеджер.
         </motion.p>
       </div>
     </section>
