@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <rect width="1080" height="1080" fill="#008080"/>
+  <rect x="60" y="90" width="960" height="840" fill="#000"/>
+  <rect x="60" y="90" width="958" height="838" fill="#fff"/>
+  <rect x="62" y="92" width="956" height="836" fill="#808080"/>
+  <rect x="62" y="92" width="954" height="834" fill="#C0C0C0"/>
+  <defs><linearGradient id="tb" x1="0" x2="1"><stop offset="0" stop-color="#000080"/><stop offset="1" stop-color="#1084D0"/></linearGradient></defs>
+  <rect x="72" y="102" width="936" height="56" fill="url(#tb)"/>
+  <text x="92" y="140" font-family="Press Start 2P" font-size="22" fill="#fff">ЧЕКЛИСТ.TXT</text>
+  <g fill="#C0C0C0" stroke="#000" stroke-width="2">
+    <rect x="874" y="110" width="40" height="40"/><rect x="918" y="110" width="40" height="40"/><rect x="962" y="110" width="40" height="40"/>
+  </g>
+  <path d="M884 140h20" stroke="#000" stroke-width="4"/>
+  <rect x="930" y="122" width="16" height="16" fill="none" stroke="#000" stroke-width="3"/>
+  <path d="M974 122l16 16M990 122l-16 16" stroke="#000" stroke-width="4"/>
+  <rect x="86" y="176" width="908" height="660" fill="#FFFBEA" stroke="#808080" stroke-width="3"/>
+  <text font-family="Press Start 2P" font-size="54" fill="#000080">
+    <tspan x="130" y="290">ПЕРЕД</tspan>
+    <tspan x="130" y="370">ОТПРАВКОЙ</tspan>
+  </text>
+  <rect x="130" y="394" width="220" height="12" fill="#FFD400"/>
+  <rect x="130" y="440" width="40" height="40" fill="#fff" stroke="#000" stroke-width="3"/><path d="M136 460l12 12l24 -28" fill="none" stroke="#15803D" stroke-width="7"/>
+  <text x="196" y="474" font-family="Tiny5" font-size="40" fill="#000">Копия файла с датой</text>
+  <rect x="130" y="512" width="40" height="40" fill="#fff" stroke="#000" stroke-width="3"/><path d="M136 532l12 12l24 -28" fill="none" stroke="#15803D" stroke-width="7"/>
+  <text x="196" y="546" font-family="Tiny5" font-size="40" fill="#000">Содержание обновлено</text>
+  <rect x="130" y="584" width="40" height="40" fill="#fff" stroke="#000" stroke-width="3"/><path d="M136 604l12 12l24 -28" fill="none" stroke="#15803D" stroke-width="7"/>
+  <text x="196" y="618" font-family="Tiny5" font-size="40" fill="#000">Нет пустых страниц</text>
+  <rect x="130" y="656" width="40" height="40" fill="#fff" stroke="#000" stroke-width="3"/><path d="M136 676l12 12l24 -28" fill="none" stroke="#15803D" stroke-width="7"/>
+  <text x="196" y="690" font-family="Tiny5" font-size="40" fill="#000">Понятное имя файла</text>
+  <rect x="130" y="728" width="40" height="40" fill="#fff" stroke="#000" stroke-width="3"/><path d="M136 748l12 12l24 -28" fill="none" stroke="#15803D" stroke-width="7"/>
+  <text x="196" y="762" font-family="Tiny5" font-size="40" fill="#000">PDF открыт и проверен</text>
+  <rect x="86" y="852" width="908" height="56" fill="#C0C0C0" stroke="#808080" stroke-width="2"/>
+  <text x="110" y="890" font-family="JetBrains Mono" font-weight="700" font-size="28" fill="#000">studyassist.ru</text>
+  <text x="970" y="890" text-anchor="end" font-family="JetBrains Mono" font-size="26" fill="#3A3A3A">#оформление</text>
+</svg>
