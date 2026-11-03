@@ -7,7 +7,7 @@ import { authOptions } from '@/lib/auth'
 const profileSchema = z.object({
   name: z.string().min(2).optional(),
   phone: z.string().optional().nullable(),
-  telegramId: z.string().optional().nullable(),
+  // telegramId намеренно нет: привязка только через бота (/api/telegram/link), иначе можно подставить чужой chat ID.
 })
 
 export async function GET() {

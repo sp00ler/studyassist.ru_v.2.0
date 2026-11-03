@@ -58,7 +58,7 @@ export function PaymentModal({ open, onClose, orderId, amount, existingPaymentLi
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CreditCard className="w-5 h-5 text-[#6C3EF4]" />
+            <CreditCard className="w-5 h-5 text-title" />
             Оплата заявки
           </DialogTitle>
           <DialogDescription>
@@ -67,19 +67,19 @@ export function PaymentModal({ open, onClose, orderId, amount, existingPaymentLi
         </DialogHeader>
 
         <div className="space-y-6 py-2">
-          <div className="bg-white/5 rounded-xl p-4 text-center">
-            <p className="text-white/60 text-sm mb-1">Стоимость работы</p>
-            <p className="text-3xl font-bold text-[#F59E0B]">{formatPrice(amount)}</p>
+          <div className="bevel-out bg-chrome/20 p-4 text-center">
+            <p className="text-ink-soft text-sm mb-1">Стоимость работы</p>
+            <p className="text-3xl font-bold text-title font-mono">{formatPrice(amount)}</p>
           </div>
 
-          <div className="text-white/60 text-sm space-y-2">
+          <div className="text-ink-soft text-sm space-y-2">
             <p>После нажатия кнопки вы перейдёте на защищённую страницу оплаты ЮKassa.</p>
             <p>Принимаем: банковские карты, СБП, электронные кошельки.</p>
           </div>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
-              <p className="text-red-400 text-sm">{error}</p>
+            <div className="bg-danger/10 border border-danger px-4 py-3">
+              <p className="text-danger text-sm">{error}</p>
             </div>
           )}
 
@@ -88,9 +88,10 @@ export function PaymentModal({ open, onClose, orderId, amount, existingPaymentLi
               Отмена
             </Button>
             <Button
+              variant="amber"
               onClick={handleGetPaymentLink}
               disabled={loading}
-              className="flex-1 gap-2 bg-gradient-to-r from-[#F59E0B] to-[#EF4444] hover:opacity-90 text-black font-bold"
+              className="flex-1 gap-2"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

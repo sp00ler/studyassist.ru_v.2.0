@@ -35,7 +35,7 @@ const orderSchema = z.object({
   name: z.string().min(2, 'Укажите ваше имя'),
   email: z.string().email('Некорректный email'),
   phone: z.string().optional().nullable(),
-  files: z.array(z.string()).optional(),
+  files: z.array(z.string().max(512)).max(10).optional(),
   estimatedPrice: estimatedPriceSchema,
 })
 
@@ -58,6 +58,22 @@ export async function POST(req: NextRequest) {
     }
 
     const data = parsed.data
+
+    if (data.files?.length) {
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: 'Войдите в аккаунт, чтобы прикрепить файлы' }, { status: 401 })
+      }
+
+      const ownedPrefix = `/api/files/orders/${session.user.id}/`
+      const validUploadPath = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/[^/\\]{1,180}$/i
+      if (data.files.some((filePath) =>
+        !filePath.startsWith(ownedPrefix) ||
+        !validUploadPath.test(filePath.slice(ownedPrefix.length)) ||
+        filePath.includes('..') || filePath.includes('\\')
+      )) {
+        return NextResponse.json({ error: 'Переданы некорректные файлы' }, { status: 400 })
+      }
+    }
 
     const order = await prisma.order.create({
       data: {

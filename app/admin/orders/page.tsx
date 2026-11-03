@@ -1,14 +1,27 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
 import { Search, Filter, Loader2, RefreshCw, Plus, X } from 'lucide-react'
 import { OrderDetailModal } from '@/components/admin/OrderDetailModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
-import { formatDate, formatPrice, formatOrderId, getOrderTypeLabel, getStatusColor, getStatusLabel } from '@/lib/utils'
+import { formatDate, formatPrice, formatOrderId, getOrderTypeLabel, getStatusLabel } from '@/lib/utils'
+
+// Win95 token classes for order status — see components/dashboard/OrdersTable.tsx
+// for rationale (lib/utils.ts getStatusColor() is legacy, out of this migration's scope).
+const STATUS_TOKEN_CLASSES: Record<string, string> = {
+  new: 'bg-title/10 text-title border-title',
+  in_progress: 'bg-title/10 text-title border-title',
+  ready_for_review: 'bg-success/15 text-success border-success',
+  awaiting_payment: 'bg-warning/15 text-warning border-warning',
+  paid: 'bg-success/15 text-success border-success',
+  completed: 'bg-success/15 text-success border-success',
+  revision: 'bg-warning/15 text-warning border-warning',
+  cancelled: 'bg-danger/15 text-danger border-danger',
+}
+const getStatusToken = (status: string) => STATUS_TOKEN_CLASSES[status] || 'bg-chrome text-ink-soft border-chrome-shadow'
 
 function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
   const [form, setForm] = useState({
@@ -67,68 +80,68 @@ function CreateOrderModal({ onClose, onCreated }: { onClose: () => void; onCreat
   ]
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-[#0f1117] border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 bg-[#0f1117]">
-          <h2 className="text-white font-semibold">Новая заявка вручную</h2>
-          <button onClick={onClose} className="text-white/40 hover:text-white"><X className="w-5 h-5" /></button>
+    <div className="fixed inset-0 bg-ink/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="window pixel-shadow w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="titlebar sticky top-0 z-10">
+          <span className="truncate">Новая заявка вручную</span>
+          <button onClick={onClose} className="titlebar-btn hover:bg-danger hover:text-white" aria-label="Закрыть"><X className="w-3 h-3" /></button>
         </div>
-        <div className="p-5 space-y-4">
+        <div className="bg-paper p-5 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-white/60 text-xs">Тип работы *</Label>
+              <Label className="text-ink-soft text-xs">Тип работы *</Label>
               <select value={form.type} onChange={e => set('type', e.target.value)}
-                className="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm">
-                {types.map(t => <option key={t.value} value={t.value} className="bg-[#0f1117]">{t.label}</option>)}
+                className="field-95 mt-1 w-full px-3 py-2 text-sm">
+                {types.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
             </div>
             <div>
-              <Label className="text-white/60 text-xs">Источник</Label>
+              <Label className="text-ink-soft text-xs">Источник</Label>
               <select value={form.source} onChange={e => set('source', e.target.value)}
-                className="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm">
-                {sources.map(s => <option key={s.value} value={s.value} className="bg-[#0f1117]">{s.label}</option>)}
+                className="field-95 mt-1 w-full px-3 py-2 text-sm">
+                {sources.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
               </select>
             </div>
           </div>
           <div>
-            <Label className="text-white/60 text-xs">Предмет / Тема *</Label>
+            <Label className="text-ink-soft text-xs">Предмет / Тема *</Label>
             <Input value={form.subject} onChange={e => set('subject', e.target.value)}
-              className="mt-1 bg-white/5 border-white/10 text-white" placeholder="Например: Экономика организации" />
+              className="mt-1" placeholder="Например: Экономика организации" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-white/60 text-xs">Дедлайн *</Label>
+              <Label className="text-ink-soft text-xs">Дедлайн *</Label>
               <Input type="date" value={form.deadline} onChange={e => set('deadline', e.target.value)}
-                className="mt-1 bg-white/5 border-white/10 text-white" />
+                className="mt-1" />
             </div>
             <div>
-              <Label className="text-white/60 text-xs">Стоимость (₽)</Label>
+              <Label className="text-ink-soft text-xs">Стоимость (₽)</Label>
               <Input type="number" value={form.price} onChange={e => set('price', e.target.value)}
-                className="mt-1 bg-white/5 border-white/10 text-white" placeholder="0" />
+                className="mt-1" placeholder="0" />
             </div>
           </div>
           <div>
-            <Label className="text-white/60 text-xs">Описание задания</Label>
+            <Label className="text-ink-soft text-xs">Описание задания</Label>
             <textarea value={form.description} onChange={e => set('description', e.target.value)}
-              className="mt-1 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm resize-none h-20 placeholder:text-white/30"
+              className="field-95 mt-1 w-full px-3 py-2 text-sm resize-none h-20"
               placeholder="Подробности..." />
           </div>
-          <div className="border-t border-white/10 pt-4">
-            <p className="text-white/50 text-xs mb-3">Данные клиента (необязательно)</p>
+          <div className="border-t border-chrome-dark pt-4">
+            <p className="text-ink-soft text-xs mb-3">Данные клиента (необязательно)</p>
             <div className="space-y-3">
               <Input value={form.clientName} onChange={e => set('clientName', e.target.value)}
-                className="bg-white/5 border-white/10 text-white" placeholder="Имя клиента" />
+                placeholder="Имя клиента" />
               <Input value={form.clientEmail} onChange={e => set('clientEmail', e.target.value)}
-                className="bg-white/5 border-white/10 text-white" placeholder="Email" type="email" />
+                placeholder="Email" type="email" />
               <Input value={form.clientPhone} onChange={e => set('clientPhone', e.target.value)}
-                className="bg-white/5 border-white/10 text-white" placeholder="Телефон" />
+                placeholder="Телефон" />
             </div>
           </div>
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
         </div>
-        <div className="flex gap-3 p-5 border-t border-white/10">
-          <Button variant="outline" onClick={onClose} className="flex-1 border-white/10 text-white/60">Отмена</Button>
-          <Button onClick={submit} disabled={loading} className="flex-1 bg-[#6C3EF4] hover:bg-[#5b2de3]">
+        <div className="flex gap-3 p-5 border-t border-chrome-dark bg-paper">
+          <Button variant="outline" onClick={onClose} className="flex-1">Отмена</Button>
+          <Button onClick={submit} disabled={loading} className="flex-1">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Создать заявку'}
           </Button>
         </div>
@@ -213,14 +226,15 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <div>
+    <div className="window pixel-shadow">
+      <div className="titlebar">
+        <h1 className="truncate">Заявки</h1>
+      </div>
+      <div className="bg-paper p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Заявки</h1>
-          <p className="text-white/50 text-sm">Всего: {total}</p>
-        </div>
+        <p className="text-ink-soft text-sm">Всего: {total}</p>
         <div className="flex gap-2">
-          <Button size="sm" onClick={() => setShowCreate(true)} className="gap-2 bg-[#6C3EF4] hover:bg-[#5b2de3]">
+          <Button size="sm" onClick={() => setShowCreate(true)} className="gap-2">
             <Plus className="w-4 h-4" /> Новая заявка
           </Button>
           <Button variant="outline" size="sm" onClick={fetchOrders} className="gap-2">
@@ -232,7 +246,7 @@ export default function AdminOrdersPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-soft" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -242,7 +256,7 @@ export default function AdminOrdersPage() {
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full sm:w-56">
-            <Filter className="w-4 h-4 mr-2 text-white/40" />
+            <Filter className="w-4 h-4 mr-2 text-ink-soft" />
             <SelectValue placeholder="Все статусы" />
           </SelectTrigger>
           <SelectContent>
@@ -261,50 +275,48 @@ export default function AdminOrdersPage() {
 
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="w-8 h-8 text-[#6C3EF4] animate-spin" />
+          <Loader2 className="w-8 h-8 text-title animate-spin" />
         </div>
       ) : (
         <>
-          <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+          <div className="window overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">№</th>
-                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Тип</th>
-                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Предмет</th>
-                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Клиент</th>
-                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Дедлайн</th>
-                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Статус</th>
-                    <th scope="col" className="text-left text-white/40 text-xs px-4 py-3 uppercase">Сумма</th>
+                  <tr className="bg-chrome border-b border-chrome-shadow">
+                    <th scope="col" className="text-left text-ink text-xs px-4 py-3 uppercase font-semibold">№</th>
+                    <th scope="col" className="text-left text-ink text-xs px-4 py-3 uppercase font-semibold">Тип</th>
+                    <th scope="col" className="text-left text-ink text-xs px-4 py-3 uppercase font-semibold">Предмет</th>
+                    <th scope="col" className="text-left text-ink text-xs px-4 py-3 uppercase font-semibold">Клиент</th>
+                    <th scope="col" className="text-left text-ink text-xs px-4 py-3 uppercase font-semibold">Дедлайн</th>
+                    <th scope="col" className="text-left text-ink text-xs px-4 py-3 uppercase font-semibold">Статус</th>
+                    <th scope="col" className="text-left text-ink text-xs px-4 py-3 uppercase font-semibold">Сумма</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="bg-paper">
                   {filteredOrders.map((order) => (
-                    <motion.tr
+                    <tr
                       key={order.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors"
+                      className="border-b border-chrome-dark/40 hover:bg-chrome/20 cursor-pointer transition-colors"
                       onClick={() => setSelectedOrder(order)}
                     >
-                      <td className="px-4 py-3 text-white/50 text-xs font-mono">{formatOrderId(order.id)}</td>
-                      <td className="px-4 py-3 text-white/80 text-sm">{getOrderTypeLabel(order.type)}</td>
-                      <td className="px-4 py-3 text-white text-sm max-w-32 truncate">{order.subject}</td>
-                      <td className="px-4 py-3 text-white/60 text-sm">
+                      <td className="px-4 py-3 text-ink-soft text-xs font-mono">{formatOrderId(order.id)}</td>
+                      <td className="px-4 py-3 text-ink-soft text-sm">{getOrderTypeLabel(order.type)}</td>
+                      <td className="px-4 py-3 text-ink text-sm max-w-32 truncate">{order.subject}</td>
+                      <td className="px-4 py-3 text-ink-soft text-sm">
                         <div>
-                          <p className="truncate max-w-28">{order.user?.name || order.clientName || '—'}</p>
-                          <p className="text-white/30 text-xs truncate max-w-28">{order.user?.email || order.clientEmail}</p>
+                          <p className="truncate max-w-28 text-ink">{order.user?.name || order.clientName || '—'}</p>
+                          <p className="text-ink-soft text-xs truncate max-w-28">{order.user?.email || order.clientEmail}</p>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-white/60 text-sm">{formatDate(order.deadline)}</td>
+                      <td className="px-4 py-3 text-ink-soft text-sm">{formatDate(order.deadline)}</td>
                       <td className="px-4 py-3">
-                        <span className={`text-xs px-2 py-1 rounded-lg border font-semibold ${getStatusColor(order.status)}`}>
+                        <span className={`text-xs px-2 py-1 border font-semibold ${getStatusToken(order.status)}`}>
                           {getStatusLabel(order.status)}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-white/80 text-sm">{formatPrice(order.price)}</td>
-                    </motion.tr>
+                      <td className="px-4 py-3 text-ink text-sm font-mono">{formatPrice(order.price)}</td>
+                    </tr>
                   ))}
                 </tbody>
               </table>
@@ -312,7 +324,7 @@ export default function AdminOrdersPage() {
 
             {filteredOrders.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-white/40">Заявок не найдено</p>
+                <p className="text-ink-soft">Заявок не найдено</p>
               </div>
             )}
           </div>
@@ -323,7 +335,7 @@ export default function AdminOrdersPage() {
               <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} aria-label="Предыдущая страница">
                 <span aria-hidden="true">←</span>
               </Button>
-              <span className="text-white/60 text-sm" aria-live="polite">Страница {page} из {Math.ceil(total / 20)}</span>
+              <span className="text-ink-soft text-sm" aria-live="polite">Страница {page} из {Math.ceil(total / 20)}</span>
               <Button variant="outline" size="sm" onClick={() => setPage((p) => p + 1)} disabled={page >= Math.ceil(total / 20)} aria-label="Следующая страница">
                 <span aria-hidden="true">→</span>
               </Button>
@@ -331,6 +343,7 @@ export default function AdminOrdersPage() {
           )}
         </>
       )}
+      </div>
 
       <OrderDetailModal
         order={selectedOrder}

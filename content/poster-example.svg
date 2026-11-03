@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <!-- Desktop -->
+  <rect width="1080" height="1080" fill="#008080"/>
+  <!-- Window: outer edge, bevel, chrome -->
+  <rect x="60" y="90" width="960" height="840" fill="#000"/>
+  <rect x="60" y="90" width="958" height="838" fill="#fff"/>
+  <rect x="62" y="92" width="956" height="836" fill="#808080"/>
+  <rect x="62" y="92" width="954" height="834" fill="#C0C0C0"/>
+  <!-- Titlebar -->
+  <defs>
+    <linearGradient id="tb" x1="0" x2="1"><stop offset="0" stop-color="#000080"/><stop offset="1" stop-color="#1084D0"/></linearGradient>
+  </defs>
+  <rect x="72" y="102" width="936" height="56" fill="url(#tb)"/>
+  <text x="92" y="140" font-family="Press Start 2P" font-size="22" fill="#fff">СОВЕТ_ДНЯ.TXT</text>
+  <g font-family="Press Start 2P" font-size="20" fill="#000">
+    <rect x="874" y="110" width="40" height="40" fill="#C0C0C0" stroke="#000" stroke-width="2"/><text x="884" y="140">_</text>
+    <rect x="918" y="110" width="40" height="40" fill="#C0C0C0" stroke="#000" stroke-width="2"/><text x="928" y="142">□</text>
+    <rect x="962" y="110" width="40" height="40" fill="#C0C0C0" stroke="#000" stroke-width="2"/><text x="972" y="142">×</text>
+  </g>
+  <!-- Paper -->
+  <rect x="86" y="176" width="908" height="660" fill="#FFFBEA" stroke="#808080" stroke-width="3"/>
+  <text font-family="Press Start 2P" font-size="54" fill="#000080">
+    <tspan x="130" y="300">ВВЕДЕНИЕ</tspan>
+    <tspan x="130" y="380">ПИШИТЕ</tspan>
+    <tspan x="130" y="460">ПОСЛЕДНИМ</tspan>
+  </text>
+  <rect x="130" y="510" width="220" height="12" fill="#FFD400"/>
+  <text font-family="Tiny5" font-size="44" fill="#3A3A3A">
+    <tspan x="130" y="610">Когда главы готовы,</tspan>
+    <tspan x="130" y="666">цель и задачи пишутся</tspan>
+    <tspan x="130" y="722">за полчаса — и совпадают</tspan>
+    <tspan x="130" y="778">с тем, что вы сделали.</tspan>
+  </text>
+  <!-- Status bar -->
+  <rect x="86" y="852" width="908" height="56" fill="#C0C0C0" stroke="#808080" stroke-width="2"/>
+  <text x="110" y="890" font-family="JetBrains Mono" font-weight="700" font-size="28" fill="#000">studyassist.ru</text>
+  <text x="970" y="890" text-anchor="end" font-family="JetBrains Mono" font-size="26" fill="#3A3A3A">#курсовая</text>
+</svg>

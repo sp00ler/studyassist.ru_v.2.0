@@ -5,6 +5,7 @@ declare module 'next-auth' {
     user: {
       id: string
       isAdmin: boolean
+      isSuperAdmin: boolean
       phone?: string | null
     } & DefaultSession['user']
   }
@@ -12,6 +13,7 @@ declare module 'next-auth' {
   interface User {
     id: string
     isAdmin: boolean
+    isSuperAdmin?: boolean
     phone?: string | null
   }
 }
@@ -20,6 +22,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     id: string
     isAdmin: boolean
+    isSuperAdmin: boolean
     phone?: string | null
   }
 }

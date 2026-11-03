@@ -1,87 +1,117 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import { useInView } from 'framer-motion'
+import { useInView, useReducedMotion } from 'framer-motion'
 
-function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
+const STATS_BARS = [
+  { label: 'Студентов сдали работы', value: 94, caption: '1000+ студентов' },
+  { label: 'Время ответа', value: 72, caption: '≤ 30 мин' },
+  { label: 'Довольных клиентов', value: 83 },
+  { label: 'Часы работы', value: 61, caption: '09:00–23:00, ежедневно' },
+]
+
+function ProgressBar({
+  label,
+  value,
+  caption,
+  duration = 1500,
+  delay = 0,
+}: {
+  label: string
+  value: number
+  caption?: string
+  duration?: number
+  delay?: number
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref as React.RefObject<Element>, { once: true, margin: '-40px' })
+  const reduceMotion = useReducedMotion()
+  const [started, setStarted] = useState(false)
   const [count, setCount] = useState(0)
-  const ref = useRef<HTMLSpanElement>(null)
-  const isInView = useInView(ref as React.RefObject<Element>, { once: true, margin: '-60px' })
 
   useEffect(() => {
     if (!isInView) return
-    const duration = 1800
-    const steps = duration / 16
-    const increment = target / steps
+    if (reduceMotion) {
+      setStarted(true)
+      setCount(value)
+      return
+    }
+    const t = setTimeout(() => setStarted(true), delay)
+    return () => clearTimeout(t)
+  }, [isInView, reduceMotion, value, delay])
+
+  useEffect(() => {
+    if (!started || reduceMotion) return
+    const steps = 14
+    const stepDuration = duration / steps
     let cur = 0
     const iv = setInterval(() => {
-      cur = Math.min(cur + increment, target)
-      setCount(Math.floor(cur))
-      if (cur >= target) clearInterval(iv)
-    }, 16)
+      cur += 1
+      setCount(Math.min(Math.round((cur / steps) * value), value))
+      if (cur >= steps) clearInterval(iv)
+    }, stepDuration)
     return () => clearInterval(iv)
-  }, [isInView, target])
+  }, [started, duration, value, reduceMotion])
 
-  return <span ref={ref}>{count}{suffix}</span>
+  const width = started ? value : 0
+
+  return (
+    <div ref={ref} className="flex flex-col gap-1.5 py-3 sm:py-3.5">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-[13px] sm:text-[14px] text-ink-soft">{label}</span>
+        <span className="font-mono text-[16px] sm:text-[18px] font-bold text-title tabular-nums">{count}%</span>
+      </div>
+      <div
+        className="bevel-in bg-paper h-[18px] sm:h-[20px] p-[2px]"
+        role="progressbar"
+        aria-valuenow={value}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={label}
+      >
+        <div
+          className="h-full"
+          style={{
+            width: `${width}%`,
+            transitionProperty: 'width',
+            transitionDuration: reduceMotion ? '0ms' : `${duration}ms`,
+            transitionTimingFunction: 'steps(14, end)',
+            backgroundImage:
+              'repeating-linear-gradient(90deg, rgb(var(--title)) 0px, rgb(var(--title)) 8px, transparent 8px, transparent 10px)',
+          }}
+        />
+      </div>
+      {caption && <span className="text-[11px] text-ink-soft font-mono">{caption}</span>}
+    </div>
+  )
 }
-
-const stats = [
-  {
-    value: <Counter target={1000} suffix="+" />,
-    label: 'студентов сдали работы',
-  },
-  {
-    value: (
-      <span>
-        30
-        <span className="text-[28px] font-sans font-normal tracking-normal leading-none">мин</span>
-      </span>
-    ),
-    label: 'среднее время ответа',
-  },
-  {
-    value: <Counter target={98} suffix="%" />,
-    label: 'довольных клиентов',
-  },
-  {
-    value: (
-      <span>
-        24
-        <span className="text-[28px] font-sans font-normal tracking-normal leading-none">/7</span>
-      </span>
-    ),
-    label: 'онлайн поддержка',
-  },
-]
 
 export function StatsSection() {
   return (
-    <div className="bg-[#0E0E1C] border-t border-b border-white/[.06]">
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-14">
-        <div className="grid grid-cols-2 md:grid-cols-4">
-          {stats.map((stat, i) => {
-            // mobile 2-col: right border only on left column (even indices), bottom border on top row
-            // desktop 4-col: right border on all except last
-            const borderCls = [
-              'border-r border-b md:border-b-0 border-white/[.06]',
-              'border-b md:border-b-0 md:border-r border-white/[.06]',
-              'border-r border-white/[.06]',
-              '',
-            ][i] ?? ''
-            return (
-            <div
-              key={i}
-              className={`text-center py-4 px-4 md:px-8 ${borderCls}`}
-            >
-              <div className="font-unbounded text-[clamp(36px,4.5vw,52px)] font-black text-[#C5FF45] tracking-[-2px] leading-none mb-2">
-                {stat.value}
-              </div>
-              <div className="text-[13px] text-[#6A6A88] mt-2 leading-snug">{stat.label}</div>
+    <section className="bg-paper">
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-10 md:py-14">
+        <div className="window max-w-[680px] mx-auto">
+          <div className="titlebar">
+            <span className="truncate">Свойства: StudyAssist.exe</span>
+            <div className="flex gap-1 shrink-0">
+              <span className="titlebar-btn" aria-hidden="true">
+                _
+              </span>
+              <span className="titlebar-btn" aria-hidden="true">
+                □
+              </span>
+              <span className="titlebar-btn" aria-hidden="true">
+                ×
+              </span>
             </div>
-            )
-          })}
+          </div>
+          <div className="px-5 sm:px-7 py-2 flex flex-col divide-y divide-chrome-shadow/20">
+            {STATS_BARS.map((row, i) => (
+              <ProgressBar key={row.label} label={row.label} value={row.value} caption={row.caption} delay={i * 150} />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

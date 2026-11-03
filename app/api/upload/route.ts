@@ -1,31 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { getPrivateUploadRoot } from '@/lib/private-file-storage'
 import path from 'path'
 import os from 'os'
-import { writeFile, mkdir, access, constants, readFile, rm } from 'fs/promises'
+import { writeFile, mkdir, readFile, rm, readdir, stat } from 'fs/promises'
 import { getIP, rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
-// orderId must be cuid (starts with c, ~25 chars) or UUID format
-const VALID_ORDER_ID = /^[a-zA-Z0-9_-]{10,60}$/
+const VALID_UPLOAD_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 export const maxDuration = 60
 export const dynamic = 'force-dynamic'
 
 const MAX_TOTAL_SIZE = 50 * 1024 * 1024 // 50MB на все файлы в одном запросе
 const MAX_SINGLE_FILE_SIZE = 30 * 1024 * 1024 // 30MB на 1 файл
+const CHUNK_TTL_MS = 60 * 60 * 1000
 
 const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.txt', '.zip', '.jpg', '.jpeg', '.png', '.rar', '.7z']
-const ALLOWED_MIME_TYPES = [
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'text/plain',
-  'application/zip',
-  'application/x-zip-compressed',
-  'image/jpeg',
-  'image/png',
-  'application/x-rar-compressed',
-  'application/octet-stream',
-]
+function matchesFileSignature(extension: string, data: Buffer): boolean {
+  if (extension === '.pdf') return data.subarray(0, 5).toString('ascii') === '%PDF-'
+  if (extension === '.doc') return data.subarray(0, 8).equals(Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]))
+  if (extension === '.docx' || extension === '.zip') return data.subarray(0, 2).toString('ascii') === 'PK'
+  if (extension === '.jpg' || extension === '.jpeg') return data.subarray(0, 3).equals(Buffer.from([0xff, 0xd8, 0xff]))
+  if (extension === '.png') return data.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
+  if (extension === '.rar') return data.subarray(0, 7).toString('ascii') === 'Rar!\x1a\x07'
+  if (extension === '.7z') return data.subarray(0, 6).equals(Buffer.from([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c]))
+  if (extension === '.txt') return !data.includes(0)
+  return false
+}
 
 function sanitizeFileName(name: string): string {
   return name
@@ -34,61 +36,53 @@ function sanitizeFileName(name: string): string {
     .slice(0, 100)
 }
 
-async function isWritable(dir: string): Promise<boolean> {
+async function cleanupExpiredChunks(ownerId: string): Promise<void> {
+  const ownerChunkRoot = path.join(os.tmpdir(), 'studyassist-upload-chunks', ownerId)
+  let entries: string[]
   try {
-    await mkdir(dir, { recursive: true })
-    await access(dir, constants.W_OK)
-    return true
+    entries = await readdir(ownerChunkRoot)
   } catch {
-    return false
+    return
   }
+
+  const now = Date.now()
+  await Promise.all(entries.map(async (entry) => {
+    const uploadDir = path.join(ownerChunkRoot, entry)
+    try {
+      const info = await stat(uploadDir)
+      if (info.isDirectory() && now - info.mtimeMs > CHUNK_TTL_MS) {
+        await rm(uploadDir, { recursive: true, force: true })
+      }
+    } catch {
+      // A concurrent upload or cleanup may remove the entry.
+    }
+  }))
 }
 
-async function getUploadDir(orderId: string): Promise<{ dir: string; publicPath: string }> {
-  // Приоритет 1: переменная окружения UPLOAD_DIR
-  if (process.env.UPLOAD_DIR) {
-    const dir = path.join(process.env.UPLOAD_DIR, orderId)
-    await mkdir(dir, { recursive: true })
-    return { dir, publicPath: `/api/files/${orderId}` }
-  }
-
-  // Приоритет 2: public/uploads в cwd
-  const publicDir = path.join(process.cwd(), 'public', 'uploads', orderId)
-  if (await isWritable(publicDir)) {
-    return { dir: publicDir, publicPath: `/api/files/${orderId}` }
-  }
-
-  // Приоритет 3: /tmp как fallback (всегда доступен для записи)
-  const tmpDir = path.join(os.tmpdir(), 'studyassist-uploads', orderId)
-  await mkdir(tmpDir, { recursive: true })
-  console.warn(`Upload fallback to /tmp: ${tmpDir} (public/uploads not writable at ${process.cwd()})`)
-  return { dir: tmpDir, publicPath: `/api/files/${orderId}` }
-}
-
-async function handleChunkUpload(formData: FormData, orderId: string) {
+async function handleChunkUpload(formData: FormData, ownerId: string) {
   const uploadId = (formData.get('uploadId') as string | null)?.trim()
   const fileName = (formData.get('fileName') as string | null)?.trim()
   const chunkIndexRaw = formData.get('chunkIndex')
   const totalChunksRaw = formData.get('totalChunks')
   const chunk = formData.get('chunk')
 
-  if (!uploadId || !fileName || chunkIndexRaw === null || totalChunksRaw === null || !(chunk instanceof File)) {
+  if (!uploadId || !VALID_UPLOAD_ID.test(uploadId) || !fileName || chunkIndexRaw === null || totalChunksRaw === null || !(chunk instanceof File)) {
     return NextResponse.json({ error: 'Некорректные данные chunk-загрузки' }, { status: 400 })
   }
 
   const chunkIndex = Number(chunkIndexRaw)
   const totalChunks = Number(totalChunksRaw)
-  if (!Number.isInteger(chunkIndex) || !Number.isInteger(totalChunks) || chunkIndex < 0 || totalChunks < 1 || chunkIndex >= totalChunks) {
+  if (!Number.isInteger(chunkIndex) || !Number.isInteger(totalChunks) || chunkIndex < 0 || totalChunks < 1 || totalChunks > 120 || chunkIndex >= totalChunks || chunk.size > 256 * 1024) {
     return NextResponse.json({ error: 'Некорректные индексы chunk-загрузки' }, { status: 400 })
   }
 
   const ext = path.extname(fileName).toLowerCase()
-  const mimeOk = !chunk.type || ALLOWED_MIME_TYPES.includes(chunk.type) || chunk.type.startsWith('image/')
-  if (!ALLOWED_EXTENSIONS.includes(ext) && !mimeOk) {
+  if (!ALLOWED_EXTENSIONS.includes(ext)) {
     return NextResponse.json({ error: `Тип файла "${fileName}" не поддерживается` }, { status: 400 })
   }
 
-  const chunkDir = path.join(os.tmpdir(), 'studyassist-upload-chunks', uploadId)
+  const chunkDir = path.join(os.tmpdir(), 'studyassist-upload-chunks', ownerId, uploadId)
+  await cleanupExpiredChunks(ownerId)
   await mkdir(chunkDir, { recursive: true })
   const chunkPath = path.join(chunkDir, `${chunkIndex}.part`)
   const chunkBuffer = Buffer.from(await chunk.arrayBuffer())
@@ -110,36 +104,62 @@ async function handleChunkUpload(formData: FormData, orderId: string) {
     return NextResponse.json({ error: `Файл "${fileName}" превышает 30МБ` }, { status: 400 })
   }
 
-  const { dir: uploadDir, publicPath: uploadPublicPath } = await getUploadDir(orderId)
+  if (!matchesFileSignature(ext, fullBuffer)) {
+    await rm(chunkDir, { recursive: true, force: true })
+    return NextResponse.json({ error: 'Содержимое файла не соответствует его расширению' }, { status: 400 })
+  }
+
+  const uploadDir = path.join(getPrivateUploadRoot(), 'orders', ownerId, uploadId)
+  await mkdir(uploadDir, { recursive: true })
   const safeExt = ALLOWED_EXTENSIONS.includes(ext) ? ext : ''
   const safeName = sanitizeFileName(path.basename(fileName, ext)) + '_' + Date.now() + safeExt
   const filePath = path.join(uploadDir, safeName)
   await writeFile(filePath, fullBuffer)
   await rm(chunkDir, { recursive: true, force: true })
 
-  return NextResponse.json({ files: [`${uploadPublicPath}/${safeName}`], skipped: [] })
+  return NextResponse.json({ files: [`/api/files/orders/${ownerId}/${uploadId}/${safeName}`], skipped: [] })
 }
 
 export async function POST(req: NextRequest) {
   try {
-    // Rate limit: 20 uploads per 10 minutes per IP
-    const ip = getIP(req)
-    const rl = rateLimit(`upload:${ip}`, 20, 10 * 60 * 1000)
-    if (!rl.allowed) return rateLimitResponse(rl.resetAt)
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Войдите, чтобы загрузить файлы' }, { status: 401 })
+    }
 
+    const ownerId = session.user.id
+    const ip = getIP(req)
     const formData = await req.formData()
-    const orderId = formData.get('orderId') as string
+    const uploadId = formData.get('uploadId') as string | null
     const files = formData.getAll('files') as File[]
 
-    if (!orderId || !VALID_ORDER_ID.test(orderId)) {
-      return NextResponse.json({ error: 'orderId обязателен' }, { status: 400 })
+    if (!uploadId || !VALID_UPLOAD_ID.test(uploadId)) {
+      return NextResponse.json({ error: 'Некорректный uploadId' }, { status: 400 })
     }
 
-    if (formData.get('uploadId')) {
-      return await handleChunkUpload(formData, orderId)
+    const isChunk = formData.get('chunk') !== null
+    // 140 requests allow a complete 30 MiB upload in 256 KiB chunks.
+    const userRl = rateLimit(`upload-requests:${ownerId}`, 140, 10 * 60 * 1000)
+    if (!userRl.allowed) return rateLimitResponse(userRl.resetAt)
+    const ipRl = rateLimit(`upload-ip-requests:${ip}`, 140, 10 * 60 * 1000)
+    if (!ipRl.allowed) return rateLimitResponse(ipRl.resetAt)
+
+    if (isChunk) {
+      if (formData.get('chunkIndex') === '0') {
+        const uploadRl = rateLimit(`upload-files:${ownerId}`, 10, 10 * 60 * 1000)
+        if (!uploadRl.allowed) return rateLimitResponse(uploadRl.resetAt)
+        const uploadIpRl = rateLimit(`upload-ip-files:${ip}`, 10, 10 * 60 * 1000)
+        if (!uploadIpRl.allowed) return rateLimitResponse(uploadIpRl.resetAt)
+      }
+      return await handleChunkUpload(formData, ownerId)
     }
 
-    if (!files || files.length === 0) {
+    const uploadRl = rateLimit(`upload-files:${ownerId}`, 10, 10 * 60 * 1000)
+    if (!uploadRl.allowed) return rateLimitResponse(uploadRl.resetAt)
+    const uploadIpRl = rateLimit(`upload-ip-files:${ip}`, 10, 10 * 60 * 1000)
+    if (!uploadIpRl.allowed) return rateLimitResponse(uploadIpRl.resetAt)
+
+    if (!files || files.length === 0 || files.length > 10) {
       return NextResponse.json({ error: 'Файлы не выбраны' }, { status: 400 })
     }
 
@@ -160,24 +180,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { dir: uploadDir, publicPath: uploadPublicPath } = await getUploadDir(orderId)
+    const uploadDir = path.join(getPrivateUploadRoot(), 'orders', ownerId, uploadId)
+    await mkdir(uploadDir, { recursive: true })
 
     const savedPaths: string[] = []
     const skipped: string[] = []
 
     for (const file of files) {
       const ext = path.extname(file.name).toLowerCase()
-      const mimeOk = !file.type || ALLOWED_MIME_TYPES.includes(file.type) || file.type.startsWith('image/')
-
-      if (!ALLOWED_EXTENSIONS.includes(ext) && !mimeOk) {
-        skipped.push(file.name)
-        continue
-      }
-      if (!ext && !mimeOk) {
-        skipped.push(file.name)
-        continue
-      }
-      if (file.type && !ALLOWED_MIME_TYPES.includes(file.type) && !file.type.startsWith('image/') && !ALLOWED_EXTENSIONS.includes(ext)) {
+      if (!ALLOWED_EXTENSIONS.includes(ext)) {
         skipped.push(file.name)
         continue
       }
@@ -187,31 +198,19 @@ export async function POST(req: NextRequest) {
       const filePath = path.join(uploadDir, safeName)
 
       const bytes = await file.arrayBuffer()
-      await writeFile(filePath, Buffer.from(bytes))
+      const buffer = Buffer.from(bytes)
+      if (!matchesFileSignature(ext, buffer)) {
+        skipped.push(file.name)
+        continue
+      }
+      await writeFile(filePath, buffer)
 
-      savedPaths.push(`${uploadPublicPath}/${safeName}`)
+      savedPaths.push(`/api/files/orders/${ownerId}/${uploadId}/${safeName}`)
     }
 
     return NextResponse.json({ files: savedPaths, skipped })
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error)
-    console.error('Upload error:', msg)
-
-    const lower = msg.toLowerCase()
-    if (lower.includes('body') && (lower.includes('too large') || lower.includes('size'))) {
-      return NextResponse.json(
-        { error: 'Файл слишком большой' },
-        { status: 413 },
-      )
-    }
-
-    if (lower.includes('multipart') || lower.includes('formdata')) {
-      return NextResponse.json(
-        { error: 'Не удалось обработать загружаемые файлы (multipart/form-data).' },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json({ error: `Ошибка загрузки файлов: ${msg}` }, { status: 500 })
+    console.error('Upload error:', error instanceof Error ? error.name : 'unknown')
+    return NextResponse.json({ error: 'Не удалось загрузить файлы' }, { status: 500 })
   }
 }

@@ -40,7 +40,7 @@ export function MagicCursor() {
         width: 600,
         height: 600,
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(197,255,69,0.055) 0%, transparent 65%)',
+        background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 65%)',
         willChange: 'transform',
       }}
     />

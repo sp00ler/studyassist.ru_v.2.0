@@ -4,29 +4,29 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95',
+  'inline-flex items-center justify-center whitespace-nowrap font-display text-[11px] leading-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        default:
-          'bg-[#C5FF45] text-[#07070E] font-bold hover:bg-[#D4FF60] hover:shadow-[0_8px_28px_rgba(197,255,69,.28)] hover:-translate-y-px',
+        // Win95 variant map (see scratchpad/BRIEF.md):
+        // default -> btn-95-primary, outline/secondary -> btn-95,
+        // ghost -> flat with hover bevel, destructive -> danger fill.
+        default: 'btn-95-primary',
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        outline:
-          'border border-white/20 bg-transparent text-white hover:bg-white/10 hover:border-white/40',
-        secondary:
-          'bg-white/5 text-white hover:bg-white/10',
+          'bg-danger text-white border border-chrome-shadow shadow-[inset_1px_1px_0_0_#fff,inset_-1px_-1px_0_0_#808080] hover:bg-danger/90 active:shadow-[inset_-1px_-1px_0_0_#fff,inset_1px_1px_0_0_#808080]',
+        outline: 'btn-95',
+        secondary: 'btn-95',
         ghost:
-          'text-white hover:bg-white/10',
-        link: 'text-primary underline-offset-4 hover:underline',
+          'bg-transparent text-ink border border-transparent hover:bg-chrome hover:border-chrome-shadow hover:shadow-[inset_1px_1px_0_0_#fff,inset_-1px_-1px_0_0_#808080]',
+        link: 'font-sans text-sm font-semibold text-title underline-offset-4 hover:underline',
         amber:
-          'bg-amber-500 text-black hover:bg-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.4)]',
+          'bg-accent text-ink border border-chrome-shadow shadow-[inset_1px_1px_0_0_#fff,inset_-1px_-1px_0_0_#808080] hover:bg-accent/80 active:shadow-[inset_-1px_-1px_0_0_#fff,inset_1px_1px_0_0_#808080]',
       },
       size: {
         default: 'h-10 px-6 py-2',
-        sm: 'h-9 px-4 text-xs',
-        lg: 'h-12 px-8 text-base',
-        xl: 'h-14 px-10 text-base',
+        sm: 'h-9 px-4 text-[10px]',
+        lg: 'h-12 px-8 text-[12px]',
+        xl: 'h-14 px-10 text-[12px]',
         icon: 'h-10 w-10',
       },
     },

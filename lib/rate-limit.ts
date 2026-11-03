@@ -15,10 +15,12 @@ setInterval(() => {
   })
 }, 5 * 60 * 1000)
 
+// nginx перезаписывает X-Real-IP на $remote_addr, клиент его подделать не может.
+// В X-Forwarded-For первый элемент задаёт клиент — доверяем только последнему (добавлен nginx).
 export function getIP(req: NextRequest): string {
   return (
-    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-    req.headers.get('x-real-ip') ||
+    req.headers.get('x-real-ip')?.trim() ||
+    req.headers.get('x-forwarded-for')?.split(',').pop()?.trim() ||
     'unknown'
   )
 }

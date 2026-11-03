@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { encode } from 'next-auth/jwt'
+import { isSuperAdminEmail } from '@/lib/roles'
 
 const BASE_URL = process.env.NEXTAUTH_URL || 'https://studyassist.ru'
 const VK_CLIENT_ID = process.env.VK_CLIENT_ID!
@@ -172,6 +173,7 @@ export async function GET(req: NextRequest) {
       email: user.email,
       picture: user.avatar,
       isAdmin: user.isAdmin,
+      isSuperAdmin: user.isAdmin && isSuperAdminEmail(user.email),
       phone: user.phone ?? null,
     },
     secret: process.env.NEXTAUTH_SECRET!,

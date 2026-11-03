@@ -5,9 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useSession } from 'next-auth/react'
 import {
   Upload, X, CheckCircle, Loader2, ChevronRight, ChevronLeft, File,
-  Info, TrendingUp, AlertCircle,
+  Info, TrendingUp, AlertCircle, ClipboardList,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,6 +17,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
 import { calculateEstimate, type PriceEstimate, type WorkType } from '@/lib/pricing'
+import { revealFrom } from '@/components/home/reveal'
 
 // ─── Zod schemas ──────────────────────────────────────────────────────────────
 
@@ -49,7 +51,7 @@ type FormData = z.infer<typeof step1Schema> & z.infer<typeof step2Schema> & z.in
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const stepTitles = ['Тип услуги', 'Описание запроса', 'Контактные данные']
+const stepTitles = ['Тип работы', 'Описание запроса', 'Контактные данные']
 
 const WORK_TYPE_LABELS: Record<WorkType | 'other', string> = {
   essay: 'Реферат / эссе',
@@ -104,19 +106,23 @@ function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockPro
 
   const confidenceColor =
     estimate.confidence === 'high'
-      ? 'text-emerald-400'
+      ? 'text-success'
       : estimate.confidence === 'medium'
-      ? 'text-yellow-400'
-      : 'text-white/40'
+      ? 'text-warning'
+      : 'text-ink-soft'
 
   if (compact) {
     return (
-      <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-white/50 text-sm">
+      <div className="bevel-in bg-paper px-4 py-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-ink-soft text-sm">
           <TrendingUp className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
           <span>Предв. стоимость</span>
         </div>
-        <span className={`font-bold text-base ${estimate.kind === 'manual' ? 'text-white/60' : 'text-[#C5FF45]'}`}>
+        <span
+          className={`font-mono font-bold text-base px-2 py-0.5 ${
+            estimate.kind === 'manual' ? 'text-ink-soft' : 'bg-accent text-ink'
+          }`}
+        >
           {estimate.label}
         </span>
       </div>
@@ -124,19 +130,25 @@ function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockPro
   }
 
   return (
-    <div className="rounded-2xl border border-[#C5FF45]/[.18] bg-[#C5FF45]/[.04] p-5">
-      <div className="flex items-start justify-between gap-3 mb-1">
+    <div className="bevel-in bg-paper p-5">
+      <div className="flex items-start justify-between gap-3 mb-2">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-[#C5FF45] flex-shrink-0" aria-hidden="true" />
-          <span className="text-sm font-medium text-white/70">Предварительная стоимость</span>
+          <TrendingUp className="w-4 h-4 text-title flex-shrink-0" aria-hidden="true" />
+          <span className="text-sm font-medium text-ink-soft">Предварительная стоимость</span>
         </div>
         {confidenceLabel && (
-          <span className={`text-xs ${confidenceColor}`}>{confidenceLabel}</span>
+          <span className={`text-xs font-semibold ${confidenceColor}`}>{confidenceLabel}</span>
         )}
       </div>
 
-      <div className={`text-2xl font-bold mb-3 ${estimate.kind === 'manual' ? 'text-white/60' : 'text-white'}`}>
-        {estimate.label}
+      <div className="mb-3">
+        <span
+          className={`inline-block font-mono text-2xl font-bold px-3 py-1 ${
+            estimate.kind === 'manual' ? 'text-ink-soft' : 'bg-accent text-ink'
+          }`}
+        >
+          {estimate.label}
+        </span>
       </div>
 
       {estimate.kind !== 'manual' && estimate.flags.length > 0 && (
@@ -144,7 +156,7 @@ function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockPro
           <button
             type="button"
             onClick={() => setShowFlags((v) => !v)}
-            className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/60 transition-colors"
+            className="flex items-center gap-1.5 text-xs text-ink-soft hover:text-title transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
             aria-expanded={showFlags}
           >
             <Info className="w-3 h-3" aria-hidden="true" />
@@ -160,8 +172,8 @@ function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockPro
                 className="mt-2 space-y-1 overflow-hidden"
               >
                 {estimate.flags.map((flag, i) => (
-                  <li key={i} className="flex items-center gap-1.5 text-xs text-white/50">
-                    <span className="w-1 h-1 rounded-full bg-[#C5FF45] flex-shrink-0" />
+                  <li key={i} className="flex items-center gap-1.5 text-xs text-ink-soft">
+                    <span className="w-1 h-1 bg-title flex-shrink-0" aria-hidden="true" />
                     {flag}
                   </li>
                 ))}
@@ -172,8 +184,8 @@ function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockPro
       )}
 
       {estimate.kind === 'manual' && (
-        <p className="text-xs text-white/40 flex items-start gap-1.5">
-          <AlertCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+        <p className="text-xs text-ink-soft flex items-start gap-1.5">
+          <AlertCircle className="w-3 h-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
           Уточним стоимость после изучения деталей
         </p>
       )}
@@ -185,6 +197,7 @@ function PriceEstimateBlock({ estimate, compact = false }: PriceEstimateBlockPro
 
 export function OrderForm() {
   const { toast } = useToast()
+  const { status: authStatus } = useSession()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -243,11 +256,20 @@ export function OrderForm() {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     setDragOver(false)
+    if (authStatus !== 'authenticated') {
+      toast({ title: 'Войдите, чтобы прикрепить файлы', description: 'Заявку можно отправить без файлов.' })
+      return
+    }
     const droppedFiles = Array.from(e.dataTransfer.files)
     setFiles((prev) => [...prev, ...droppedFiles].slice(0, 10))
-  }, [])
+  }, [authStatus, toast])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (authStatus !== 'authenticated') {
+      toast({ title: 'Войдите, чтобы прикрепить файлы', description: 'Заявку можно отправить без файлов.' })
+      e.target.value = ''
+      return
+    }
     const selected = Array.from(e.target.files || [])
     setFiles((prev) => [...prev, ...selected].slice(0, 10))
   }
@@ -274,8 +296,6 @@ export function OrderForm() {
       const allData = { ...formData, ...data }
       let uploadedFiles: string[] = []
 
-      const tempId = `temp_${Date.now()}`
-
       if (files.length > 0) {
         try {
           const parseUploadError = async (res: Response): Promise<string> => {
@@ -291,7 +311,7 @@ export function OrderForm() {
 
           const uploadBatch = async (batchFiles: File[]): Promise<{ files: string[]; skipped: string[]; error?: string }> => {
             const fd = new FormData()
-            fd.append('orderId', tempId)
+            fd.append('uploadId', crypto.randomUUID())
             batchFiles.forEach((f) => fd.append('files', f))
             const uploadRes = await fetch('/api/upload', { method: 'POST', body: fd })
             if (!uploadRes.ok) {
@@ -307,7 +327,7 @@ export function OrderForm() {
           const chunkUploadFile = async (file: File): Promise<{ files: string[]; skipped: string[]; error?: string }> => {
             const CHUNK_SIZE = 256 * 1024
             const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
-            const uploadId = `${tempId}_${file.name}_${file.size}_${Date.now()}`
+            const uploadId = crypto.randomUUID()
 
             for (let index = 0; index < totalChunks; index++) {
               const start = index * CHUNK_SIZE
@@ -315,7 +335,6 @@ export function OrderForm() {
               const chunk = file.slice(start, end)
 
               const fd = new FormData()
-              fd.append('orderId', tempId)
               fd.append('uploadId', uploadId)
               fd.append('fileName', file.name)
               fd.append('chunkIndex', String(index))
@@ -464,28 +483,41 @@ export function OrderForm() {
 
   if (success) {
     return (
-      <section id="order" className="py-24 bg-[#07070E]">
-        <div className="max-w-2xl mx-auto px-4">
+      <section id="order" className="bg-desk dither py-16 sm:py-24">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             role="status"
             aria-live="polite"
-            className="bg-[#141428] border border-white/[.06] rounded-3xl p-12 text-center"
+            className="window pixel-shadow text-center"
           >
-            <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-10 h-10 text-emerald-400" />
+            <div className="titlebar">
+              <span className="flex items-center gap-2 truncate">
+                <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+                Заявка отправлена
+              </span>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <span className="titlebar-btn" aria-hidden="true">_</span>
+                <span className="titlebar-btn" aria-hidden="true">□</span>
+                <span className="titlebar-btn" aria-hidden="true">×</span>
+              </div>
             </div>
-            <h3 className="font-unbounded text-3xl font-bold text-white mb-3">Заявка принята!</h3>
-            <p className="text-white/50 mb-4">Ваша заявка успешно отправлена</p>
-            <div className="inline-block bg-[#C5FF45]/10 border border-[#C5FF45]/[.18] rounded-xl px-6 py-3 mb-6">
-              <p className="text-white/70 text-sm">Номер заявки</p>
-              <p className="text-2xl font-bold text-[#C5FF45]">{formatOrderId(orderId)}</p>
+            <div className="p-8 sm:p-12">
+              <div className="bevel-out bg-success w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-10 h-10 text-white" aria-hidden="true" />
+              </div>
+              <h3 className="font-display text-xl sm:text-2xl leading-snug text-ink mb-3">Заявка принята!</h3>
+              <p className="text-ink-soft mb-4">Ваша заявка успешно отправлена</p>
+              <div className="inline-block bevel-in bg-paper px-6 py-3 mb-6">
+                <p className="text-ink-soft text-sm">Номер заявки</p>
+                <p className="font-mono text-2xl font-bold text-title">{formatOrderId(orderId)}</p>
+              </div>
+              <p className="text-ink-soft text-sm max-w-md mx-auto">
+                Мы свяжемся с вами в течение 30 минут и согласуем детали консультации.
+                Проверьте email — там уже ждёт подтверждение заявки.
+              </p>
             </div>
-            <p className="text-white/50 text-sm">
-              Мы свяжемся с вами в течение 30 минут и согласуем детали консультации.
-              Проверьте email — там уже ждёт подтверждение заявки.
-            </p>
           </motion.div>
         </div>
       </section>
@@ -495,58 +527,68 @@ export function OrderForm() {
   // ─── Form render ─────────────────────────────────────────────────────────────
 
   return (
-    <section id="order" className="py-24 bg-[#07070E] border-t border-white/[.06]">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6">
+    <section id="order" className="bg-desk dither py-16 sm:py-24">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={revealFrom({ opacity: 0, y: 20 })}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="text-center mb-10"
         >
-          <h2 className="font-unbounded text-3xl md:text-4xl font-black tracking-[-1.5px] mb-4">
-            Опиши ситуацию —{' '}
-            <span className="text-[#C5FF45]">
-              ответим за 30 минут
-            </span>
+          <h2 className="font-display text-lg sm:text-2xl leading-snug break-words text-ink mb-3">
+            Опиши ситуацию — ответим за 30 минут
           </h2>
-          <p className="text-[#6A6A88]">Без регистрации. Без предоплаты. Просто напиши — и мы разберёмся.</p>
+          <p className="text-ink/80 text-base md:text-lg">Без регистрации. Без предоплаты. Просто напиши — и мы разберёмся.</p>
         </motion.div>
 
-        <div className="bg-[#141428] border border-white/[.06] rounded-3xl p-4 sm:p-8">
-          {/* Progress */}
-          <div className="flex items-center justify-between mb-8">
-            {stepTitles.map((title, i) => (
-              <div key={title} className="flex items-center flex-1">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                      i + 1 < step
-                        ? 'bg-emerald-500 text-white'
-                        : i + 1 === step
-                        ? 'bg-[#C5FF45] text-[#07070E]'
-                        : 'bg-white/10 text-white/30'
-                    }`}
-                  >
-                    {i + 1 < step ? <CheckCircle className="w-5 h-5" /> : i + 1}
-                  </div>
-                  <span className={`text-xs mt-1 hidden sm:block transition-colors ${i + 1 === step ? 'text-white' : 'text-white/30'}`}>
-                    {title}
-                  </span>
-                </div>
-                {i < 2 && (
-                  <div className={`flex-1 h-px mx-2 transition-all duration-300 ${i + 1 < step ? 'bg-emerald-500' : 'bg-white/10'}`} />
-                )}
-              </div>
-            ))}
+        <div className="window pixel-shadow">
+          <div className="titlebar">
+            <span className="flex items-center gap-2 truncate">
+              <ClipboardList className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+              Новый заказ — шаг {step} из 3
+            </span>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <span className="titlebar-btn" aria-hidden="true">_</span>
+              <span className="titlebar-btn" aria-hidden="true">□</span>
+              <span className="titlebar-btn" aria-hidden="true">×</span>
+            </div>
           </div>
 
-          <AnimatePresence mode="wait">
+          <div className="p-4 sm:p-8">
+            {/* Progress */}
+            <div className="flex items-center justify-between mb-8" role="list" aria-label="Шаги оформления заявки">
+              {stepTitles.map((title, i) => (
+                <div key={title} className="flex items-center flex-1">
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-10 h-10 flex items-center justify-center text-sm font-bold font-mono transition-colors duration-300 ${
+                        i + 1 < step
+                          ? 'bevel-in bg-success text-white'
+                          : i + 1 === step
+                          ? 'bevel-out bg-title text-white'
+                          : 'bevel-out bg-chrome text-ink-soft'
+                      }`}
+                    >
+                      {i + 1 < step ? <CheckCircle className="w-5 h-5" aria-hidden="true" /> : i + 1}
+                    </div>
+                    <span className={`text-xs mt-1.5 hidden sm:block text-center transition-colors ${i + 1 === step ? 'text-ink font-semibold' : 'text-ink-soft'}`}>
+                      {title}
+                    </span>
+                  </div>
+                  {i < 2 && (
+                    <div className={`flex-1 h-[2px] mx-2 transition-colors duration-300 ${i + 1 < step ? 'bg-success' : 'bg-chrome-dark'}`} />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <AnimatePresence mode="wait">
             {/* ── Step 1 ── */}
             {step === 1 && (
               <motion.form
                 key="step1"
-                initial={{ opacity: 0, x: 20 }}
+                initial={revealFrom({ opacity: 0, x: 20 })}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
@@ -557,7 +599,7 @@ export function OrderForm() {
                   <Label htmlFor="field-type" className="mb-2 block">Тип работы *</Label>
                   <Select onValueChange={(v) => setValue1('type', v as FormData['type'])}>
                     <SelectTrigger id="field-type" aria-describedby={errors1.type ? 'error-type' : undefined} aria-invalid={!!errors1.type}>
-                      <SelectValue placeholder="Выберите тип услуги" />
+                      <SelectValue placeholder="Выберите тип работы" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="essay">Реферат / эссе</SelectItem>
@@ -570,7 +612,7 @@ export function OrderForm() {
                       <SelectItem value="other">Другое</SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors1.type && <p id="error-type" role="alert" className="text-red-400 text-xs mt-1">{errors1.type.message}</p>}
+                  {errors1.type && <p id="error-type" role="alert" className="text-danger text-xs mt-1.5 font-medium">{errors1.type.message}</p>}
                 </div>
 
                 <div>
@@ -582,7 +624,7 @@ export function OrderForm() {
                     aria-invalid={!!errors1.subject}
                     placeholder="Например: Экономика организации, Высшая математика..."
                   />
-                  {errors1.subject && <p id="error-subject" role="alert" className="text-red-400 text-xs mt-1">{errors1.subject.message}</p>}
+                  {errors1.subject && <p id="error-subject" role="alert" className="text-danger text-xs mt-1.5 font-medium">{errors1.subject.message}</p>}
                 </div>
 
                 <div>
@@ -594,9 +636,9 @@ export function OrderForm() {
                     aria-describedby={errors1.deadline ? 'error-deadline' : undefined}
                     aria-invalid={!!errors1.deadline}
                     min={getTomorrowDate()}
-                    className="[color-scheme:dark]"
+                    className="[color-scheme:light]"
                   />
-                  {errors1.deadline && <p id="error-deadline" role="alert" className="text-red-400 text-xs mt-1">{errors1.deadline.message}</p>}
+                  {errors1.deadline && <p id="error-deadline" role="alert" className="text-danger text-xs mt-1.5 font-medium">{errors1.deadline.message}</p>}
                 </div>
 
                 <Button type="submit" className="w-full gap-2" size="lg">
@@ -609,7 +651,7 @@ export function OrderForm() {
             {step === 2 && (
               <motion.form
                 key="step2"
-                initial={{ opacity: 0, x: 20 }}
+                initial={revealFrom({ opacity: 0, x: 20 })}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
@@ -619,7 +661,7 @@ export function OrderForm() {
                 <div>
                   <Label htmlFor="field-description" className="mb-2 block">
                     Подробное описание запроса *
-                    <span className={`ml-2 text-xs ${descriptionLength < 50 ? 'text-white/30' : 'text-emerald-400'}`} aria-live="polite">
+                    <span className={`ml-2 text-xs font-mono ${descriptionLength < 50 ? 'text-ink-soft' : 'text-success'}`} aria-live="polite">
                       {descriptionLength}/50 мин.
                     </span>
                   </Label>
@@ -631,18 +673,18 @@ export function OrderForm() {
                     placeholder="Опишите запрос подробно: какие темы или задачи вызывают затруднение, уровень подготовки, конкретные вопросы. Чем подробнее, тем точнее расчёт стоимости..."
                     rows={6}
                   />
-                  {errors2.description && <p id="error-description" role="alert" className="text-red-400 text-xs mt-1">{errors2.description.message}</p>}
+                  {errors2.description && <p id="error-description" role="alert" className="text-danger text-xs mt-1.5 font-medium">{errors2.description.message}</p>}
                 </div>
 
                 {/* File upload */}
                 <div>
-                  <label htmlFor="file-input" className="mb-2 block text-sm font-medium leading-none">Прикрепить файлы (необязательно)</label>
+                  <label htmlFor="file-input" className="mb-2 block text-sm font-medium leading-none text-ink">Прикрепить файлы (необязательно)</label>
                   <div
                     onDrop={handleDrop}
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
                     onDragLeave={() => setDragOver(false)}
-                    className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 cursor-pointer ${
-                      dragOver ? 'border-[#C5FF45] bg-[#C5FF45]/10' : 'border-white/10 hover:border-white/20 bg-white/3'
+                    className={`field-95 relative p-6 text-center transition-colors duration-200 cursor-pointer ${
+                      dragOver ? 'bg-accent/20' : ''
                     }`}
                     onClick={() => document.getElementById('file-input')?.click()}
                     role="button"
@@ -650,15 +692,20 @@ export function OrderForm() {
                     tabIndex={0}
                     onKeyDown={(e) => e.key === 'Enter' && document.getElementById('file-input')?.click()}
                   >
-                    <Upload className="w-8 h-8 text-white/30 mx-auto mb-2" aria-hidden="true" />
-                    <p className="text-white/50 text-sm">
-                      Перетащите файлы сюда или <span className="text-[#C5FF45]">выберите файлы</span>
+                    <Upload className="w-8 h-8 text-ink-soft mx-auto mb-2" aria-hidden="true" />
+                    <p className="text-ink-soft text-sm">
+                      Перетащите файлы сюда или <span className="text-title font-semibold">выберите файлы</span>
                     </p>
-                    <p className="text-white/30 text-xs mt-1">PDF, DOC, DOCX, TXT, ZIP, JPG, PNG — до 50МБ</p>
+                    <p className="text-ink-soft/70 text-xs mt-1">
+                      {authStatus === 'authenticated'
+                        ? 'PDF, DOC, DOCX, TXT, ZIP, JPG, PNG — до 50МБ'
+                        : 'Войдите, чтобы прикрепить файлы. Заявку можно отправить без них.'}
+                    </p>
                     <input
                       id="file-input"
                       type="file"
                       multiple
+                      disabled={authStatus !== 'authenticated'}
                       accept=".pdf,.doc,.docx,.txt,.zip,.jpg,.jpeg,.png,.rar"
                       onChange={handleFileChange}
                       className="sr-only"
@@ -668,17 +715,17 @@ export function OrderForm() {
                   {files.length > 0 && (
                     <div className="mt-3 space-y-2">
                       {files.map((file, i) => (
-                        <div key={i} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
-                          <div className="flex items-center gap-2">
-                            <File className="w-4 h-4 text-[#C5FF45]" />
-                            <span className="text-white/70 text-sm truncate max-w-48">{file.name}</span>
-                            <span className="text-white/30 text-xs">({(file.size / 1024 / 1024).toFixed(1)} МБ)</span>
+                        <div key={i} className="bevel-out bg-chrome flex items-center justify-between px-3 py-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <File className="w-4 h-4 text-title flex-shrink-0" aria-hidden="true" />
+                            <span className="text-ink text-sm truncate max-w-48">{file.name}</span>
+                            <span className="text-ink-soft text-xs flex-shrink-0">({(file.size / 1024 / 1024).toFixed(1)} МБ)</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeFile(i)}
                             aria-label={`Удалить файл ${file.name}`}
-                            className="text-white/30 hover:text-red-400 transition-colors"
+                            className="text-ink-soft hover:text-danger transition-colors flex-shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
                           >
                             <X className="w-4 h-4" aria-hidden="true" />
                           </button>
@@ -708,7 +755,7 @@ export function OrderForm() {
             {step === 3 && (
               <motion.form
                 key="step3"
-                initial={{ opacity: 0, x: 20 }}
+                initial={revealFrom({ opacity: 0, x: 20 })}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
@@ -724,7 +771,7 @@ export function OrderForm() {
                     aria-invalid={!!errors3.name}
                     placeholder="Как к вам обращаться?"
                   />
-                  {errors3.name && <p id="error-name" role="alert" className="text-red-400 text-xs mt-1">{errors3.name.message}</p>}
+                  {errors3.name && <p id="error-name" role="alert" className="text-danger text-xs mt-1.5 font-medium">{errors3.name.message}</p>}
                 </div>
 
                 <div>
@@ -737,7 +784,7 @@ export function OrderForm() {
                     aria-invalid={!!errors3.email}
                     placeholder="your@email.ru"
                   />
-                  {errors3.email && <p id="error-email" role="alert" className="text-red-400 text-xs mt-1">{errors3.email.message}</p>}
+                  {errors3.email && <p id="error-email" role="alert" className="text-danger text-xs mt-1.5 font-medium">{errors3.email.message}</p>}
                 </div>
 
                 <div>
@@ -762,36 +809,36 @@ export function OrderForm() {
                     type="checkbox"
                     id="consent"
                     {...register3('consent')}
-                    className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 text-[#C5FF45] cursor-pointer accent-[#C5FF45] flex-shrink-0"
+                    className="mt-1 w-[18px] h-[18px] border border-chrome-shadow bg-paper accent-title cursor-pointer flex-shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-dotted focus-visible:outline-offset-2 focus-visible:outline-ink"
                   />
-                  <label htmlFor="consent" className="text-white/50 text-sm cursor-pointer">
+                  <label htmlFor="consent" className="text-ink-soft text-sm cursor-pointer leading-relaxed">
                     Я даю согласие на обработку моих персональных данных (ФИО, email, телефон) в целях
                     обработки заявки и связи по её исполнению в соответствии с{' '}
-                    <a href="/privacy" className="text-[#C5FF45] hover:underline">
+                    <a href="/privacy" className="text-title font-semibold hover:underline">
                       Политикой конфиденциальности
                     </a>.
                     {' '}Согласие можно отозвать, написав на{' '}
-                    <a href="mailto:support@studyassist.ru" className="text-[#C5FF45] hover:underline">
+                    <a href="mailto:support@studyassist.ru" className="text-title font-semibold hover:underline">
                       support@studyassist.ru
                     </a>
                   </label>
                 </div>
-                {errors3.consent && <p className="text-red-400 text-xs">{errors3.consent.message}</p>}
+                {errors3.consent && <p role="alert" className="text-danger text-xs font-medium">{errors3.consent.message}</p>}
 
                 {/* ── Compact price summary (step 3) ── */}
                 {estimate && (
                   <div className="space-y-2">
                     {/* Order summary line */}
-                    <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white/50 space-y-1">
+                    <div className="bevel-in bg-paper px-4 py-3 text-sm text-ink-soft space-y-1.5">
                       <div className="flex justify-between gap-2">
                         <span>Тип работы</span>
-                        <span className="text-white/70 text-right">
+                        <span className="text-ink font-medium text-right">
                           {formData.type ? WORK_TYPE_LABELS[formData.type as WorkType] : '—'}
                         </span>
                       </div>
                       <div className="flex justify-between gap-2">
                         <span>Предмет</span>
-                        <span className="text-white/70 truncate max-w-[55%] text-right">{formData.subject || '—'}</span>
+                        <span className="text-ink font-medium truncate max-w-[55%] text-right">{formData.subject || '—'}</span>
                       </div>
                     </div>
 
@@ -799,8 +846,8 @@ export function OrderForm() {
                     <PriceEstimateBlock estimate={estimate} compact />
 
                     {/* Disclaimer */}
-                    <p className="text-xs text-white/35 flex items-start gap-1.5 leading-snug">
-                      <Info className="w-3 h-3 mt-0.5 flex-shrink-0 text-white/30" aria-hidden="true" />
+                    <p className="text-xs text-ink-soft flex items-start gap-1.5 leading-snug">
+                      <Info className="w-3 h-3 mt-0.5 flex-shrink-0 text-ink-soft" aria-hidden="true" />
                       Цена ориентировочная. После изучения всех условий задания итоговая стоимость может
                       быть уточнена — как в большую, так и в меньшую сторону.
                     </p>
@@ -829,7 +876,8 @@ export function OrderForm() {
                 </div>
               </motion.form>
             )}
-          </AnimatePresence>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </section>

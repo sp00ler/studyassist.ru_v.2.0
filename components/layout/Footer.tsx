@@ -1,39 +1,51 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { SocialContacts } from '@/components/layout/SocialContacts'
 
 export function Footer() {
+  const pathname = usePathname()
+  // Same reasoning as Navbar: "#order" only works as a plain anchor when
+  // we're already on the home page (past the gate); elsewhere it must go
+  // through ?go=order so it doesn't land on the RetroGate.
+  const orderHref = pathname === '/' ? '/#order' : '/?go=order'
+
   return (
-    <footer className="border-t border-white/[.06] bg-[#07070E]">
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 pt-[72px] pb-10">
-
+    <footer className="bg-paper border-t-2 border-chrome-shadow">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 pt-[64px] pb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-8 md:gap-12 mb-12">
-
           {/* Brand */}
           <div>
-            <Link href="/" className="font-unbounded text-[17px] font-black tracking-[-0.3px] text-[#F0F0EC] hover:text-white transition-colors">
-              Study<span className="text-[#C5FF45]">Assist</span>
+            <Link href="/" className="font-sans font-bold text-[17px] text-ink hover:text-title transition-colors">
+              Study<span className="text-title">Assist</span>
             </Link>
-            <p className="text-[13px] text-[#6A6A88] leading-[1.75] mt-4 max-w-[240px]">
-              Помогаем студентам справляться с любыми учебными задачами. Быстро, качественно, конфиденциально.
+            <p className="text-[13px] text-ink-soft leading-[1.75] mt-4 max-w-[260px]">
+              Курсовые, дипломы, рефераты — консультации и помощь в подготовке. Быстро, по делу, конфиденциально.
             </p>
           </div>
 
           {/* Services */}
           <div>
-            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6A6A88] mb-4">
+            <div className="font-mono text-[11px] font-bold uppercase tracking-[1.5px] text-ink-soft mb-4">
               Услуги
             </div>
             <ul className="space-y-2.5">
               {[
                 { href: '/kursovaya', label: 'Курсовые работы' },
-                { href: '/diplom',    label: 'Дипломы (ВКР)' },
-                { href: '/referat',  label: 'Рефераты и эссе' },
-                { href: '/#services', label: 'Лабораторные' },
-                { href: '/#services', label: 'Презентации' },
-                { href: '/#services', label: 'Отчёты по практике' },
+                { href: '/diplom', label: 'Дипломы (ВКР)' },
+                { href: '/referat', label: 'Рефераты' },
+                { href: '/esse', label: 'Эссе' },
+                { href: '/laboratornaya', label: 'Лабораторные' },
+                { href: '/chertezhi', label: 'Чертежи' },
+                { href: '/kontrolnaya', label: 'Контрольные' },
+                { href: '/reshenie-zadach', label: 'Решение задач' },
+                { href: '/prezentatsiya', label: 'Презентации' },
+                { href: '/otchet-po-praktike', label: 'Отчёты по практике' },
+                { href: '/tseny', label: 'Цены' },
               ].map((item) => (
                 <li key={item.label}>
-                  <Link href={item.href} className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                  <Link href={item.href} className="text-ink-soft hover:text-title text-[13px] transition-colors">
                     {item.label}
                   </Link>
                 </li>
@@ -43,7 +55,7 @@ export function Footer() {
 
           {/* Navigation */}
           <div>
-            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6A6A88] mb-4">
+            <div className="font-mono text-[11px] font-bold uppercase tracking-[1.5px] text-ink-soft mb-4">
               Навигация
             </div>
             <ul className="space-y-2.5">
@@ -51,10 +63,14 @@ export function Footer() {
                 { href: '/#how-it-works', label: 'Как это работает' },
                 { href: '/#pricing', label: 'Цены' },
                 { href: '/#reviews', label: 'Отзывы' },
-                { href: '/#order', label: 'Оставить заявку' },
+                { href: '/gid', label: 'Гайды' },
+                { href: '/spisok-literatury-po-gostu', label: 'Список литературы по ГОСТу' },
+                { href: '/proverka-oformleniya', label: 'Проверка оформления' },
+                { href: '/kalkulyator/opredelitel-matritsy', label: 'Калькуляторы матриц' },
+                { href: orderHref, label: 'Оставить заявку' },
               ].map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                  <Link href={item.href} className="text-ink-soft hover:text-title text-[13px] transition-colors">
                     {item.label}
                   </Link>
                 </li>
@@ -64,7 +80,7 @@ export function Footer() {
 
           {/* Legal & Contacts */}
           <div>
-            <div className="font-unbounded text-[10px] font-bold uppercase tracking-[1.5px] text-[#6A6A88] mb-4">
+            <div className="font-mono text-[11px] font-bold uppercase tracking-[1.5px] text-ink-soft mb-4">
               Контакты
             </div>
 
@@ -75,7 +91,7 @@ export function Footer() {
 
             <ul className="space-y-2.5">
               <li>
-                <a href="mailto:support@studyassist.ru" className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                <a href="mailto:support@studyassist.ru" className="text-ink-soft hover:text-title text-[13px] transition-colors">
                   support@studyassist.ru
                 </a>
               </li>
@@ -88,7 +104,7 @@ export function Footer() {
                 { href: '/contacts', label: 'Контакты' },
               ].map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-[#6A6A88] hover:text-[#C5FF45] text-[13px] transition-colors">
+                  <Link href={item.href} className="text-ink-soft hover:text-title text-[13px] transition-colors">
                     {item.label}
                   </Link>
                 </li>
@@ -97,9 +113,10 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-6 border-t border-white/[.06] flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[12px] text-[#6A6A88]">© 2025 StudyAssist. Образовательные консультации.</p>
-          <p className="text-[12px] text-[#6A6A88]">Режим работы: 9:00 – 23:00 МСК</p>
+        {/* Taskbar-style bottom bar */}
+        <div className="bevel-out bg-chrome px-4 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-[12px] font-sans text-ink">© <span className="font-mono">{new Date().getFullYear()}</span> StudyAssist. Образовательные консультации.</p>
+          <p className="text-[12px] font-sans text-ink">Режим работы: <span className="font-mono">9:00 – 23:00</span> МСК</p>
         </div>
       </div>
     </footer>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { Plus, Pencil, Trash2, Eye, EyeOff, Loader2, FolderOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -61,12 +60,13 @@ export default function AdminPortfolioPage() {
   }
 
   return (
-    <div>
+    <div className="window pixel-shadow">
+      <div className="titlebar">
+        <h1 className="truncate">Портфолио</h1>
+      </div>
+      <div className="bg-paper p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Портфолио</h1>
-          <p className="text-white/50 text-sm mt-1">Примеры выполненных работ</p>
-        </div>
+        <p className="text-ink-soft text-sm">Примеры выполненных работ</p>
         <Link href="/admin/portfolio/new">
           <Button className="gap-2">
             <Plus className="w-4 h-4" />
@@ -77,12 +77,12 @@ export default function AdminPortfolioPage() {
 
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="w-6 h-6 text-[#6C3EF4] animate-spin" />
+          <Loader2 className="w-6 h-6 text-title animate-spin" />
         </div>
       ) : items.length === 0 ? (
-        <div className="text-center py-16 bg-white/5 rounded-2xl border border-white/10">
-          <FolderOpen className="w-12 h-12 text-white/20 mx-auto mb-3" />
-          <p className="text-white/40">Примеры работ не добавлены</p>
+        <div className="text-center py-16 border border-chrome-dark bg-chrome/20">
+          <FolderOpen className="w-12 h-12 text-ink-soft mx-auto mb-3" />
+          <p className="text-ink-soft">Примеры работ не добавлены</p>
           <Link href="/admin/portfolio/new">
             <Button variant="outline" className="mt-4 gap-2">
               <Plus className="w-4 h-4" /> Добавить первый
@@ -91,35 +91,32 @@ export default function AdminPortfolioPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          {items.map((item, i) => (
-            <motion.div
+          {items.map((item) => (
+            <div
               key={item.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
-              className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 flex items-center gap-4"
+              className="bevel-out bg-chrome/20 px-5 py-4 flex items-center gap-4"
             >
               {/* Type badge */}
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg bg-[#C5FF45]/10 text-[#C5FF45] border border-[#C5FF45]/20 flex-shrink-0">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 bg-title/10 text-title border border-title flex-shrink-0">
                 {WORK_TYPE_LABELS[item.workType] || item.workType}
               </span>
 
               {/* Title */}
               <div className="flex-1 min-w-0">
-                <p className="text-white font-medium truncate">{item.title}</p>
+                <p className="text-ink font-medium truncate">{item.title}</p>
                 {item.subject && (
-                  <p className="text-white/40 text-xs mt-0.5">{item.subject}</p>
+                  <p className="text-ink-soft text-xs mt-0.5">{item.subject}</p>
                 )}
               </div>
 
               {/* Order */}
-              <span className="text-white/30 text-xs flex-shrink-0">#{item.sortOrder}</span>
+              <span className="text-ink-soft text-xs font-mono flex-shrink-0">#{item.sortOrder}</span>
 
               {/* Published */}
-              <span className={`text-xs px-2 py-1 rounded-lg border flex-shrink-0 ${
+              <span className={`text-xs px-2 py-1 border flex-shrink-0 ${
                 item.published
-                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                  : 'bg-white/5 text-white/30 border-white/10'
+                  ? 'bg-success/15 text-success border-success'
+                  : 'bg-chrome text-ink-soft border-chrome-shadow'
               }`}>
                 {item.published ? 'Видно' : 'Скрыто'}
               </span>
@@ -129,29 +126,30 @@ export default function AdminPortfolioPage() {
                 <button
                   onClick={() => togglePublish(item)}
                   title={item.published ? 'Скрыть' : 'Показать'}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                  className="btn-95 w-9 h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:w-8 sm:h-8 flex items-center justify-center"
                 >
                   {item.published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
                 <Link href={`/admin/portfolio/${item.id}`}>
-                  <button className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-all">
+                  <button className="btn-95 w-9 h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:w-8 sm:h-8 flex items-center justify-center">
                     <Pencil className="w-4 h-4" />
                   </button>
                 </Link>
                 <button
                   onClick={() => deleteItem(item.id)}
                   disabled={deleting === item.id}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                  className="btn-95 w-9 h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-danger hover:text-white"
                 >
                   {deleting === item.id
                     ? <Loader2 className="w-4 h-4 animate-spin" />
                     : <Trash2 className="w-4 h-4" />}
                 </button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}
+      </div>
     </div>
   )
 }

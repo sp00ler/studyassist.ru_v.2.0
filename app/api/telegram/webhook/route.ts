@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
+import crypto from 'crypto'
 import { handleUpdate } from '@/lib/telegram-handler'
+import { telegramWebhookSecret } from '@/lib/telegram'
+
+function hasValidSecret(req: NextRequest): boolean {
+  const expected = telegramWebhookSecret()
+  const got = req.headers.get('x-telegram-bot-api-secret-token')
+  if (!expected || !got || got.length !== expected.length) return false
+  return crypto.timingSafeEqual(Buffer.from(got), Buffer.from(expected))
+}
 
 export async function POST(req: NextRequest) {
+  // Без секрета любой мог слать поддельные апдейты от имени пользователей/админов.
+  if (!hasValidSecret(req)) {
+    return NextResponse.json({ ok: false }, { status: 403 })
+  }
   try {
     const update = await req.json()
     const msg = update.message
